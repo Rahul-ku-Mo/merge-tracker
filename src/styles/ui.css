@@ -1,0 +1,186 @@
+/* Shared UI primitives — retro style (no framework) */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s;
+  white-space: nowrap;
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none !important;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-sm), 0 0 0 2px hsl(var(--ring));
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: hsl(18 86% 44%);
+}
+
+.btn-outline {
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: hsl(var(--accent));
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  box-shadow: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 11px;
+}
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.card {
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  box-shadow: var(--shadow-md);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge.open {
+  background: hsl(205 80% 62%);
+  color: hsl(222 28% 14%);
+}
+
+.badge.merged {
+  background: hsl(150 55% 50%);
+  color: hsl(222 28% 14%);
+}
+
+.badge.closed {
+  background: hsl(0 75% 62%);
+  color: hsl(40 50% 97%);
+}
+
+.badge.provider-gitlab {
+  background: hsl(18 86% 52%);
+  color: hsl(40 50% 97%);
+}
+
+.badge.provider-github {
+  background: hsl(222 12% 22%);
+  color: hsl(40 50% 97%);
+}
+
+.badge.provider-bitbucket {
+  background: hsl(212 84% 50%);
+  color: hsl(40 50% 97%);
+}
+
+.input,
+.select {
+  display: block;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(40 50% 97%);
+  color: hsl(var(--foreground));
+  font: inherit;
+  font-size: 13px;
+  box-shadow: inset 2px 2px 0 0 hsl(40 25% 80%);
+  transition: box-shadow 0.1s;
+}
+
+.input:focus-visible,
+.select:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.field-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  width: 100%;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  gap: 12px;
+}
+
+.field-label:last-child {
+  margin-bottom: 0;
+}
+
+/* Faint maker's mark. */
+.credit {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.4;
+}
+
+.credit:hover {
+  opacity: 0.7;
+}

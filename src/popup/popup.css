@@ -1,0 +1,240 @@
+@import "../styles/tokens.css";
+@import "../styles/ui.css";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  width: 400px;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  background-image: repeating-linear-gradient(
+    hsl(var(--ink) / 0.035) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 120px;
+  padding: 14px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid hsl(var(--ink));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.brand-sub {
+  margin: 2px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Status banner */
+.status-banner {
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.status-banner.is-error {
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+.status-banner.is-success {
+  background: hsl(var(--success-muted));
+  color: hsl(var(--success));
+}
+
+.status-banner.is-loading {
+  color: hsl(var(--muted-foreground));
+}
+
+.status-banner[hidden] {
+  display: none;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 28px 16px;
+  text-align: center;
+  border: 2px dashed hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+}
+
+.empty-icon {
+  font-size: 28px;
+  line-height: 1;
+  color: hsl(var(--primary));
+  margin-bottom: 8px;
+}
+
+.empty-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.empty-desc {
+  margin: 0;
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* MR list */
+.mr-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.mr-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.mr-list::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-left: 2px solid hsl(var(--ink));
+}
+
+.mr-list::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--ink));
+}
+
+.mr-item {
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  transition: background-color 0.1s, border-color 0.1s;
+}
+
+.mr-item:hover {
+  background: hsl(var(--accent));
+  border-color: hsl(var(--ink));
+}
+
+.mr-item + .mr-item {
+  margin-top: 4px;
+}
+
+.mr-title {
+  display: block;
+  color: hsl(var(--foreground));
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.mr-title:hover {
+  color: hsl(var(--primary));
+}
+
+.mr-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+}
+
+.mr-meta-sep {
+  opacity: 0.5;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 2px solid hsl(var(--ink));
+}
+
+.footer-link {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: hsl(var(--primary));
+}
+
+.footer-meta {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  text-align: right;
+}

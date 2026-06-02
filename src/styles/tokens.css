@@ -1,0 +1,40 @@
+/**
+ * Retro design tokens (plain CSS, no library).
+ * Warm "paper" palette, ink outlines, hard offset shadows, monospace type.
+ */
+
+/* Include padding + border in element width so 100%-width inputs never overflow. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --background: 40 38% 92%;
+  --foreground: 222 28% 14%;
+  --card: 42 50% 96%;
+  --card-foreground: 222 28% 14%;
+  --primary: 18 86% 50%;
+  --primary-foreground: 40 50% 97%;
+  --secondary: 41 32% 85%;
+  --secondary-foreground: 222 28% 14%;
+  --muted: 40 30% 87%;
+  --muted-foreground: 222 14% 36%;
+  --accent: 41 42% 86%;
+  --accent-foreground: 222 28% 14%;
+  --destructive: 0 68% 46%;
+  --destructive-foreground: 40 50% 97%;
+  --success: 158 60% 30%;
+  --success-muted: 158 42% 85%;
+  --border: 222 28% 14%;
+  --input: 222 28% 14%;
+  --ring: 18 86% 50%;
+  --radius: 0px;
+  --ink: 222 28% 14%;
+  --shadow-sm: 2px 2px 0 0 hsl(var(--ink));
+  --shadow-md: 4px 4px 0 0 hsl(var(--ink));
+  --shadow-lg: 6px 6px 0 0 hsl(var(--ink));
+  --font-sans: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", Consolas,
+    "SF Mono", "Liberation Mono", Menlo, "DejaVu Sans Mono", monospace;
+}

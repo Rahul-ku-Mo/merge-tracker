@@ -1,0 +1,1 @@
+{"root":["./src/vite-env.d.ts","./src/background/service-worker.ts","./src/lib/dom.ts","./src/lib/storage.ts","./src/lib/sync.ts","./src/options/options.ts","./src/popup/popup.ts","./src/providers/bitbucket.ts","./src/providers/github.ts","./src/providers/gitlab.ts","./src/providers/registry.ts","./src/providers/types.ts","./src/types/index.ts"],"version":"5.9.3"}

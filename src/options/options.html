@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MR Tracker — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="page">
+      <main class="card settings-card">
+        <header class="settings-header">
+          <div class="settings-brand">
+            <span class="settings-brand-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
+            </span>
+            <div>
+              <h1>Settings</h1>
+              <p class="settings-sub">Merge Request Tracker</p>
+            </div>
+          </div>
+        </header>
+
+        <p class="lead">
+          Connect one or more accounts. Each uses a <strong>read-only</strong>
+          token / app password stored only on this device.
+        </p>
+
+        <form id="config-form">
+          <section class="form-section card">
+            <div class="section-head">
+              <h2 class="section-title">Accounts</h2>
+              <div class="add-account">
+                <select class="select" id="new-provider" aria-label="Provider">
+                  <option value="gitlab">GitLab</option>
+                  <option value="github">GitHub</option>
+                  <option value="bitbucket">Bitbucket</option>
+                </select>
+                <button type="button" class="btn" id="add-account">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-plus-icon lucide-plus"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                  </svg>
+                  Add
+                </button>
+              </div>
+            </div>
+            <div id="accounts"></div>
+            <p id="accounts-empty" class="hint" hidden>
+              No accounts yet. Pick a provider above and click Add.
+            </p>
+          </section>
+
+          <section class="form-section card">
+            <h2 class="section-title">Sync &amp; notifications</h2>
+            <label class="field-label">
+              Sync every (minutes)
+              <input
+                class="input"
+                type="number"
+                id="syncIntervalMinutes"
+                min="1"
+                max="1440"
+                value="5"
+              />
+            </label>
+            <div class="checks">
+              <label class="check-row">
+                <input type="checkbox" id="notifyNewMr" /> Notify on new PR/MR
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="notifyStatusChange" checked />
+                Notify on status change
+              </label>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <span id="save-status" class="save-status" role="status"></span>
+          </div>
+        </form>
+
+        <p class="credit">crafted by Rahul KM</p>
+      </main>
+    </div>
+    <script type="module" src="./options.ts"></script>
+  </body>
+</html>

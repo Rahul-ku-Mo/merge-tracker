@@ -1,0 +1,255 @@
+@import "../styles/tokens.css";
+@import "../styles/ui.css";
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  background-image: repeating-linear-gradient(
+    hsl(var(--ink) / 0.03) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.page {
+  padding: 40px 20px 56px;
+}
+
+.settings-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+}
+
+.settings-header {
+  margin-bottom: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid hsl(var(--ink));
+}
+
+.settings-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-brand-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-sub {
+  margin: 4px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.lead {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+}
+
+.lead a {
+  color: hsl(var(--primary));
+  font-weight: 700;
+}
+
+.lead code {
+  padding: 1px 6px;
+  border: 1px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  font-size: 12px;
+  background: hsl(var(--secondary));
+}
+
+.form-section {
+  margin-bottom: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed hsl(var(--ink));
+}
+
+.hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: hsl(var(--primary));
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-head .section-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.add-account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-account .select {
+  width: auto;
+  height: 32px;
+  font-size: 12px;
+}
+
+.account-card {
+  margin-bottom: 14px;
+  padding: 16px;
+}
+
+.account-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.account-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed hsl(var(--ink));
+}
+
+.account-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.account-label {
+  height: 30px;
+  font-size: 13px;
+  max-width: 220px;
+}
+
+.account-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Inside account cards, stack label text above the input for readability. */
+.account-card .field-label {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.account-card .field-label .hint {
+  margin: 0;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.account-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid hsl(var(--ink) / 0.2);
+}
+
+.account-filters .checks {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 2px solid hsl(var(--ink));
+}
+
+.save-status {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: hsl(var(--success));
+}
+
+.save-status.error {
+  color: hsl(var(--destructive));
+}
