@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -54,6 +54,7 @@ export const githubProvider: Provider = {
       label: t("fieldOrgFilter"),
       placeholder: "my-org",
       required: false,
+      kind: "select",
       hint: t("hintGithubOrg")
     },
     {
@@ -65,6 +66,25 @@ export const githubProvider: Provider = {
       hint: t("hintGithubToken")
     }
   ],
+
+  async listWorkspaces(token: string, host: string): Promise<string[]> {
+    const base = normalizeHost(host) || DEFAULT_HOST;
+    const res = await fetch(`${base}/user/orgs?per_page=100`, {
+      headers: {
+        Authorization: `Bearer ${token.trim()}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+    if (!res.ok) {
+      throw new ProviderApiError(`GitHub API error (${res.status})`, res.status);
+    }
+    const orgs = (await res.json()) as { login?: string }[];
+    return orgs
+      .map((org) => org.login ?? "")
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+  },
 
   async fetchMergeRequests(account: Account): Promise<MergeRequest[]> {
     const token = account.token.trim();
@@ -89,8 +109,111 @@ export const githubProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async fetchIdentity(account: Account): Promise<string> {
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const user = await getGitHubJson<{ login?: string }>(`${base}/user`, account.token.trim());
+    if (!user.login) throw new ProviderApiError("Could not resolve GitHub login.");
+    return user.login;
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
+    const token = account.token.trim();
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const pullUrl = `${base}/repos/${mr.repo}/pulls/${mr.number}`;
+
+    const pull = await getGitHubJson<GitHubPullDetail>(pullUrl, token);
+    const sha = pull.head?.sha;
+    // Requested reviewers drop off once they submit a review, so presence means "still owed".
+    const reviewRequestedFromMe = me
+      ? (pull.requested_reviewers ?? []).some((r) => r.login === me)
+      : undefined;
+    // The search API has no branch names, so they come from the pull detail.
+    const branches = { sourceBranch: pull.head?.ref, targetBranch: pull.base?.ref };
+    if (!sha) return { ...branches, reviewRequestedFromMe };
+
+    const [checks, status, reviews] = await Promise.all([
+      getGitHubJson<GitHubCheckRuns>(`${base}/repos/${mr.repo}/commits/${sha}/check-runs?per_page=100`, token),
+      getGitHubJson<GitHubCombinedStatus>(`${base}/repos/${mr.repo}/commits/${sha}/status`, token),
+      getGitHubJson<GitHubReview[]>(`${pullUrl}/reviews?per_page=100`, token)
+    ]);
+
+    return {
+      ...branches,
+      ci: githubCi(checks.check_runs ?? [], status),
+      approvals: countApprovals(reviews),
+      reviewRequestedFromMe
+    };
   }
 };
+
+interface GitHubPullDetail {
+  head?: { sha?: string; ref?: string };
+  base?: { ref?: string };
+  requested_reviewers?: { login?: string }[];
+}
+
+interface GitHubCheckRuns {
+  check_runs?: { status: string; conclusion: string | null }[];
+}
+
+interface GitHubCombinedStatus {
+  state: string;
+  total_count: number;
+}
+
+interface GitHubReview {
+  user?: { login?: string };
+  state: string;
+}
+
+const FAILED_CONCLUSIONS = ["failure", "timed_out", "cancelled", "action_required", "startup_failure"];
+
+/** Check runs (Actions, apps) and legacy commit statuses combined into one CI state. */
+function githubCi(runs: NonNullable<GitHubCheckRuns["check_runs"]>, status: GitHubCombinedStatus): CiStatus {
+  const hasAny = runs.length > 0 || status.total_count > 0;
+  if (!hasAny) return "none";
+
+  const failed =
+    runs.some((r) => r.status === "completed" && FAILED_CONCLUSIONS.includes(r.conclusion ?? "")) ||
+    status.state === "failure" ||
+    status.state === "error";
+  if (failed) return "fail";
+
+  const pending = runs.some((r) => r.status !== "completed") || status.state === "pending";
+  return pending ? "pending" : "pass";
+}
+
+/** Count reviewers whose most recent approve/request-changes/dismiss is "APPROVED". */
+function countApprovals(reviews: GitHubReview[]): number {
+  const latest = new Map<string, string>();
+  for (const review of reviews) {
+    if (!review.user?.login) continue;
+    if (["APPROVED", "CHANGES_REQUESTED", "DISMISSED"].includes(review.state)) {
+      latest.set(review.user.login, review.state);
+    }
+  }
+  return [...latest.values()].filter((state) => state === "APPROVED").length;
+}
+
+async function getGitHubJson<T>(url: string, token: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    }
+  });
+  if (!res.ok) {
+    throw new ProviderApiError(`GitHub API error (${res.status})`, res.status);
+  }
+  return (await res.json()) as T;
+}
 
 async function search(
   base: string,
@@ -151,6 +274,7 @@ function toMergeRequest(account: Account, item: GitHubIssueItem): MergeRequest {
     author: item.user?.login ?? "unknown",
     repo,
     updatedAt: item.updated_at,
-    draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title)
+    draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title),
+    authorId: item.user?.login
   };
 }

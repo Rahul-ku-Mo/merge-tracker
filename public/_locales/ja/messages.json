@@ -308,6 +308,9 @@
   "fieldOrgFilter": {
     "message": "組織フィルター（任意）"
   },
+  "orgLoadFailed": {
+    "message": "組織を読み込めませんでした。トークンを確認してください。"
+  },
   "fieldUsername": {
     "message": "ユーザー名"
   },
@@ -343,5 +346,134 @@
   },
   "hintBitbucketToken": {
     "message": "Pull requests: Read スコープで作成してください。"
+  },
+  "searchPlaceholder": {
+    "message": "タイトル・プロジェクト・作成者で検索…"
+  },
+  "searchLabel": {
+    "message": "検索"
+  },
+  "kbdTitle": {
+    "message": "キーボードショートカット"
+  },
+  "kbdClose": {
+    "message": "閉じる"
+  },
+  "kbdMove": {
+    "message": "次 / 前の項目"
+  },
+  "kbdOpen": {
+    "message": "選択中の項目を開く"
+  },
+  "kbdMute": {
+    "message": "選択中のプロジェクトをミュート"
+  },
+  "kbdSync": {
+    "message": "今すぐ同期"
+  },
+  "kbdSearch": {
+    "message": "検索"
+  },
+  "kbdHelp": {
+    "message": "この一覧を表示 / 非表示"
+  },
+  "kbdEsc": {
+    "message": "閉じる、または検索をクリア"
+  },
+  "ciPass": {
+    "message": "CI 成功"
+  },
+  "ciFail": {
+    "message": "CI 失敗"
+  },
+  "ciPending": {
+    "message": "CI 実行中"
+  },
+  "approvalsLabel": {
+    "message": "承認: $1"
+  },
+  "stateBlocked": {
+    "message": "自分の対応待ち"
+  },
+  "blockReview": {
+    "message": "レビュー待ち"
+  },
+  "blockCi": {
+    "message": "自分のMRのCI失敗"
+  },
+  "blockThreads": {
+    "message": "未解決のスレッド"
+  },
+  "notifyReviewRequested": {
+    "message": "自分にレビュー依頼が来たら通知"
+  },
+  "notifyCiFailed": {
+    "message": "自分のMRでCIが失敗したら通知"
+  },
+  "notifyDigest": {
+    "message": "通知を1件のまとめにする"
+  },
+  "quietHours": {
+    "message": "おやすみ時間（保留して後で送信）"
+  },
+  "quietFrom": {
+    "message": "開始（時、0〜23）"
+  },
+  "quietTo": {
+    "message": "終了（時、0〜23）"
+  },
+  "notifyReviewTitle": {
+    "message": "レビュー依頼"
+  },
+  "notifyCiTitle": {
+    "message": "自分のMRでCI失敗"
+  },
+  "digestTitle": {
+    "message": "MRの更新 $1 件"
+  },
+  "digestMore": {
+    "message": "ほか $1 件"
+  },
+  "standupButton": {
+    "message": "スタンドアップ"
+  },
+  "standupButtonTitle": {
+    "message": "スタンドアップ用のまとめをMarkdownでコピー"
+  },
+  "standupTitle": {
+    "message": "スタンドアップ $1"
+  },
+  "standupMerged": {
+    "message": "マージ済み（直近24時間）"
+  },
+  "standupWaiting": {
+    "message": "レビュー待ち"
+  },
+  "standupCi": {
+    "message": "自分のMRでCI失敗"
+  },
+  "standupReviews": {
+    "message": "自分が対応すべきレビュー"
+  },
+  "standupNone": {
+    "message": "なし"
+  },
+  "standupCopied": {
+    "message": "スタンドアップをコピーしました"
+  },
+  "stackedOn": {
+    "message": "$1 の上に積み上げ"
+  },
+  "ticketSection": {
+    "message": "チケットリンク"
+  },
+  "ticketBaseLabel": {
+    "message": "チケットのベースURL"
+  },
+  "ticketBaseHint": {
+    "message": "ブランチ名またはタイトルに ABC-123 のようなキーがあるMRにリンクを表示します。Jira: https://<site>.atlassian.net/browse/ · Linear: https://linear.app/<workspace>/issue/"
+  },
+  "ticketLinkTitle": {
+    "message": "$1 を開く"
   }
 }

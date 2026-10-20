@@ -82,7 +82,51 @@
                 <input type="checkbox" id="notifyStatusChange" checked />
                 <span data-i18n="notifyStatus">Notify on status change</span>
               </label>
+              <label class="check-row">
+                <input type="checkbox" id="notifyReviewRequested" checked />
+                <span data-i18n="notifyReviewRequested">Notify when a review is requested from me</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="notifyCiFailed" checked />
+                <span data-i18n="notifyCiFailed">Notify when CI fails on my MR</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="notifyDigest" />
+                <span data-i18n="notifyDigest">Batch notifications into one summary</span>
+              </label>
             </div>
+            <div class="checks">
+              <label class="check-row">
+                <input type="checkbox" id="quietEnabled" />
+                <span data-i18n="quietHours">Quiet hours (held and sent after)</span>
+              </label>
+            </div>
+            <div class="quiet-hours-row">
+              <label class="field-label">
+                <span data-i18n="quietFrom">From (hour, 0-23)</span>
+                <input class="input" type="number" id="quietStart" min="0" max="23" value="22" />
+              </label>
+              <label class="field-label">
+                <span data-i18n="quietTo">To (hour, 0-23)</span>
+                <input class="input" type="number" id="quietEnd" min="0" max="23" value="8" />
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section card">
+            <h2 class="section-title" data-i18n="ticketSection">Ticket links</h2>
+            <label class="field-label">
+              <span data-i18n="ticketBaseLabel">Ticket base URL</span>
+              <input
+                class="input"
+                type="url"
+                id="ticketBaseUrl"
+                placeholder="https://your-site.atlassian.net/browse/"
+              />
+            </label>
+            <p class="hint" data-i18n="ticketBaseHint">
+              Shows a link on MRs whose branch or title has a key like ABC-123. Jira: https://&lt;site&gt;.atlassian.net/browse/ · Linear: https://linear.app/&lt;workspace&gt;/issue/
+            </p>
           </section>
 
           <section class="form-section card">

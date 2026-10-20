@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -26,8 +26,9 @@ interface BitbucketPr {
   draft?: boolean;
   updated_on: string;
   links?: { html?: { href?: string } };
-  author?: { display_name?: string; nickname?: string };
-  destination?: { repository?: { full_name?: string } };
+  author?: { display_name?: string; nickname?: string; uuid?: string };
+  source?: { branch?: { name?: string } };
+  destination?: { repository?: { full_name?: string }; branch?: { name?: string } };
 }
 
 interface BitbucketPrPage {
@@ -97,8 +98,61 @@ export const bitbucketProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async fetchIdentity(account: Account): Promise<string> {
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const me = await fetchJson<BitbucketUser>(`${base}/user`, buildAuthHeader(account));
+    return me.uuid;
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
+    const authHeader = buildAuthHeader(account);
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const prUrl = `${base}/repositories/${mr.repo}/pullrequests/${mr.number}`;
+
+    const pr = await fetchJson<BitbucketPrDetail>(prUrl, authHeader);
+    const hash = pr.source?.commit?.hash;
+    const statuses = hash
+      ? await fetchJson<BitbucketStatusPage>(
+          `${base}/repositories/${mr.repo}/commit/${hash}/statuses/build?pagelen=100`,
+          authHeader
+        )
+      : { values: [] };
+
+    const participants = pr.participants ?? [];
+    const reviewRequestedFromMe = me
+      ? participants.some((p) => p.role === "REVIEWER" && p.user?.uuid === me && !p.approved)
+      : undefined;
+
+    return {
+      ci: bitbucketCi(statuses.values ?? []),
+      approvals: participants.filter((p) => p.approved).length,
+      reviewRequestedFromMe
+    };
   }
 };
+
+interface BitbucketPrDetail {
+  source?: { commit?: { hash?: string } };
+  participants?: { role?: string; approved?: boolean; user?: { uuid?: string } }[];
+}
+
+interface BitbucketStatusPage {
+  values?: { state: string }[];
+}
+
+/** Bitbucket Pipelines report commit build statuses; reduce them to one CI state. */
+function bitbucketCi(statuses: { state: string }[]): CiStatus {
+  if (!statuses.length) return "none";
+  if (statuses.some((s) => s.state === "FAILED" || s.state === "STOPPED")) return "fail";
+  if (statuses.some((s) => s.state === "INPROGRESS")) return "pending";
+  return statuses.every((s) => s.state === "SUCCESSFUL") ? "pass" : "pending";
+}
 
 function buildAuthHeader(account: Account): string {
   const username = account.username?.trim();
@@ -157,6 +211,9 @@ function toMergeRequest(
     author: pr.author?.display_name ?? pr.author?.nickname ?? "unknown",
     repo,
     updatedAt: pr.updated_on,
-    draft: Boolean(pr.draft)
+    draft: Boolean(pr.draft),
+    authorId: pr.author?.uuid,
+    sourceBranch: pr.source?.branch?.name,
+    targetBranch: pr.destination?.branch?.name
   };
 }

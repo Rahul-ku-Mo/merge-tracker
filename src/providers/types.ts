@@ -19,6 +19,8 @@ export interface ProviderField {
   required: boolean;
   /** password input (token) vs text. */
   secret?: boolean;
+  /** "select" renders a dropdown filled by Provider.listWorkspaces. */
+  kind?: "select";
   hint?: string;
 }
 
@@ -31,8 +33,22 @@ export interface Provider {
   tokenDocsUrl: string;
   /** Drives the dynamic options form. */
   fields: ProviderField[];
+  /** Organizations/workspaces the token can see, for the workspace dropdown. */
+  listWorkspaces?(token: string, host: string): Promise<string[]>;
   /** Fetch + normalize the account's merge/pull requests. */
   fetchMergeRequests(account: Account): Promise<MergeRequest[]>;
+  /** Provider id of the signed-in user for this account (matches MergeRequest.authorId). */
+  fetchIdentity?(account: Account): Promise<string>;
+  /**
+   * Optional per-MR detail call (CI, approvals, review requests). Costs extra requests,
+   * so sync only runs it for open MRs. `me` is the signed-in user's id, if known.
+   * Throwing leaves the fields unknown.
+   */
+  enrichMergeRequest?(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>>;
 }
 
 export function normalizeHost(host: string): string {

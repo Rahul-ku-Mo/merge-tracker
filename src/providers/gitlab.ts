@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -20,6 +20,8 @@ interface GitLabMr {
   updated_at: string;
   draft?: boolean;
   work_in_progress?: boolean;
+  source_branch?: string;
+  target_branch?: string;
   author?: { name?: string; username?: string };
   references?: { full?: string };
 }
@@ -77,8 +79,77 @@ export const gitlabProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async fetchIdentity(account: Account): Promise<string> {
+    return fetchUsername(normalizeHost(account.host) || DEFAULT_HOST, account.token.trim());
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
+    const token = account.token.trim();
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    // The URL-encoded "group/project" path works as the project identifier.
+    const mrUrl = `${base}/api/v4/projects/${encodeURIComponent(mr.repo)}/merge_requests/${mr.number}`;
+
+    const [detail, approvals] = await Promise.all([
+      getGitLabJson<GitLabMrDetail>(mrUrl, token),
+      getGitLabJson<GitLabApprovals>(`${mrUrl}/approvals`, token).catch(() => undefined)
+    ]);
+
+    const approvedBy = (approvals?.approved_by ?? []).map((a) => a.user?.username);
+    const reviewRequestedFromMe = me
+      ? (detail.reviewers ?? []).some((r) => r.username === me) && !approvedBy.includes(me)
+      : undefined;
+
+    return {
+      ci: gitlabCi(detail.head_pipeline?.status ?? undefined),
+      approvals: approvals?.approved_by?.length,
+      threadsResolved: detail.blocking_discussions_resolved,
+      reviewRequestedFromMe
+    };
   }
 };
+
+interface GitLabMrDetail {
+  head_pipeline?: { status?: string } | null;
+  reviewers?: { username?: string }[];
+  blocking_discussions_resolved?: boolean;
+}
+
+interface GitLabApprovals {
+  approved_by?: { user?: { username?: string } }[];
+}
+
+/** GitLab pipeline status → normalized CI status. */
+function gitlabCi(status: string | undefined): CiStatus {
+  switch (status) {
+    case "success":
+      return "pass";
+    case "failed":
+      return "fail";
+    case "running":
+    case "pending":
+    case "created":
+    case "preparing":
+    case "waiting_for_resource":
+    case "scheduled":
+      return "pending";
+    default:
+      return "none";
+  }
+}
+
+async function getGitLabJson<T>(url: string, token: string): Promise<T> {
+  const res = await fetch(url, { headers: { "PRIVATE-TOKEN": token } });
+  if (!res.ok) {
+    throw new ProviderApiError(`GitLab API error (${res.status})`, res.status);
+  }
+  return (await res.json()) as T;
+}
 
 async function fetchUsername(base: string, token: string): Promise<string> {
   const res = await fetch(`${base}/api/v4/user`, {
@@ -108,10 +179,11 @@ async function fetchByState(
     sort: "desc"
   });
 
+  // GitLab defaults to scope=created_by_me when omitted, which would hide
+  // private-project MRs authored by others. Always send an explicit scope.
+  params.set("scope", scope === "assigned_to_me" || scope === "created_by_me" ? scope : "all");
   if (scope === "needs_my_review" && reviewerUsername) {
     params.set("reviewer_username", reviewerUsername);
-  } else if (scope !== "all" && scope !== "needs_my_review") {
-    params.set("scope", scope);
   }
 
   const res = await fetch(`${base}/api/v4/merge_requests?${params}`, {
@@ -148,6 +220,9 @@ function toMergeRequest(
     author: mr.author?.name ?? mr.author?.username ?? "unknown",
     repo,
     updatedAt: mr.updated_at,
-    draft: Boolean(mr.draft ?? mr.work_in_progress)
+    draft: Boolean(mr.draft ?? mr.work_in_progress),
+    authorId: mr.author?.username,
+    sourceBranch: mr.source_branch,
+    targetBranch: mr.target_branch
   };
 }

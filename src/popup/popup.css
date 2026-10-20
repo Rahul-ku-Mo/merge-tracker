@@ -446,6 +446,78 @@ h1 {
   cursor: pointer;
 }
 
+/* Search box (opened with "/") */
+.search-input {
+  height: 32px;
+  font-size: 12px;
+}
+
+.search-input[hidden] {
+  display: none;
+}
+
+/* Keyboard shortcut overlay (opened with "?") */
+.kbd-help {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 10;
+  padding: 14px;
+}
+
+.kbd-help[hidden] {
+  display: none;
+}
+
+.kbd-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: var(--bw) solid hsl(var(--border));
+}
+
+.kbd-help-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.kbd-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.kbd-list dt {
+  white-space: nowrap;
+}
+
+.kbd-list dd {
+  margin: 0;
+  color: hsl(var(--muted-foreground));
+}
+
+.kbd-list kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0 5px;
+  border: 1px solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
 /* Empty state */
 .empty-state {
   padding: 28px 16px;
@@ -555,6 +627,16 @@ h1 {
   margin-top: 2px;
 }
 
+/* Keyboard cursor (j/k). Inset shadow so it doesn't override the is-new left border. */
+.mr-item.is-cursor {
+  background: hsl(var(--accent));
+  box-shadow: inset 0 0 0 1px hsl(var(--ink));
+}
+
+.mr-item.is-cursor .mr-actions {
+  opacity: 1;
+}
+
 /* Read = already opened: dimmed. New/updated since last view: accent bar. */
 .mr-item.is-read {
   opacity: 0.55;
@@ -656,6 +738,33 @@ h1 {
   color: hsl(var(--muted-foreground));
 }
 
+/* CI dot: pass/fail/running for the MR's head pipeline. Shape + fill, not color alone. */
+.ci-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid hsl(var(--ink));
+  border-radius: 50%;
+}
+
+.ci-dot.ci-pass {
+  background: hsl(var(--success));
+}
+
+.ci-dot.ci-fail {
+  background: hsl(var(--destructive));
+}
+
+.ci-dot.ci-pending {
+  background: hsl(var(--card));
+  border-style: dashed;
+}
+
+.approvals {
+  font-weight: 700;
+  color: hsl(var(--success));
+}
+
 /* Provider chip = brand-colored square with the white logo mark. */
 .badge.mr-provider {
   padding: 2px 5px;
@@ -710,10 +819,41 @@ h1 {
   box-shadow: none;
 }
 
+button.footer-link {
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.footer-link[hidden] {
+  display: none;
+}
+
 .footer-meta {
   font-size: 10px;
   letter-spacing: 0;
   text-transform: none;
   color: hsl(var(--muted-foreground));
   text-align: right;
+}
+
+/* Reason chip on open MRs that need the user's action (Blocked on me). */
+.badge.block-reason {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border: 1px solid hsl(var(--ink));
+}
+
+/* Stacked MR (its target branch is another open MR's source). Indented per level in markup. */
+.stack-hint {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Ticket key chip (only when a ticket base URL is configured). */
+.badge.ticket {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--ink));
+  text-decoration: none;
 }

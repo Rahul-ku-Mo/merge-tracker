@@ -20,6 +20,17 @@ export interface NotifyOnConfig {
   newMr: boolean;
   statusChange: boolean;
   newComment: boolean;
+  /** A review was newly requested from the signed-in user. */
+  reviewRequested: boolean;
+  /** CI on an MR you authored went from passing/running to failing. */
+  ciFailed: boolean;
+}
+
+/** Notifications are held and sent after the window ends. Hours are local time, 0-23. */
+export interface QuietHours {
+  enabled: boolean;
+  start: number;
+  end: number;
 }
 
 /**
@@ -47,6 +58,12 @@ export interface Account {
   color: string;
 }
 
+/**
+ * Latest pipeline / check result for an MR's head commit.
+ * "none" = the provider reports no CI for it; undefined on the MR = not fetched.
+ */
+export type CiStatus = "pass" | "fail" | "pending" | "none";
+
 /** A single merge/pull request, normalized from any provider. */
 export interface MergeRequest {
   /** Stable unique key across providers/accounts. */
@@ -63,6 +80,30 @@ export interface MergeRequest {
   updatedAt: string;
   /** Draft / work-in-progress flag, when the provider exposes it cheaply. */
   draft: boolean;
+  /**
+   * Detail fields, filled by Provider.enrichMergeRequest for open MRs only.
+   * undefined = unknown (not fetched, or the detail call failed).
+   */
+  ci?: CiStatus;
+  /**
+   * Approval count. Meaning differs by provider: GitLab = approvals given;
+   * GitHub = reviewers whose latest review is "Approved"; Bitbucket = participants who approved.
+   */
+  approvals?: number;
+  /** Branch the MR comes from and the branch it merges into. Used for stacked-MR detection. */
+  sourceBranch?: string;
+  targetBranch?: string;
+  /** Provider user id of the author (GitLab username, GitHub login, Bitbucket uuid). */
+  authorId?: string;
+  /** True when the signed-in user (per account) is the author. */
+  authoredByMe?: boolean;
+  /** True while a review is requested from the signed-in user and not yet given. */
+  reviewRequestedFromMe?: boolean;
+  /**
+   * GitLab only: false when the MR has unresolved threads that block merge.
+   * GitHub's REST API does not expose review-thread resolution, so this stays undefined there.
+   */
+  threadsResolved?: boolean;
 }
 
 /**
@@ -86,6 +127,11 @@ export interface ExtensionConfig {
   accounts: Account[];
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
+  quietHours: QuietHours;
+  /** Base URL for ticket links (Jira or Linear). Empty = ticket chips are off. */
+  ticketBaseUrl: string;
+  /** Send one summary notification per batch instead of one per event. */
+  digestNotifications: boolean;
   /** Repos (full names) the user muted: hidden from list, badge, notifications. */
   mutedRepos: string[];
   mode: ThemeMode;
@@ -99,7 +145,8 @@ export type MrSortKey = "updated_desc" | "updated_asc";
 /** Popup filter/sort selections, persisted so they survive reopening. */
 export interface PopupPrefs {
   project: string;
-  state: NormalizedState | "all";
+  /** "blocked" = open MRs that need the signed-in user's action (see lib/blocked.ts). */
+  state: NormalizedState | "all" | "blocked";
   sort: MrSortKey;
 }
 

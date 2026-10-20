@@ -13,7 +13,12 @@ import { initModeControl } from "../lib/theme";
 import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
+import { type BlockReason, blockReasons } from "../lib/blocked";
+import { buildStandup } from "../lib/standup";
+import { type StackRow, orderStacks } from "../lib/stacks";
+import { buildTicketUrl, extractTicketKey } from "../lib/tickets";
 import type {
+  CiStatus,
   ExtensionConfig,
   MergeRequest,
   NormalizedState,
@@ -38,6 +43,10 @@ const emptyDescEl = emptyEl.querySelector<HTMLParagraphElement>(".empty-desc");
 const syncBtn = requireElement<HTMLButtonElement>("sync-btn");
 const lastSyncEl = requireElement<HTMLSpanElement>("last-sync");
 const optionsLink = requireElement<HTMLAnchorElement>("options-link");
+const standupBtn = requireElement<HTMLButtonElement>("standup-btn");
+const searchEl = requireElement<HTMLInputElement>("search-input");
+const helpEl = requireElement<HTMLDivElement>("kbd-help");
+const helpCloseBtn = requireElement<HTMLButtonElement>("kbd-help-close");
 
 interface AccountMeta {
   color: string;
@@ -53,6 +62,13 @@ const accountMeta = new Map<string, AccountMeta>();
 /** Whether any of the controls-bar items are visible (drives the container). */
 let showControls = true;
 let connectPanel: ReturnType<typeof initConnectPanel> | null = null;
+
+/** Free-text filter from the `/` search box. Session-only, not persisted. */
+let searchQuery = "";
+/** Key of the keyboard-selected MR. Tracked by key so it survives re-renders. */
+let cursorKey: string | null = null;
+/** Ticket link base from Settings. Empty = no ticket chips. */
+let ticketBase = "";
 
 optionsLink.addEventListener("click", (e) => {
   e.preventDefault();
@@ -95,11 +111,13 @@ async function enterMainView(): Promise<void> {
   connectPanel?.hide();
   statusEl.hidden = false;
   syncBtn.hidden = false;
+  standupBtn.hidden = false;
 
   const config = await getConfig();
   accountMeta.clear();
   for (const a of config.accounts) accountMeta.set(a.id, { color: a.color, label: a.label });
   mutedRepos = new Set(config.mutedRepos);
+  ticketBase = config.ticketBaseUrl;
 
   await renderFromCache();
   await runSync(false);
@@ -112,6 +130,7 @@ function showConnectView(): void {
   emptyEl.hidden = true;
   mutedBar.hidden = true;
   syncBtn.hidden = true;
+  standupBtn.hidden = true;
   lastSyncEl.textContent = "";
   connectPanel?.show();
 }
@@ -203,8 +222,21 @@ function applyAndRender(): void {
 
 function matchesFilters(mr: MergeRequest): boolean {
   if (prefs.project !== "all" && mr.repo !== prefs.project) return false;
-  if (prefs.state !== "all" && mr.state !== prefs.state) return false;
+  if (prefs.state === "blocked") {
+    if (!blockReasons(mr).length) return false;
+  } else if (prefs.state !== "all" && mr.state !== prefs.state) {
+    return false;
+  }
+  if (searchQuery && !matchesSearch(mr)) return false;
   return true;
+}
+
+function matchesSearch(mr: MergeRequest): boolean {
+  const q = searchQuery.trim().toLowerCase();
+  if (!q) return true;
+  return [mr.title, mr.repo, mr.author, `#${mr.number}`].some((field) =>
+    field.toLowerCase().includes(q)
+  );
 }
 
 function sortMrs(list: MergeRequest[]): MergeRequest[] {
@@ -214,17 +246,17 @@ function sortMrs(list: MergeRequest[]): MergeRequest[] {
   );
 }
 
-function groupByRepo(list: MergeRequest[]): { repo: string; items: MergeRequest[] }[] {
+function groupByRepo(list: MergeRequest[]): { repo: string; items: StackRow[] }[] {
   const map = new Map<string, MergeRequest[]>();
   for (const mr of list) {
     const items = map.get(mr.repo) ?? [];
     items.push(mr);
     map.set(mr.repo, items);
   }
-  return [...map.entries()].map(([repo, items]) => ({ repo, items }));
+  return [...map.entries()].map(([repo, items]) => ({ repo, items: orderStacks(items) }));
 }
 
-function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
+function renderGroups(groups: { repo: string; items: StackRow[] }[]): void {
   const focusSelector = focusedRowSelector();
   const scrollTop = listEl.scrollTop;
   listEl.replaceChildren();
@@ -244,6 +276,44 @@ function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
 
   listEl.scrollTop = scrollTop;
   if (focusSelector) listEl.querySelector<HTMLElement>(focusSelector)?.focus();
+  applyCursorClass(false);
+}
+
+function cursorRows(): HTMLElement[] {
+  return Array.from(listEl.querySelectorAll<HTMLElement>(".mr-title"));
+}
+
+function cursorRow(): HTMLElement | null {
+  if (cursorKey === null) return null;
+  return cursorRows().find((el) => el.dataset.key === cursorKey) ?? null;
+}
+
+/** Move the keyboard cursor by delta rows; starts at the top or bottom if none is set. */
+function moveCursor(delta: number): void {
+  const rows = cursorRows();
+  if (!rows.length) return;
+  const idx = rows.findIndex((el) => el.dataset.key === cursorKey);
+  const next =
+    idx < 0
+      ? delta > 0
+        ? 0
+        : rows.length - 1
+      : Math.min(rows.length - 1, Math.max(0, idx + delta));
+  cursorKey = rows[next].dataset.key ?? null;
+  applyCursorClass(true);
+}
+
+/** Sync the `is-cursor` highlight to cursorKey; clears the cursor if its row is gone. */
+function applyCursorClass(scroll: boolean): void {
+  listEl.querySelectorAll(".mr-item.is-cursor").forEach((el) => el.classList.remove("is-cursor"));
+  const row = cursorRow();
+  if (!row) {
+    cursorKey = null;
+    return;
+  }
+  const item = row.closest<HTMLElement>(".mr-item");
+  item?.classList.add("is-cursor");
+  if (scroll) item?.scrollIntoView({ block: "nearest" });
 }
 
 /** Selector that re-finds the focused row control after the list is rebuilt. */
@@ -257,7 +327,7 @@ function focusedRowSelector(): string | null {
   return null;
 }
 
-function itemHtml(mr: MergeRequest): string {
+function itemHtml({ mr, depth }: StackRow): string {
   const meta = accountMeta.get(mr.accountId);
   const color = meta?.color ?? "#888";
   const copyLabel = t("copyLink");
@@ -269,7 +339,7 @@ function itemHtml(mr: MergeRequest): string {
     .join(" ");
 
   return `
-    <li class="${classes}">
+    <li class="${classes}"${depth ? ` style="margin-left: ${depth * 16}px"` : ""}>
       <div class="mr-row">
         <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}" aria-label="${esc(t("accountLabel", meta?.label ?? ""))}" role="img"></span>
         <a class="mr-title" href="${esc(mr.url)}" data-key="${esc(mr.key)}" target="_blank" rel="noopener">${esc(mr.title)}</a>
@@ -286,6 +356,11 @@ function itemHtml(mr: MergeRequest): string {
         ${providerBadge(mr.provider)}
         <span class="badge ${mr.state}">${stateLabel(mr.state)}</span>
         ${mr.draft ? `<span class="badge draft">${t("draft")}</span>` : ""}
+        ${ciDotHtml(mr)}
+        ${approvalsHtml(mr)}
+        ${blockChipsHtml(mr)}
+        ${ticketChipHtml(mr)}
+        ${depth && mr.targetBranch ? `<span class="stack-hint">↳ ${esc(t("stackedOn", mr.targetBranch))}</span>` : ""}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
         <span class="mr-meta-sep">·</span>
@@ -294,6 +369,48 @@ function itemHtml(mr: MergeRequest): string {
     </li>
   `;
 }
+
+/** CI dot for open MRs with a known, non-empty pipeline result. */
+function ciDotHtml(mr: MergeRequest): string {
+  if (mr.state !== "open" || !mr.ci || mr.ci === "none") return "";
+  const label = t(CI_LABEL_KEY[mr.ci]);
+  return `<span class="ci-dot ci-${mr.ci}" title="${esc(label)}" role="img" aria-label="${esc(label)}"></span>`;
+}
+
+/** Approval count for open MRs whose detail call succeeded. */
+function approvalsHtml(mr: MergeRequest): string {
+  if (mr.state !== "open" || mr.approvals === undefined) return "";
+  const label = t("approvalsLabel", String(mr.approvals));
+  return `<span class="approvals" title="${esc(label)}" aria-label="${esc(label)}">✓ ${mr.approvals}</span>`;
+}
+
+/** Ticket key chip, linked when a ticket base URL is set in Settings. */
+function ticketChipHtml(mr: MergeRequest): string {
+  if (!ticketBase) return "";
+  const key = extractTicketKey(mr);
+  if (!key) return "";
+  const url = buildTicketUrl(ticketBase, key);
+  return `<a class="badge ticket" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(t("ticketLinkTitle", key))}">${esc(key)}</a>`;
+}
+
+/** Reason chips for open MRs that need the user's action. */
+function blockChipsHtml(mr: MergeRequest): string {
+  return blockReasons(mr)
+    .map((reason) => `<span class="badge block-reason">${t(BLOCK_LABEL_KEY[reason])}</span>`)
+    .join("");
+}
+
+const BLOCK_LABEL_KEY: Record<BlockReason, string> = {
+  review: "blockReview",
+  ci: "blockCi",
+  threads: "blockThreads"
+};
+
+const CI_LABEL_KEY: Record<Exclude<CiStatus, "none">, string> = {
+  pass: "ciPass",
+  fail: "ciFail",
+  pending: "ciPending"
+};
 
 function providerBadge(provider: MergeRequest["provider"]): string {
   const icon = providerIconSvg(provider);
@@ -334,7 +451,7 @@ function attachListeners(): void {
     void persistPrefsAndRender();
   });
   stateEl.addEventListener("change", () => {
-    prefs.state = stateEl.value as NormalizedState | "all";
+    prefs.state = stateEl.value as PopupPrefs["state"];
     void persistPrefsAndRender();
   });
   sortBtn.addEventListener("click", () => {
@@ -343,6 +460,7 @@ function attachListeners(): void {
     void persistPrefsAndRender();
   });
   openAllBtn.addEventListener("click", () => openAllVisible());
+  standupBtn.addEventListener("click", () => void copyStandup());
   unmuteBtn.addEventListener("click", () => void unmuteAll());
 
   listEl.addEventListener("click", (e) => {
@@ -365,6 +483,92 @@ function attachListeners(): void {
       markOpened(link.dataset.key);
     }
   });
+
+  searchEl.addEventListener("input", () => {
+    searchQuery = searchEl.value;
+    applyAndRender();
+  });
+  helpCloseBtn.addEventListener("click", () => {
+    helpEl.hidden = true;
+  });
+  document.addEventListener("keydown", onKeydown);
+}
+
+function showSearch(): void {
+  searchEl.hidden = false;
+  searchEl.focus();
+  searchEl.select();
+}
+
+function clearSearch(): void {
+  searchQuery = "";
+  searchEl.value = "";
+  searchEl.hidden = true;
+  searchEl.blur();
+  applyAndRender();
+}
+
+function onKeydown(e: KeyboardEvent): void {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // Connect view has no list; the sync button is hidden there, so skip all shortcuts.
+  if (syncBtn.hidden) return;
+
+  const target = e.target as HTMLElement;
+
+  if (target === searchEl) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      clearSearch();
+    } else if (e.key === "Enter" || e.key === "ArrowDown") {
+      e.preventDefault();
+      searchEl.blur();
+      if (e.key === "ArrowDown") moveCursor(1);
+    }
+    return;
+  }
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLSelectElement ||
+    target instanceof HTMLTextAreaElement
+  ) {
+    return;
+  }
+
+  switch (e.key) {
+    case "j":
+    case "ArrowDown":
+      e.preventDefault();
+      moveCursor(1);
+      break;
+    case "k":
+    case "ArrowUp":
+      e.preventDefault();
+      moveCursor(-1);
+      break;
+    case "Enter":
+      // Let focused buttons and links keep their native Enter behaviour.
+      if (target.closest("a, button")) return;
+      e.preventDefault();
+      cursorRow()?.click();
+      break;
+    case "m":
+      cursorRow()?.closest(".mr-item")?.querySelector<HTMLButtonElement>("[data-mute]")?.click();
+      break;
+    case "s":
+      syncBtn.click();
+      break;
+    case "/":
+      e.preventDefault();
+      showSearch();
+      break;
+    case "?":
+      helpEl.hidden = !helpEl.hidden;
+      break;
+    case "Escape":
+      if (!helpEl.hidden) helpEl.hidden = true;
+      else if (searchQuery) clearSearch();
+      break;
+  }
 }
 
 function reflectSortButton(): void {
@@ -388,6 +592,17 @@ async function copyLink(url: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(url);
     flashStatus(t("linkCopied"));
+  } catch {
+    flashStatus(t("copyFailed"));
+  }
+}
+
+/** Copy a Markdown standup of the synced MRs (ignores filters, skips muted projects). */
+async function copyStandup(): Promise<void> {
+  const visible = allMrs.filter((mr) => !mutedRepos.has(mr.repo));
+  try {
+    await navigator.clipboard.writeText(buildStandup(visible, new Date()));
+    flashStatus(t("standupCopied"));
   } catch {
     flashStatus(t("copyFailed"));
   }

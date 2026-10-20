@@ -1,6 +1,8 @@
 import { getConfig, getMrSnapshot, setMrSnapshot } from "./storage";
 import { stateLabel, t } from "./i18n";
 import { getProvider } from "../providers/registry";
+import { enrichOpenMergeRequests } from "./enrich";
+import { isQuietNow } from "./quiet-hours";
 import type {
   Account,
   AccountError,
@@ -10,11 +12,19 @@ import type {
   SyncResult
 } from "../types/index";
 
+/** A notification waiting to be shown. Plain data, so it survives service-worker restarts. */
 interface PendingNotification {
   id: string;
   url: string;
-  options: chrome.notifications.NotificationOptions<true>;
+  title: string;
+  message: string;
 }
+
+const PENDING_KEY = "pendingNotifications";
+/** Cap on held notifications during quiet hours. Oldest are dropped first. */
+const MAX_PENDING = 100;
+/** How many MR titles a digest lists before summarizing the rest. */
+const DIGEST_PREVIEW = 3;
 
 export async function syncMergeRequests({
   reason = "manual"
@@ -60,8 +70,14 @@ export async function syncMergeRequests({
   const muted = new Set(config.mutedRepos);
   const visible = mergeRequests.filter((mr) => !muted.has(mr.repo));
 
+  await enrichOpenMergeRequests(
+    visible,
+    new Map(enabled.map((a) => [a.id, a] as const)),
+    prevByKey
+  );
+
   const notifications = diffAndBuildNotifications(prevByKey, visible, config, reason);
-  await dispatchNotifications(notifications);
+  await dispatchNotifications(notifications, config);
 
   await setMrSnapshot({
     mergeRequests,
@@ -90,13 +106,36 @@ async function updateBadge(count: number): Promise<void> {
   await chrome.action.setBadgeText({ text: count > 0 ? String(count) : "" });
 }
 
-async function dispatchNotifications(notifications: PendingNotification[]): Promise<void> {
-  if (!notifications.length) return;
+/**
+ * Show new notifications, or hold them while quiet hours are active. Held items are
+ * delivered on the first sync after the window ends. Digest mode merges a batch into one.
+ */
+async function dispatchNotifications(
+  fresh: PendingNotification[],
+  config: ExtensionConfig
+): Promise<void> {
+  const { [PENDING_KEY]: stored } = await chrome.storage.local.get(PENDING_KEY);
+  const held = (stored as PendingNotification[] | undefined) ?? [];
+  const queued = dedupeById([...held, ...fresh]).slice(-MAX_PENDING);
 
+  if (isQuietNow(config.quietHours, new Date())) {
+    if (fresh.length) await chrome.storage.local.set({ [PENDING_KEY]: queued });
+    return;
+  }
+
+  if (held.length) await chrome.storage.local.remove(PENDING_KEY);
+  if (!queued.length) return;
+
+  const toShow =
+    config.digestNotifications && queued.length > 1 ? [buildDigest(queued)] : queued;
+  await showNotifications(toShow);
+}
+
+async function showNotifications(items: PendingNotification[]): Promise<void> {
   const links: Record<string, string> = {};
-  for (const n of notifications) {
+  for (const n of items) {
     const notificationId = `mr-${n.id}`;
-    await chrome.notifications.create(notificationId, n.options);
+    await chrome.notifications.create(notificationId, notificationFor(n.title, n.message));
     if (n.url) links[notificationId] = n.url;
   }
 
@@ -106,6 +145,24 @@ async function dispatchNotifications(notifications: PendingNotification[]): Prom
   await chrome.storage.local.set({
     notifLinks: { ...(notifLinks as Record<string, string> | undefined), ...links }
   });
+}
+
+/** One summary notification. Clicking it opens the first MR in the batch. */
+function buildDigest(items: PendingNotification[]): PendingNotification {
+  const preview = items.slice(0, DIGEST_PREVIEW).map((i) => i.message);
+  const more = items.length - preview.length;
+  return {
+    id: `digest-${Date.now()}`,
+    url: items[0].url,
+    title: t("digestTitle", String(items.length)),
+    message: more > 0 ? `${preview.join(" · ")} · ${t("digestMore", String(more))}` : preview.join(" · ")
+  };
+}
+
+function dedupeById(items: PendingNotification[]): PendingNotification[] {
+  const seen = new Map<string, PendingNotification>();
+  for (const item of items) seen.set(item.id, item);
+  return [...seen.values()];
 }
 
 function diffAndBuildNotifications(
@@ -120,25 +177,56 @@ function diffAndBuildNotifications(
   for (const mr of current) {
     const prev = prevByKey.get(mr.key);
 
-    if (!prev && notifyOn.newMr && reason !== "install") {
-      out.push({
-        id: `new-${mr.key}`,
-        url: mr.url,
-        options: notificationFor(t("notifyNewTitle", mr.accountLabel), mr.title)
-      });
+    if (!prev) {
+      if (reason === "install") continue;
+      if (notifyOn.reviewRequested && mr.reviewRequestedFromMe) {
+        out.push(reviewRequestedNotice(mr));
+      } else if (notifyOn.newMr) {
+        out.push({
+          id: `new-${mr.key}`,
+          url: mr.url,
+          title: t("notifyNewTitle", mr.accountLabel),
+          message: mr.title
+        });
+      }
       continue;
     }
 
-    if (prev && prev.state !== mr.state && notifyOn.statusChange) {
+    if (prev.state !== mr.state && notifyOn.statusChange) {
       out.push({
         id: `status-${mr.key}-${mr.state}`,
         url: mr.url,
-        options: notificationFor(t("notifyStatusTitle"), `${mr.title} → ${stateLabel(mr.state)}`)
+        title: t("notifyStatusTitle"),
+        message: `${mr.title} → ${stateLabel(mr.state)}`
+      });
+    }
+
+    // Only compare against a known previous value. Older snapshots lack these fields,
+    // so the first sync after upgrading must not notify for every MR.
+    if (notifyOn.reviewRequested && prev.reviewRequestedFromMe === false && mr.reviewRequestedFromMe) {
+      out.push(reviewRequestedNotice(mr));
+    }
+
+    if (notifyOn.ciFailed && mr.authoredByMe && prev.ci && prev.ci !== "fail" && mr.ci === "fail") {
+      out.push({
+        id: `ci-${mr.key}-${mr.updatedAt}`,
+        url: mr.url,
+        title: t("notifyCiTitle"),
+        message: mr.title
       });
     }
   }
 
   return out;
+}
+
+function reviewRequestedNotice(mr: MergeRequest): PendingNotification {
+  return {
+    id: `review-${mr.key}-${mr.updatedAt}`,
+    url: mr.url,
+    title: t("notifyReviewTitle"),
+    message: mr.title
+  };
 }
 
 function notificationFor(

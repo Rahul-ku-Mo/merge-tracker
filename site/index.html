@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Merge Requests Tracker (MR) — GitLab, GitHub and Bitbucket reviews in one list</title>
-  <meta name="description" content="A Chrome extension that gathers your GitLab, GitHub and Bitbucket merge and pull requests into one popup and notifies you when their status changes. No server, no account.">
+  <title>Merge Requests Tracker (MR): GitLab, GitHub and Bitbucket reviews in one list</title>
+  <meta name="description" content="A Chrome extension that lists your GitLab, GitHub and Bitbucket merge and pull requests in one popup, with CI status, a Blocked on me view and the notifications you choose. No server, no account.">
   <meta name="theme-color" content="#0965ce">
   <link rel="icon" href="assets/favicon.png">
   <link rel="stylesheet" href="styles.css">
@@ -26,72 +26,91 @@
       </div>
       <div class="hero-copy">
         <h1>Merge your review queue.</h1>
-        <p class="lede">GitLab, GitHub and Bitbucket reviews in one popup, with a notification the moment one changes.</p>
+        <p class="lede">Every merge and pull request from GitLab, GitHub and Bitbucket in one popup, with CI status, approvals, and a notification when one needs you.</p>
         <div class="cta">
           <a class="btn btn-primary btn-lg" data-install href="#get">Add to Chrome</a>
           <a class="link" href="#connect">See how it works</a>
         </div>
-        <p class="fine">Free. No account. Read-only tokens that never leave your browser.</p>
+        <p class="fine">Free, with no account to create. Your read-only tokens stay in this browser.</p>
       </div>
       <figure class="device">
         <div class="popup" style="--h:600px"><iframe title="Interactive demo of the extension popup" loading="eager" src="demo/src/popup/popup.html?scene=list"></iframe></div>
-        <figcaption>Live demo: your list, grouped by project (synthetic data)</figcaption>
+        <figcaption>The real popup, running on synthetic data</figcaption>
       </figure>
     </section>
 
     <section id="connect" class="step" data-section>
       <div class="copy">
-        <h2>Three providers, one list.</h2>
-        <p>Connect GitHub, GitLab and Bitbucket side by side, with as many accounts as you need. Self-hosted GitLab and GitHub Enterprise work too.</p>
+        <h2>Connect every account you review in.</h2>
+        <p>Add GitHub, GitLab and Bitbucket side by side, with as many accounts as you need. Self-hosted GitLab and GitHub Enterprise work too.</p>
         <ul class="facts">
-          <li>Everything assigned to you, created by you, or waiting for your review</li>
-          <li>Grouped by project, with a provider badge on every row</li>
-          <li>Status and draft state at a glance</li>
+          <li>Per account, track what is assigned to you, what you created, what waits for your review, or all of it</li>
+          <li>GitLab and GitHub take a personal access token; Bitbucket takes an app password</li>
+          <li>A self-hosted server asks for its permission only when you add it</li>
         </ul>
       </div>
       <figure class="device">
         <div class="popup" style="--h:400px"><iframe title="Demo of connecting a provider" loading="lazy" src="demo/src/popup/popup.html?scene=connect"></iframe></div>
-        <figcaption>Live demo: connecting a provider (synthetic data)</figcaption>
+        <figcaption>Picking a provider to connect</figcaption>
+      </figure>
+    </section>
+
+    <section class="step" data-section data-node="blocked">
+      <div class="copy">
+        <h2>See what is waiting on you.</h2>
+        <p>Blocked on me keeps only the open requests where the next move is yours: a review someone asked you for, failing CI on your own request, or unresolved threads on your GitLab merge request.</p>
+        <ul class="facts">
+          <li>Every open row shows its CI result, its approval count and, here, why it is waiting</li>
+          <li>Requests built on another branch sit under the request they depend on</li>
+          <li>Ticket keys such as PLAT-212 link to Jira or Linear once you set the address</li>
+          <li>Standup copies a Markdown summary: merged in the last 24 hours, waiting on review, failing CI, reviews you owe</li>
+        </ul>
+        <p class="note">GitHub's API does not report unresolved review threads, so that check covers GitLab only.</p>
+      </div>
+      <figure class="device">
+        <div class="popup" style="--h:600px"><iframe title="Demo of the Blocked on me view" loading="lazy" src="demo/src/popup/popup.html?scene=blocked"></iframe></div>
+        <figcaption>Blocked on me, with the reason on each row</figcaption>
       </figure>
     </section>
 
     <section class="step step-toasts" data-section data-node="notify">
       <div class="copy">
-        <h2>Know the moment it changes.</h2>
-        <p>A desktop notification when a request opens or its status changes. Click it to jump straight to the request.</p>
+        <h2>Notifications for the events you choose.</h2>
+        <p>Turn on any of: a new request, a status change, a review requested from you, or CI failing on a request you opened. Click a notification to open that request.</p>
         <ul class="facts">
-          <li>Sync in the background as often as every minute</li>
-          <li>Titles in the list turn bold until you have seen the update</li>
-          <li>Choose which events notify you</li>
+          <li>Quiet hours hold notifications overnight and send them once the window ends</li>
+          <li>Digest mode folds one sync's updates into a single notification</li>
+          <li>Sync runs in the background as often as every minute</li>
         </ul>
       </div>
       <div class="toasts">
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Review requested</p><p class="m">Per-key quota editor in the admin UI</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">CI failed on your MR</p><p class="m">Add retry with backoff to the sync client</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
         <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Status changed</p><p class="m">Upgrade Postgres driver to 5.2 → merged</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
-        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">New PR · GitHub</p><p class="m">Add retry with backoff to the sync client</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
         <p class="caption">Notification text is shown as the extension writes it. Titles are synthetic.</p>
       </div>
     </section>
 
-    <section class="step" data-section data-node="filter">
+    <section class="step" data-section data-node="keys">
       <div class="copy">
-        <h2>Filter, sort, mute the noise.</h2>
-        <p>Narrow the list to one project or one state. Flip the order. Mute the projects you never review and they stay out of the list, the badge count and the notifications.</p>
+        <h2>Work the list from the keyboard.</h2>
+        <p>Press <kbd>j</kbd> and <kbd>k</kbd> to move, <kbd>Enter</kbd> to open, <kbd>/</kbd> to search by title, project, author or number, <kbd>s</kbd> to sync, and <kbd>?</kbd> for the full list.</p>
         <ul class="facts">
-          <li>Open every visible request in tabs with one click</li>
-          <li>Hide any control you don't use</li>
-          <li>Newest first or oldest first</li>
+          <li>Filter to one project or one state, newest or oldest first</li>
+          <li>Press <kbd>m</kbd> to mute a project: it leaves the list, the badge count and the notifications</li>
+          <li>Open every visible request in tabs at once</li>
         </ul>
       </div>
       <figure class="device">
         <div class="popup" style="--h:470px"><iframe title="Demo of filtering and muting" loading="lazy" src="demo/src/popup/popup.html?scene=filtered"></iframe></div>
-        <figcaption>Live demo: filtering and muting (synthetic data)</figcaption>
+        <figcaption>Filtered to one project, with another project muted</figcaption>
       </figure>
     </section>
 
     <section id="privacy" class="step step-perms" data-section data-node="local">
       <div class="copy">
-        <h2>Private by design.</h2>
-        <p>There is no server and no account. Your tokens and the cached list live in your browser's local storage, and requests go straight from your browser to your Git provider. No analytics, no tracking.</p>
+        <h2>No server between you and your Git provider.</h2>
+        <p>There is no account to create. Your tokens and the cached list live in your browser's local storage, and requests go straight from your browser to your Git provider. No analytics, no tracking.</p>
         <p><a class="link" href="privacy.html">Read the privacy policy</a></p>
       </div>
       <div class="perms">
@@ -99,10 +118,19 @@
           <caption>What the extension asks for, and why</caption>
           <thead><tr><th scope="col">Permission</th><th scope="col">Why</th></tr></thead>
           <tbody>
-            <tr><th scope="row">storage</th><td>Save your settings and the cached list on this device</td></tr>
-            <tr><th scope="row">alarms</th><td>Schedule the background sync</td></tr>
-            <tr><th scope="row">notifications</th><td>Show desktop notifications for changes</td></tr>
-            <tr><th scope="row">gitlab.com, api.github.com, api.bitbucket.org</th><td>Read your requests directly from the provider APIs</td></tr>
+            <tr><th scope="row"><code class="perm">storage</code></th><td>Save your settings and the cached list on this device</td></tr>
+            <tr><th scope="row"><code class="perm">alarms</code></th><td>Schedule the background sync</td></tr>
+            <tr><th scope="row"><code class="perm">notifications</code></th><td>Show desktop notifications for changes</td></tr>
+            <tr>
+              <th scope="row">
+                <ul class="hosts" aria-label="Provider API hosts">
+                  <li class="host"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="#e24329" d="m460.6 354.1l-.3.2l-106.8 79.9l-97.4-73.6l153-115.7c27.8-20.7 59.8-35.1 93.7-42.1L433.1 21c-1.4-3.6-3.9-6.6-7.2-8.6c-8.6-5.5-19.9-3-25.4 5.6c-1 1.5-1.7 3.2-2.2 4.9l-47 144H160.8l-47-144c-2.8-9.8-13-15.5-22.8-12.7c-1.7.5-3.4 1.2-4.9 2.2c-3.2 2-5.8 5.1-7.2 8.6L9.3 202.8c33.9 7 65.9 21.3 93.6 42.1l153 115.8l.1-.1l97.3 73.7l-52.6 39.7l-31.9 24.2c-3.8 2.9-8.4 4.3-12.9 4.3c4.6 0 9.2-1.4 13-4.3l31.9-24.2l52.6-39.7l106.8-79.9l.3-.2c2.5-1.9 4.8-3.8 7.1-5.8c-2.3 2-4.6 3.9-7 5.7"/><path fill="#fca326" d="m158.3 434.3l52.6 39.7l31.9 24.2a21.6 21.6 0 0 0 26 0l31.9-24.2l52.6-39.7l-97.3-73.7z"/><path fill="#fc6d26" d="m460.6 354.1l-.3.2l-106.8 79.9l-97.4-73.6l153-115.7c27.8-20.7 59.8-35.1 93.7-42.1l.7 1.8c20.5 53.9 3.1 114.8-42.9 149.5M9.3 202.8l-.7 1.8C-12 258.5 5.5 319.4 51.5 354.2l.3.2l.6.5l106 79.4l97.5-73.6l-153-115.8c-27.7-20.8-59.7-35.1-93.6-42.1"/></svg><span>gitlab.com</span></li>
+                  <li class="host"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 .396c-8.839 0-16 7.167-16 16c0 7.073 4.584 13.068 10.937 15.183c.803.151 1.093-.344 1.093-.772c0-.38-.009-1.385-.015-2.719c-4.453.964-5.391-2.151-5.391-2.151c-.729-1.844-1.781-2.339-1.781-2.339c-1.448-.989.115-.968.115-.968c1.604.109 2.448 1.645 2.448 1.645c1.427 2.448 3.744 1.74 4.661 1.328c.14-1.031.557-1.74 1.011-2.135c-3.552-.401-7.287-1.776-7.287-7.907c0-1.751.62-3.177 1.645-4.297c-.177-.401-.719-2.031.141-4.235c0 0 1.339-.427 4.4 1.641a15.4 15.4 0 0 1 4-.541c1.36.009 2.719.187 4 .541c3.043-2.068 4.381-1.641 4.381-1.641c.859 2.204.317 3.833.161 4.235c1.015 1.12 1.635 2.547 1.635 4.297c0 6.145-3.74 7.5-7.296 7.891c.556.479 1.077 1.464 1.077 2.959c0 2.14-.02 3.864-.02 4.385c0 .416.28.916 1.104.755c6.4-2.093 10.979-8.093 10.979-15.156c0-8.833-7.161-16-16-16z"/></svg><span>api.github.com</span></li>
+                  <li class="host"><svg viewBox="0 0 128 128" aria-hidden="true"><defs><linearGradient id="bb-grad" x1="28.593" x2="16.672" y1="14.226" y2="23.532" gradientTransform="scale(4)" gradientUnits="userSpaceOnUse"><stop offset=".176" stop-color="#0052cc"/><stop offset="1" stop-color="#2684ff"/></linearGradient></defs><path fill="#2684ff" d="M19.082 20c-1.918 0-3.355 1.758-3.039 3.516l12.95 79.289c.32 2.078 2.077 3.515 4.155 3.515h62.66c1.442 0 2.72-1.12 3.04-2.558l13.109-80.086c.316-1.918-1.121-3.516-3.039-3.516zM74.07 77.227H54.09l-5.278-28.293h30.215zm0 0"/><path fill="url(#bb-grad)" d="M107.64 48.934H78.868L74.07 77.227H54.09l-23.5 27.972s1.12.961 2.719.961h62.66c1.441 0 2.719-1.12 3.039-2.558zm0 0"/></svg><span>api.bitbucket.org</span></li>
+                </ul>
+              </th>
+              <td>Read your requests directly from the provider APIs</td>
+            </tr>
             <tr><th scope="row">Other hosts (optional)</th><td>Asked only when you add a self-hosted server, and only with your approval</td></tr>
           </tbody>
         </table>
@@ -110,8 +138,8 @@
     </section>
 
     <section id="get" class="finale" data-section>
-      <h2>Merge it into your toolbar.</h2>
-      <p>One click to install. Paste a read-only token for each provider and your queue is in one place.</p>
+      <h2>Install it and paste a token.</h2>
+      <p>Add the extension to Chrome, then paste a read-only token for each provider. Your requests load on the first sync.</p>
       <a class="btn btn-primary btn-lg" id="finale-cta" data-install href="#get">Add to Chrome</a>
     </section>
   </main>

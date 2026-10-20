@@ -308,6 +308,9 @@
   "fieldOrgFilter": {
     "message": "Org filter (optional)"
   },
+  "orgLoadFailed": {
+    "message": "Could not load organizations. Check the token."
+  },
   "fieldUsername": {
     "message": "Username"
   },
@@ -343,5 +346,134 @@
   },
   "hintBitbucketToken": {
     "message": "Create one with the Pull requests: Read scope."
+  },
+  "searchPlaceholder": {
+    "message": "Search title, project, author…"
+  },
+  "searchLabel": {
+    "message": "Search"
+  },
+  "kbdTitle": {
+    "message": "Keyboard shortcuts"
+  },
+  "kbdClose": {
+    "message": "Close"
+  },
+  "kbdMove": {
+    "message": "Next / previous item"
+  },
+  "kbdOpen": {
+    "message": "Open selected item"
+  },
+  "kbdMute": {
+    "message": "Mute selected project"
+  },
+  "kbdSync": {
+    "message": "Sync now"
+  },
+  "kbdSearch": {
+    "message": "Search"
+  },
+  "kbdHelp": {
+    "message": "Show or hide this list"
+  },
+  "kbdEsc": {
+    "message": "Close, or clear search"
+  },
+  "ciPass": {
+    "message": "CI passing"
+  },
+  "ciFail": {
+    "message": "CI failing"
+  },
+  "ciPending": {
+    "message": "CI running"
+  },
+  "approvalsLabel": {
+    "message": "Approvals: $1"
+  },
+  "stateBlocked": {
+    "message": "Blocked on me"
+  },
+  "blockReview": {
+    "message": "Review owed"
+  },
+  "blockCi": {
+    "message": "My CI failing"
+  },
+  "blockThreads": {
+    "message": "Unresolved threads"
+  },
+  "notifyReviewRequested": {
+    "message": "Notify when a review is requested from me"
+  },
+  "notifyCiFailed": {
+    "message": "Notify when CI fails on my MR"
+  },
+  "notifyDigest": {
+    "message": "Batch notifications into one summary"
+  },
+  "quietHours": {
+    "message": "Quiet hours (held and sent after)"
+  },
+  "quietFrom": {
+    "message": "From (hour, 0-23)"
+  },
+  "quietTo": {
+    "message": "To (hour, 0-23)"
+  },
+  "notifyReviewTitle": {
+    "message": "Review requested"
+  },
+  "notifyCiTitle": {
+    "message": "CI failed on your MR"
+  },
+  "digestTitle": {
+    "message": "$1 MR updates"
+  },
+  "digestMore": {
+    "message": "+$1 more"
+  },
+  "standupButton": {
+    "message": "Standup"
+  },
+  "standupButtonTitle": {
+    "message": "Copy a standup summary as Markdown"
+  },
+  "standupTitle": {
+    "message": "Standup $1"
+  },
+  "standupMerged": {
+    "message": "Merged (last 24h)"
+  },
+  "standupWaiting": {
+    "message": "Waiting on review"
+  },
+  "standupCi": {
+    "message": "Failing CI on my MRs"
+  },
+  "standupReviews": {
+    "message": "Reviews I owe"
+  },
+  "standupNone": {
+    "message": "None"
+  },
+  "standupCopied": {
+    "message": "Standup copied"
+  },
+  "stackedOn": {
+    "message": "Stacked on $1"
+  },
+  "ticketSection": {
+    "message": "Ticket links"
+  },
+  "ticketBaseLabel": {
+    "message": "Ticket base URL"
+  },
+  "ticketBaseHint": {
+    "message": "Shows a link on MRs whose branch or title has a key like ABC-123. Jira: https://<site>.atlassian.net/browse/ · Linear: https://linear.app/<workspace>/issue/"
+  },
+  "ticketLinkTitle": {
+    "message": "Open $1"
   }
 }
