@@ -1,4 +1,5 @@
 import { getConfig, getMrSnapshot, setMrSnapshot } from "./storage";
+import { stateLabel, t } from "./i18n";
 import { getProvider } from "../providers/registry";
 import type {
   Account,
@@ -23,7 +24,7 @@ export async function syncMergeRequests({
 
   if (!enabled.length) {
     await updateBadge(0);
-    return { ok: false, error: "No connected accounts. Open Settings.", reason };
+    return { ok: false, error: t("noConnectedAccounts"), reason };
   }
 
   const previous = await getMrSnapshot();
@@ -123,7 +124,7 @@ function diffAndBuildNotifications(
       out.push({
         id: `new-${mr.key}`,
         url: mr.url,
-        options: notificationFor(`New PR · ${mr.accountLabel}`, mr.title)
+        options: notificationFor(t("notifyNewTitle", mr.accountLabel), mr.title)
       });
       continue;
     }
@@ -132,7 +133,7 @@ function diffAndBuildNotifications(
       out.push({
         id: `status-${mr.key}-${mr.state}`,
         url: mr.url,
-        options: notificationFor("Status changed", `${mr.title} → ${mr.state}`)
+        options: notificationFor(t("notifyStatusTitle"), `${mr.title} → ${stateLabel(mr.state)}`)
       });
     }
   }

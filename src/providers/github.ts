@@ -1,5 +1,6 @@
 import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://api.github.com";
 
@@ -43,25 +44,25 @@ export const githubProvider: Provider = {
   fields: [
     {
       key: "host",
-      label: "API host",
+      label: t("fieldApiHost"),
       placeholder: DEFAULT_HOST,
       required: false,
-      hint: "Leave blank for github.com, or use https://HOST/api/v3 for Enterprise."
+      hint: t("hintGithubHost")
     },
     {
       key: "workspace",
-      label: "Org filter (optional)",
+      label: t("fieldOrgFilter"),
       placeholder: "my-org",
       required: false,
-      hint: "Limit results to one organization."
+      hint: t("hintGithubOrg")
     },
     {
       key: "token",
-      label: "Personal access token",
+      label: t("fieldToken"),
       placeholder: "github_pat_… / ghp_…",
       required: true,
       secret: true,
-      hint: "Fine-grained token with Pull requests: Read."
+      hint: t("hintGithubToken")
     }
   ],
 

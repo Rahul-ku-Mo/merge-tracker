@@ -8,6 +8,7 @@ import {
   setUiState
 } from "../lib/storage";
 import { requireElement } from "../lib/dom";
+import { applyI18n, stateLabel, t } from "../lib/i18n";
 import { initModeControl } from "../lib/theme";
 import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
@@ -61,6 +62,7 @@ optionsLink.addEventListener("click", (e) => {
 syncBtn.addEventListener("click", () => void runSync(true));
 
 async function init(): Promise<void> {
+  applyI18n();
   hydrateIcons();
   prefs = await getPopupPrefs();
   uiState = await getUiState();
@@ -138,7 +140,7 @@ async function renderFromCache(): Promise<void> {
   populateProjectOptions();
   applyAndRender();
   void updateBadge();
-  lastSyncEl.textContent = lastSyncAt ? `Synced ${formatRelative(lastSyncAt)}` : "";
+  lastSyncEl.textContent = lastSyncAt ? t("syncedAt", formatRelative(lastSyncAt)) : "";
 }
 
 function populateProjectOptions(): void {
@@ -146,7 +148,7 @@ function populateProjectOptions(): void {
     (a, b) => a.localeCompare(b)
   );
   const options = [
-    { value: "all", label: "All projects" },
+    { value: "all", label: t("filterAllProjects") },
     ...projects.map((p) => ({ value: p, label: p }))
   ];
   const hasSelected = options.some((o) => o.value === prefs.project);
@@ -168,8 +170,8 @@ function applyAndRender(): void {
   if (!allMrs.length) {
     controlsEl.hidden = true;
     listEl.hidden = true;
-    showEmpty("No merge requests", "Click Sync or check your filters in Settings.");
-    setStatus("No merge requests yet. Click Sync.", "default");
+    showEmpty(t("emptyNoMrTitle"), t("emptyNoMrDesc"));
+    setStatus(t("statusNoMr"), "default");
     return;
   }
 
@@ -179,8 +181,8 @@ function applyAndRender(): void {
 
   if (!filtered.length) {
     listEl.hidden = true;
-    showEmpty("No matches", "Try changing the filters above.");
-    setStatus(`0 of ${visible.length} shown`, "default");
+    showEmpty(t("emptyNoMatchesTitle"), t("emptyNoMatchesDesc"));
+    setStatus(t("statusShown", ["0", String(visible.length)]), "default");
     return;
   }
 
@@ -190,8 +192,10 @@ function applyAndRender(): void {
 
   const label =
     filtered.length === visible.length
-      ? `${visible.length} request${visible.length === 1 ? "" : "s"}`
-      : `${filtered.length} of ${visible.length} shown`;
+      ? visible.length === 1
+        ? t("requestsOne")
+        : t("requestsMany", String(visible.length))
+      : t("statusShown", [String(filtered.length), String(visible.length)]);
   setStatus(label, "success");
 
   markSeen();
@@ -256,6 +260,8 @@ function focusedRowSelector(): string | null {
 function itemHtml(mr: MergeRequest): string {
   const meta = accountMeta.get(mr.accountId);
   const color = meta?.color ?? "#888";
+  const copyLabel = t("copyLink");
+  const muteLabel = t("muteProject");
   const isNew = isUpdatedSinceSeen(mr);
   const isRead = uiState.opened.includes(mr.key);
   const classes = ["mr-item", isNew ? "is-new" : "", isRead ? "is-read" : ""]
@@ -265,21 +271,21 @@ function itemHtml(mr: MergeRequest): string {
   return `
     <li class="${classes}">
       <div class="mr-row">
-        <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}" aria-label="Account: ${esc(meta?.label ?? "")}" role="img"></span>
+        <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}" aria-label="${esc(t("accountLabel", meta?.label ?? ""))}" role="img"></span>
         <a class="mr-title" href="${esc(mr.url)}" data-key="${esc(mr.key)}" target="_blank" rel="noopener">${esc(mr.title)}</a>
         <span class="mr-actions">
-          <button class="mr-action" type="button" data-copy="${esc(mr.url)}" title="Copy link" aria-label="Copy link">
+          <button class="mr-action" type="button" data-copy="${esc(mr.url)}" title="${copyLabel}" aria-label="${copyLabel}">
             ${iconSvg("copy", 13)}
           </button>
-          <button class="mr-action" type="button" data-mute="${esc(mr.repo)}" title="Mute this project" aria-label="Mute this project">
+          <button class="mr-action" type="button" data-mute="${esc(mr.repo)}" title="${muteLabel}" aria-label="${muteLabel}">
             ${iconSvg("eye-off", 13)}
           </button>
         </span>
       </div>
       <span class="mr-meta">
         ${providerBadge(mr.provider)}
-        <span class="badge ${mr.state}">${mr.state}</span>
-        ${mr.draft ? '<span class="badge draft">draft</span>' : ""}
+        <span class="badge ${mr.state}">${stateLabel(mr.state)}</span>
+        ${mr.draft ? `<span class="badge draft">${t("draft")}</span>` : ""}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
         <span class="mr-meta-sep">·</span>
@@ -313,7 +319,7 @@ function updateMutedBar(): void {
   }
   mutedBar.hidden = false;
   const count = mutedRepos.size;
-  mutedText.textContent = `${count} project${count === 1 ? "" : "s"} muted`;
+  mutedText.textContent = count === 1 ? t("mutedOne") : t("mutedMany", String(count));
 }
 
 async function updateBadge(): Promise<void> {
@@ -364,7 +370,7 @@ function attachListeners(): void {
 function reflectSortButton(): void {
   const asc = prefs.sort === "updated_asc";
   sortBtn.classList.toggle("is-asc", asc);
-  sortBtn.title = asc ? "Sort: oldest first" : "Sort: newest first";
+  sortBtn.title = asc ? t("sortOldest") : t("sortNewest");
   sortBtn.setAttribute("aria-label", sortBtn.title);
 }
 
@@ -381,9 +387,9 @@ async function copyLink(url: string): Promise<void> {
   if (!url) return;
   try {
     await navigator.clipboard.writeText(url);
-    flashStatus("Link copied");
+    flashStatus(t("linkCopied"));
   } catch {
-    flashStatus("Could not copy");
+    flashStatus(t("copyFailed"));
   }
 }
 
@@ -418,7 +424,7 @@ async function persistPrefsAndRender(): Promise<void> {
 
 async function runSync(showErrors: boolean): Promise<void> {
   syncBtn.disabled = true;
-  setStatus("Syncing…", "loading");
+  setStatus(t("syncing"), "loading");
 
   try {
     const result = (await chrome.runtime.sendMessage({
@@ -426,13 +432,13 @@ async function runSync(showErrors: boolean): Promise<void> {
     })) as SyncResult | undefined;
 
     if (!result?.ok) {
-      throw new Error(result?.error ?? "Sync failed");
+      throw new Error(result?.error ?? t("syncFailed"));
     }
 
     await renderFromCache();
 
     if (result.errors.length) {
-      setStatus(`${result.count} request(s) · ${result.errors.length} account(s) failed`, "error");
+      setStatus(t("statusFailed", [String(result.count), String(result.errors.length)]), "error");
     }
   } catch (err) {
     if (showErrors) {
@@ -477,10 +483,10 @@ function showEmpty(title: string, desc: string): void {
 function formatRelative(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t("justNow");
+  if (mins < 60) return t("minutesAgo", String(mins));
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
+  if (hrs < 24) return t("hoursAgo", String(hrs));
   return new Date(iso).toLocaleString();
 }
 

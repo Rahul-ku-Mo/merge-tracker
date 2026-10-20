@@ -17,7 +17,7 @@ export default defineConfig({
   root: resolve(__dirname, ".."),
   base: "./",
   plugins: [injectStub()],
-  publicDir: false,
+  // Default publicDir (public/) copies _locales/ into the demo so the stub can read English strings.
   build: {
     outDir: "site/demo",
     emptyOutDir: true,

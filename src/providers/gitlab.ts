@@ -1,5 +1,6 @@
 import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://gitlab.com";
 
@@ -32,18 +33,18 @@ export const gitlabProvider: Provider = {
   fields: [
     {
       key: "host",
-      label: "Host",
+      label: t("fieldHost"),
       placeholder: DEFAULT_HOST,
       required: false,
-      hint: "Leave blank for gitlab.com, or set your self-hosted URL."
+      hint: t("hintGitlabHost")
     },
     {
       key: "token",
-      label: "Personal access token",
+      label: t("fieldToken"),
       placeholder: "glpat-…",
       required: true,
       secret: true,
-      hint: "Create with the read_api scope."
+      hint: t("hintGitlabToken")
     }
   ],
 

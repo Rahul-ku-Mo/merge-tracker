@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Merge Requests Tracker (MR)</title>
+    <title data-i18n="popupTitle">Merge Requests Tracker (MR)</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
@@ -13,8 +13,8 @@
             <span data-icon="git-merge" data-size="16"></span>
           </span>
           <div>
-            <h1>Merge Requests Tracker</h1>
-            <p class="brand-sub">Pull &amp; merge requests</p>
+            <h1 data-i18n="appName">Merge Requests Tracker</h1>
+            <p class="brand-sub" data-i18n="appSub">Pull &amp; merge requests</p>
           </div>
         </div>
         <div class="header-actions">
@@ -22,6 +22,7 @@
             id="mode-toggle"
             class="icon-btn"
             type="button"
+            data-i18n-title="themeModeTitle"
             title="Theme mode (system / light / dark)"
             aria-label="Theme mode: system"
           >
@@ -33,25 +34,27 @@
             id="sync-btn"
             type="button"
             class="btn btn-primary btn-sm"
+            data-i18n-title="fetchLatest"
+            data-i18n-aria="fetchLatest"
             title="Fetch latest"
             aria-label="Fetch latest"
           >
             <span data-icon="refresh-cw" data-size="16"></span>
-            Sync
+            <span data-i18n="syncNow">Sync</span>
           </button>
         </div>
       </header>
 
-      <div id="status" class="status-banner" role="status">Loading…</div>
+      <div id="status" class="status-banner" role="status" data-i18n="loading">Loading…</div>
 
       <section id="connect-panel" class="connect-panel" hidden>
         <div class="connect-intro">
-          <h2 class="connect-heading">Connect a provider</h2>
-          <p class="connect-lead">Pick GitHub, GitLab, or Bitbucket and paste a read-only token.</p>
+          <h2 class="connect-heading" data-i18n="connectHeading">Connect a provider</h2>
+          <p class="connect-lead" data-i18n="connectLead">Pick GitHub, GitLab, or Bitbucket and paste a read-only token.</p>
         </div>
         <div id="connect-list" class="connect-list"></div>
         <div id="connect-form-wrap" class="connect-form-wrap" hidden>
-          <button id="connect-back" type="button" class="connect-back"><span data-icon="arrow-left" data-size="14"></span> All providers</button>
+          <button id="connect-back" type="button" class="connect-back"><span data-icon="arrow-left" data-size="14"></span> <span data-i18n="connectBack">All providers</span></button>
           <form id="connect-form" class="connect-form card"></form>
           <p id="connect-error" class="connect-error" role="alert" hidden></p>
         </div>
@@ -61,13 +64,14 @@
         <select
           id="filter-project"
           class="select"
+          data-i18n-aria="filterProject"
           aria-label="Project"
         ></select>
-        <select id="filter-state" class="select" aria-label="State">
-          <option value="all">All</option>
-          <option value="open">Open</option>
-          <option value="merged">Merged</option>
-          <option value="closed">Closed</option>
+        <select id="filter-state" class="select" data-i18n-aria="filterState" aria-label="State">
+          <option value="all" data-i18n="stateAll">All</option>
+          <option value="open" data-i18n="stateOpen">Open</option>
+          <option value="merged" data-i18n="stateMerged">Merged</option>
+          <option value="closed" data-i18n="stateClosed">Closed</option>
         </select>
         <button
           id="sort-btn"
@@ -82,6 +86,8 @@
           id="open-all-btn"
           type="button"
           class="icon-btn"
+          data-i18n-title="openAllTabs"
+          data-i18n-aria="openAllTabs"
           title="Open all in tabs"
           aria-label="Open all in tabs"
         >
@@ -91,15 +97,15 @@
 
       <div id="muted-bar" class="muted-bar" hidden>
         <span id="muted-text"></span>
-        <button id="unmute-btn" type="button" class="muted-clear">
+        <button id="unmute-btn" type="button" class="muted-clear" data-i18n="showAll">
           show all
         </button>
       </div>
 
       <div id="empty-state" class="empty-state" hidden>
         <div class="empty-icon" aria-hidden="true"><span data-icon="git-pull-request" data-size="28"></span></div>
-        <p class="empty-title">No merge requests</p>
-        <p class="empty-desc">Click Sync or check your filters in Settings.</p>
+        <p class="empty-title" data-i18n="emptyNoMrTitle">No merge requests</p>
+        <p class="empty-desc" data-i18n="emptyNoMrDesc">Click Sync or check your filters in Settings.</p>
       </div>
 
       <div id="mr-list" class="mr-list card" hidden></div>
@@ -107,12 +113,12 @@
       <footer class="footer">
         <a id="options-link" class="footer-link" href="#">
           <span data-icon="settings" data-size="14"></span>
-          Settings
+          <span data-i18n="settings">Settings</span>
         </a>
         <span id="last-sync" class="footer-meta"></span>
       </footer>
 
-      <p class="credit">crafted by Rahul KM</p>
+      <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
     </div>
 
     <script type="module" src="./popup.ts"></script>

@@ -1,0 +1,347 @@
+{
+  "extName": {
+    "message": "MR - マージリクエスト トラッカー"
+  },
+  "extDescription": {
+    "message": "GitLab・GitHub・Bitbucketのマージ／プルリクエストを一箇所で追跡し、ステータスが変わると通知します。"
+  },
+  "optionsTitle": {
+    "message": "マージリクエスト トラッカー (MR) — 設定"
+  },
+  "popupTitle": {
+    "message": "マージリクエスト トラッカー (MR)"
+  },
+  "appName": {
+    "message": "マージリクエスト トラッカー"
+  },
+  "appNameMr": {
+    "message": "マージリクエスト トラッカー (MR)"
+  },
+  "appSub": {
+    "message": "プル／マージリクエスト"
+  },
+  "themeModeTitle": {
+    "message": "テーマ（システム／ライト／ダーク）"
+  },
+  "themeModeAria": {
+    "message": "テーマ: $1"
+  },
+  "modeSystem": {
+    "message": "システム"
+  },
+  "modeLight": {
+    "message": "ライト"
+  },
+  "modeDark": {
+    "message": "ダーク"
+  },
+  "syncNow": {
+    "message": "同期"
+  },
+  "fetchLatest": {
+    "message": "最新を取得"
+  },
+  "loading": {
+    "message": "読み込み中…"
+  },
+  "syncing": {
+    "message": "同期中…"
+  },
+  "connectHeading": {
+    "message": "プロバイダーを接続"
+  },
+  "connectLead": {
+    "message": "GitHub・GitLab・Bitbucketから選び、読み取り専用トークンを貼り付けてください。"
+  },
+  "connectBack": {
+    "message": "すべてのプロバイダー"
+  },
+  "connectNotConnected": {
+    "message": "未接続"
+  },
+  "connectAction": {
+    "message": "接続"
+  },
+  "connectSubmit": {
+    "message": "$1に接続"
+  },
+  "connectDocs": {
+    "message": "読み取り専用トークンを作成 →"
+  },
+  "connectScopesTitle": {
+    "message": "必要なスコープ"
+  },
+  "connectNoteGithub": {
+    "message": "一覧表示には、Pull requests: Read 権限を持つ Fine-grained トークンで十分です。"
+  },
+  "connectNoteGitlab": {
+    "message": "マージリクエストの一覧を読み取るための読み取り専用アクセスです。このデバイスにのみ保存されます。"
+  },
+  "connectNoteBitbucket": {
+    "message": "Pull requests: Read 権限のアプリパスワードを使用します。ユーザー名とワークスペースが必要です。"
+  },
+  "connectTokenLabel": {
+    "message": "トークン"
+  },
+  "connectTokenRequired": {
+    "message": "トークンを入力してください。"
+  },
+  "connectFieldRequired": {
+    "message": "$1は必須です。"
+  },
+  "hostAccessDenied": {
+    "message": "保存しましたが、セルフホストのホストへのアクセスが拒否されました。"
+  },
+  "filterProject": {
+    "message": "プロジェクト"
+  },
+  "filterState": {
+    "message": "状態"
+  },
+  "filterAllProjects": {
+    "message": "すべてのプロジェクト"
+  },
+  "stateAll": {
+    "message": "すべて"
+  },
+  "stateOpen": {
+    "message": "オープン"
+  },
+  "stateMerged": {
+    "message": "マージ済み"
+  },
+  "stateClosed": {
+    "message": "クローズ"
+  },
+  "sortNewest": {
+    "message": "並び替え: 新しい順"
+  },
+  "sortOldest": {
+    "message": "並び替え: 古い順"
+  },
+  "openAllTabs": {
+    "message": "すべてタブで開く"
+  },
+  "showAll": {
+    "message": "すべて表示"
+  },
+  "mutedOne": {
+    "message": "1件のプロジェクトをミュート中"
+  },
+  "mutedMany": {
+    "message": "$1件のプロジェクトをミュート中"
+  },
+  "emptyNoMrTitle": {
+    "message": "マージリクエストはありません"
+  },
+  "emptyNoMrDesc": {
+    "message": "「同期」をクリックするか、設定でフィルターを確認してください。"
+  },
+  "emptyNoMatchesTitle": {
+    "message": "一致する項目はありません"
+  },
+  "emptyNoMatchesDesc": {
+    "message": "上のフィルターを変更してみてください。"
+  },
+  "statusNoMr": {
+    "message": "マージリクエストはまだありません。「同期」をクリックしてください。"
+  },
+  "statusShown": {
+    "message": "$2件中$1件を表示"
+  },
+  "requestsOne": {
+    "message": "1件"
+  },
+  "requestsMany": {
+    "message": "$1件"
+  },
+  "statusFailed": {
+    "message": "$1件 · $2アカウントでエラー"
+  },
+  "justNow": {
+    "message": "たった今"
+  },
+  "minutesAgo": {
+    "message": "$1分前"
+  },
+  "hoursAgo": {
+    "message": "$1時間前"
+  },
+  "syncedAt": {
+    "message": "同期済み: $1"
+  },
+  "linkCopied": {
+    "message": "リンクをコピーしました"
+  },
+  "copyFailed": {
+    "message": "コピーできませんでした"
+  },
+  "copyLink": {
+    "message": "リンクをコピー"
+  },
+  "muteProject": {
+    "message": "このプロジェクトをミュート"
+  },
+  "accountLabel": {
+    "message": "アカウント: $1"
+  },
+  "draft": {
+    "message": "下書き"
+  },
+  "syncFailed": {
+    "message": "同期に失敗しました"
+  },
+  "noConnectedAccounts": {
+    "message": "接続済みのアカウントがありません。設定を開いてください。"
+  },
+  "settings": {
+    "message": "設定"
+  },
+  "credit": {
+    "message": "制作: Rahul KM"
+  },
+  "accounts": {
+    "message": "アカウント"
+  },
+  "add": {
+    "message": "追加"
+  },
+  "providerAria": {
+    "message": "プロバイダー"
+  },
+  "accountsEmpty": {
+    "message": "まだアカウントがありません。上でプロバイダーを選び、「追加」をクリックしてください。"
+  },
+  "optionsLead": {
+    "message": "1つ以上のアカウントを接続してください。各アカウントは<strong>読み取り専用</strong>のトークン／アプリパスワードを使用し、このデバイスにのみ保存されます。"
+  },
+  "syncSection": {
+    "message": "同期と通知"
+  },
+  "syncEvery": {
+    "message": "同期間隔（分）"
+  },
+  "notifyNew": {
+    "message": "新しいPR/MRを通知"
+  },
+  "notifyStatus": {
+    "message": "ステータス変更を通知"
+  },
+  "popupSection": {
+    "message": "ポップアップの表示"
+  },
+  "popupHint": {
+    "message": "使わないコントロールを非表示にすると、ポップアップのスペースを広く使えます。"
+  },
+  "dispTheme": {
+    "message": "ライト／ダーク切り替え"
+  },
+  "dispFilters": {
+    "message": "プロジェクトと状態のフィルター"
+  },
+  "dispSort": {
+    "message": "並び替えボタン"
+  },
+  "dispOpenAll": {
+    "message": "「すべてタブで開く」ボタン"
+  },
+  "dispCredit": {
+    "message": "「制作: Rahul KM」のクレジット"
+  },
+  "saveChanges": {
+    "message": "変更を保存"
+  },
+  "remove": {
+    "message": "削除"
+  },
+  "enabled": {
+    "message": "有効"
+  },
+  "labelPlaceholder": {
+    "message": "ラベル"
+  },
+  "accountColor": {
+    "message": "アカウントの色"
+  },
+  "tokenHowTo": {
+    "message": "読み取り専用トークンの作成方法"
+  },
+  "scope": {
+    "message": "スコープ"
+  },
+  "statesLabel": {
+    "message": "状態:"
+  },
+  "scopeAssigned": {
+    "message": "自分にアサインされたもの"
+  },
+  "scopeCreated": {
+    "message": "自分が作成したもの"
+  },
+  "scopeReview": {
+    "message": "自分のレビューが必要なもの"
+  },
+  "scopeAll": {
+    "message": "自分が関わるすべて"
+  },
+  "saving": {
+    "message": "保存中…"
+  },
+  "needsToken": {
+    "message": "「$1」にはトークンが必要です。"
+  },
+  "saved": {
+    "message": "保存しました。バックグラウンド同期を更新しました。"
+  },
+  "notifyNewTitle": {
+    "message": "新しいPR · $1"
+  },
+  "notifyStatusTitle": {
+    "message": "ステータスが変わりました"
+  },
+  "fieldHost": {
+    "message": "ホスト"
+  },
+  "fieldApiHost": {
+    "message": "APIホスト"
+  },
+  "fieldOrgFilter": {
+    "message": "組織フィルター（任意）"
+  },
+  "fieldUsername": {
+    "message": "ユーザー名"
+  },
+  "fieldWorkspace": {
+    "message": "ワークスペース"
+  },
+  "fieldToken": {
+    "message": "アクセストークン"
+  },
+  "fieldAppPassword": {
+    "message": "アプリパスワード"
+  },
+  "hintGitlabHost": {
+    "message": "gitlab.comの場合は空欄のまま。セルフホストの場合はURLを入力してください。"
+  },
+  "hintGitlabToken": {
+    "message": "read_api スコープで作成してください。"
+  },
+  "hintGithubHost": {
+    "message": "github.comの場合は空欄のまま。Enterpriseの場合は https://HOST/api/v3 を使用してください。"
+  },
+  "hintGithubOrg": {
+    "message": "結果を1つの組織に限定します。"
+  },
+  "hintGithubToken": {
+    "message": "Pull requests: Read 権限を持つ Fine-grained トークン。"
+  },
+  "hintBitbucketUsername": {
+    "message": "アプリパスワードとともにBasic認証に使用します。"
+  },
+  "hintBitbucketWorkspace": {
+    "message": "PRを一覧表示するにはワークスペースが必要です。"
+  },
+  "hintBitbucketToken": {
+    "message": "Pull requests: Read スコープで作成してください。"
+  }
+}

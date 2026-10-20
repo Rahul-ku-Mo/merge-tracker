@@ -1,5 +1,6 @@
 import type { Account, MergeRequest, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://api.bitbucket.org/2.0";
 
@@ -42,25 +43,25 @@ export const bitbucketProvider: Provider = {
   fields: [
     {
       key: "username",
-      label: "Username",
+      label: t("fieldUsername"),
       placeholder: "your-bitbucket-username",
       required: true,
-      hint: "Used with the app password for Basic auth."
+      hint: t("hintBitbucketUsername")
     },
     {
       key: "workspace",
-      label: "Workspace",
+      label: t("fieldWorkspace"),
       placeholder: "my-workspace",
       required: true,
-      hint: "Bitbucket requires a workspace to list your PRs."
+      hint: t("hintBitbucketWorkspace")
     },
     {
       key: "token",
-      label: "App password",
+      label: t("fieldAppPassword"),
       placeholder: "app password",
       required: true,
       secret: true,
-      hint: "Create one with the Pull requests: Read scope."
+      hint: t("hintBitbucketToken")
     }
   ],
 
