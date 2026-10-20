@@ -8,15 +8,6 @@
 
 export type ProviderId = "gitlab" | "github" | "bitbucket";
 
-export type ThemeId =
-  | "retro"
-  | "shadcn"
-  | "ocean"
-  | "nord"
-  | "dracula"
-  | "solarized"
-  | "github";
-
 export type ThemeMode = "light" | "dark" | "system";
 
 /** What the user wants to track. Each provider maps this to its own filters. */
@@ -79,7 +70,7 @@ export interface MergeRequest {
  * All default to true (everything shown).
  */
 export interface DisplayPrefs {
-  /** Theme <select> + light/dark toggle in the popup header. */
+  /** Light/dark toggle in the popup header. */
   themeControls: boolean;
   /** Project + state filter dropdowns. */
   filters: boolean;
@@ -97,7 +88,6 @@ export interface ExtensionConfig {
   notifyOn: NotifyOnConfig;
   /** Repos (full names) the user muted: hidden from list, badge, notifications. */
   mutedRepos: string[];
-  theme: ThemeId;
   mode: ThemeMode;
   /** Which popup controls to show. */
   display: DisplayPrefs;

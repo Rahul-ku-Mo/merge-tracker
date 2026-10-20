@@ -1,20 +1,23 @@
 {
-  "name": "mr-tracker",
+  "name": "merge-tracker",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Track GitLab, GitHub, and Bitbucket merge/pull requests and get notified when their status changes.",
+  "description": "Track GitLab, GitHub, and Bitbucket merge/pull requests in one place and get notified when their status changes.",
   "scripts": {
     "dev": "vite build --watch",
     "dev:hmr": "vite",
     "build": "vite build",
-    "zip": "vite build && powershell -NoProfile -Command \"Compress-Archive -Path dist/* -DestinationPath mr-tracker.zip -Force\"",
+    "zip": "vite build && cd dist && zip -qr ../merge-tracker.zip .",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "icons:ui": "node scripts/build-icons.mjs"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.4.0",
+    "@iconify-json/lucide": "^1.2.146",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/chrome": "^0.0.304",
     "typescript": "^5.7.3",
     "vite": "^6.0.7"

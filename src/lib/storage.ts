@@ -16,7 +16,6 @@ const DEFAULT_CONFIG: ExtensionConfig = {
     newComment: false
   },
   mutedRepos: [],
-  theme: "shadcn",
   mode: "system",
   display: {
     themeControls: true,
@@ -97,7 +96,6 @@ export async function getConfig(): Promise<ExtensionConfig> {
     syncIntervalMinutes: stored.syncIntervalMinutes ?? DEFAULT_CONFIG.syncIntervalMinutes,
     notifyOn: { ...DEFAULT_CONFIG.notifyOn, ...stored.notifyOn },
     mutedRepos: Array.isArray(stored.mutedRepos) ? stored.mutedRepos : [],
-    theme: stored.theme ?? DEFAULT_CONFIG.theme,
     mode: stored.mode ?? DEFAULT_CONFIG.mode,
     display: { ...DEFAULT_CONFIG.display, ...stored.display }
   };

@@ -1,7 +1,8 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
 import { getProvider } from "../providers/registry";
-import { initThemeControls } from "../lib/theme";
+import { initModeControl } from "../lib/theme";
+import { hydrateIcons } from "../lib/icons";
 import { ensureHostPermissions } from "../lib/permissions";
 import type { Account, MrScope, NormalizedState, ProviderId } from "../types/index";
 
@@ -24,13 +25,12 @@ const STATES: NormalizedState[] = ["open", "merged", "closed"];
 let accounts: Account[] = [];
 
 async function load(): Promise<void> {
+  hydrateIcons();
   const config = await getConfig();
-  initThemeControls({
-    selectId: "theme-select",
+  initModeControl({
     toggleId: "mode-toggle",
-    theme: config.theme,
     mode: config.mode,
-    onChange: (theme, mode) => void setConfig({ theme, mode })
+    onChange: (mode) => void setConfig({ mode })
   });
   accounts = config.accounts;
   requireInput("syncIntervalMinutes").value = String(config.syncIntervalMinutes);

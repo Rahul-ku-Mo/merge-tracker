@@ -1,6 +1,6 @@
-# GitLab MR Tracker — Chrome Extension (learning project)
+# Merge Requests Tracker (MR) — Chrome Extension
 
-A minimal **Manifest V3** extension that syncs GitLab merge requests and shows desktop notifications when MR status changes. Source is **TypeScript**, built with **pnpm** and **Vite** (via [@crxjs/vite-plugin](https://crxjs.dev)).
+A **Manifest V3** extension that syncs merge/pull requests from GitLab, GitHub, and Bitbucket and shows desktop notifications when their status changes. UI icons are [Lucide](https://lucide.dev) via [Icônes](https://icones.js.org/collection/lucide); run `pnpm icons:ui` after changing the icon list in `scripts/build-icons.mjs`, and `pnpm icons` to regenerate the toolbar PNGs. Source is **TypeScript**, built with **pnpm** and **Vite** (via [@crxjs/vite-plugin](https://crxjs.dev)).
 
 ## How a Chrome extension fits together
 

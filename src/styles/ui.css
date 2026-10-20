@@ -1,3 +1,15 @@
+/* Icon placeholders are filled with Lucide SVGs by hydrateIcons(). */
+[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+[data-icon] svg {
+  display: block;
+}
+
 /* Shared UI primitives — retro style (no framework) */
 
 .btn {

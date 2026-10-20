@@ -7,7 +7,7 @@ Everything you need to paste into the Developer Dashboard. Copy each block as‑
 ## Item name
 
 ```
-Merge Request Tracker
+Merge Requests Tracker (MR)
 ```
 
 ## Summary (≤132 chars)
@@ -19,7 +19,7 @@ Track your GitLab, GitHub & Bitbucket merge/pull requests in one place and get n
 ## Detailed description
 
 ```
-Merge Request Tracker keeps all your open work in one place. Connect GitLab,
+Merge Requests Tracker (MR) keeps all your open work in one place. Connect GitLab,
 GitHub, and Bitbucket accounts and see every merge/pull request assigned to,
 created by, or involving you — without switching tabs.
 
@@ -52,7 +52,7 @@ Host `docs/privacy-policy.md` somewhere public (e.g. GitHub Pages or a Gist) and
 paste the URL here. Example:
 
 ```
-https://<your-username>.github.io/mr-tracker/privacy-policy.html
+https://<your-username>.github.io/merge-tracker/privacy-policy.html
 ```
 
 ---
@@ -133,7 +133,7 @@ parties.
 
 ## Pre-submit checklist
 
-- [ ] `pnpm zip` produced `mr-tracker.zip` (manifest.json at the root).
+- [ ] `pnpm zip` produced `merge-tracker.zip` (manifest.json at the root).
 - [ ] Version bumped in `package.json` for each new upload.
 - [ ] Privacy policy hosted and URL added.
 - [ ] Single purpose + permission justifications filled.

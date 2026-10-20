@@ -1,7 +1,7 @@
 import { defineManifest } from "@crxjs/vite-plugin";
 import packageJson from "./package.json";
 
-const { name, version, description } = packageJson;
+const { version, description } = packageJson;
 
 /**
  * Extension manifest (source of truth for Chrome).
@@ -11,7 +11,7 @@ const { name, version, description } = packageJson;
  */
 export default defineManifest({
   manifest_version: 3,
-  name,
+  name: "MR - Merge Requests Tracker",
   version,
   description,
   author: {
@@ -24,7 +24,7 @@ export default defineManifest({
   },
   action: {
     default_popup: "src/popup/popup.html",
-    default_title: "Merge Requests",
+    default_title: "MR - Merge Requests Tracker",
   },
   background: {
     service_worker: "src/background/service-worker.ts",

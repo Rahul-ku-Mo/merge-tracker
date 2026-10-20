@@ -8,7 +8,8 @@ import {
   setUiState
 } from "../lib/storage";
 import { requireElement } from "../lib/dom";
-import { initThemeControls } from "../lib/theme";
+import { initModeControl } from "../lib/theme";
+import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
 import type {
@@ -60,6 +61,7 @@ optionsLink.addEventListener("click", (e) => {
 syncBtn.addEventListener("click", () => void runSync(true));
 
 async function init(): Promise<void> {
+  hydrateIcons();
   prefs = await getPopupPrefs();
   uiState = await getUiState();
   stateEl.value = prefs.state;
@@ -67,12 +69,10 @@ async function init(): Promise<void> {
   attachListeners();
 
   const config = await getConfig();
-  initThemeControls({
-    selectId: "theme-select",
+  initModeControl({
     toggleId: "mode-toggle",
-    theme: config.theme,
     mode: config.mode,
-    onChange: (theme, mode) => void setConfig({ theme, mode })
+    onChange: (mode) => void setConfig({ mode })
   });
   accountMeta.clear();
   for (const a of config.accounts) accountMeta.set(a.id, { color: a.color, label: a.label });
@@ -121,7 +121,6 @@ function applyDisplayPrefs(display: ExtensionConfig["display"]): void {
     if (el) el.hidden = hidden;
   };
 
-  setHidden("theme-select", !display.themeControls);
   setHidden("mode-toggle", !display.themeControls);
   projectEl.hidden = !display.filters;
   stateEl.hidden = !display.filters;
@@ -270,10 +269,10 @@ function itemHtml(mr: MergeRequest): string {
         <a class="mr-title" href="${esc(mr.url)}" data-key="${esc(mr.key)}" target="_blank" rel="noopener">${esc(mr.title)}</a>
         <span class="mr-actions">
           <button class="mr-action" type="button" data-copy="${esc(mr.url)}" title="Copy link" aria-label="Copy link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            ${iconSvg("copy", 13)}
           </button>
           <button class="mr-action" type="button" data-mute="${esc(mr.repo)}" title="Mute this project" aria-label="Mute this project">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+            ${iconSvg("eye-off", 13)}
           </button>
         </span>
       </div>
@@ -319,7 +318,7 @@ function updateMutedBar(): void {
 
 async function updateBadge(): Promise<void> {
   const open = allMrs.filter((mr) => mr.state === "open" && !mutedRepos.has(mr.repo)).length;
-  await chrome.action.setBadgeBackgroundColor({ color: "#bd4d12" });
+  await chrome.action.setBadgeBackgroundColor({ color: "#0965ce" });
   await chrome.action.setBadgeText({ text: open > 0 ? String(open) : "" });
 }
 

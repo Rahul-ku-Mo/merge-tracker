@@ -46,7 +46,7 @@ Waits for file changes and rebuilds `dist/`. No dev server on port 5173.
 | `popup.ts`, `options.ts` | Same |
 | `service-worker.ts`, `sync.ts`, etc. | **Reload extension** |
 
-Reload: `chrome://extensions` → ↻ on **GitLab MR Tracker**
+Reload: `chrome://extensions` → ↻ on **Merge Requests Tracker (MR)**
 
 ### Best for side-by-side: **Settings (options)**
 

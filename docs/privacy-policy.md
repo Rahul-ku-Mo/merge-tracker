@@ -1,8 +1,8 @@
-# Privacy Policy — Merge Request Tracker
+# Privacy Policy — Merge Requests Tracker (MR)
 
 _Last updated: 2 June 2026_
 
-Merge Request Tracker ("the extension") is a browser extension that displays your
+Merge Requests Tracker (MR) ("the extension") is a browser extension that displays your
 GitLab, GitHub, and Bitbucket merge/pull requests and notifies you when their
 status changes.
 
