@@ -75,8 +75,25 @@
     return out;
   };
 
+  // Load the English catalog synchronously (chrome.i18n.getMessage is sync). The
+  // demo pages sit in site/demo/src/<page>/, and public/_locales is copied to site/demo/_locales.
+  const en = (() => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "../../_locales/en/messages.json", false);
+    xhr.send();
+    return xhr.status === 200 ? JSON.parse(xhr.responseText) : {};
+  })();
+
   window.chrome = {
     storage: { local: { get: async (k) => pick(k), set: async (o) => void Object.assign(data, o) } },
+    i18n: {
+      getMessage: (name, subs) => {
+        let msg = en[name]?.message ?? "";
+        [].concat(subs ?? []).forEach((s, i) => { msg = msg.replaceAll(`$${i + 1}`, s); });
+        return msg;
+      },
+      getUILanguage: () => "en"
+    },
     runtime: {
       sendMessage: async () => ({ ok: true, count: mergeRequests.length, notified: 0, reason: "manual", errors: [] }),
       openOptionsPage: () => {},

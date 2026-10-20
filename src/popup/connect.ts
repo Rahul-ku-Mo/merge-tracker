@@ -1,6 +1,7 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
 import { ensureHostPermissions } from "../lib/permissions";
 import { providerIconSvg } from "../lib/provider-icons";
+import { t } from "../lib/i18n";
 import { getProvider } from "../providers/registry";
 import type { ProviderId } from "../types/index";
 
@@ -13,17 +14,17 @@ const CONNECT_HINTS: Record<
 > = {
   github: {
     scopes: ["repo", "read:user"],
-    note: "Fine-grained token with Pull requests: Read is enough for listing.",
+    note: t("connectNoteGithub"),
     tokenPlaceholder: "github_pat_… or ghp_…"
   },
   gitlab: {
     scopes: ["read_api"],
-    note: "Read-only access to list merge requests. Stored only on this device.",
+    note: t("connectNoteGitlab"),
     tokenPlaceholder: "glpat-xxxxxxxxxxxxxx"
   },
   bitbucket: {
     scopes: ["pullrequest:read"],
-    note: "App password with Pull requests: Read. Username + workspace required.",
+    note: t("connectNoteBitbucket"),
     tokenPlaceholder: "App password"
   }
 };
@@ -72,9 +73,9 @@ export function initConnectPanel(onConnected: () => void): ConnectPanel {
         <span class="connect-card-icon badge provider-${id}">${providerIconSvg(id)}</span>
         <span class="connect-card-body">
           <span class="connect-card-name">${esc(provider.label)}</span>
-          <span class="connect-card-status">Not connected</span>
+          <span class="connect-card-status">${t("connectNotConnected")}</span>
         </span>
-        <span class="connect-card-action">Connect</span>
+        <span class="connect-card-action">${t("connectAction")}</span>
       `;
       card.addEventListener("click", () => showForm(id));
       listEl.appendChild(card);
@@ -117,12 +118,12 @@ export function initConnectPanel(onConnected: () => void): ConnectPanel {
         <span class="connect-form-icon badge provider-${providerId}">${providerIconSvg(providerId)}</span>
         <div class="connect-form-title">
           <strong>${esc(provider.label)}</strong>
-          <span>Not connected</span>
+          <span>${t("connectNotConnected")}</span>
         </div>
       </div>
       ${extras}
       <label class="connect-field">
-        <span class="connect-field-label">${esc(tokenField?.label ?? "Token")} *</span>
+        <span class="connect-field-label">${esc(tokenField?.label ?? t("connectTokenLabel"))} *</span>
         <input
           class="input"
           type="password"
@@ -133,14 +134,14 @@ export function initConnectPanel(onConnected: () => void): ConnectPanel {
         />
       </label>
       <a class="connect-docs" href="${esc(provider.tokenDocsUrl)}" target="_blank" rel="noopener">
-        Create a read-only token →
+        ${t("connectDocs")}
       </a>
       <div class="connect-scopes card">
-        <p class="connect-scopes-title">Required scopes</p>
+        <p class="connect-scopes-title">${t("connectScopesTitle")}</p>
         <div class="connect-scopes-tags">${scopeTags}</div>
         <p class="connect-scopes-note">${esc(hints.note)}</p>
       </div>
-      <button type="submit" class="btn btn-primary connect-submit">Connect ${esc(provider.label)}</button>
+      <button type="submit" class="btn btn-primary connect-submit">${esc(t("connectSubmit", provider.label))}</button>
     `;
 
     formEl.querySelector<HTMLInputElement>('input[name="token"]')?.focus();
@@ -183,7 +184,7 @@ async function submitConnect(
     const data = new FormData(form);
     const token = String(data.get("token") ?? "").trim();
     if (!token) {
-      showError("Token is required.");
+      showError(t("connectTokenRequired"));
       return;
     }
 
@@ -198,7 +199,7 @@ async function submitConnect(
       }
       const value = String(data.get(field.key) ?? "").trim();
       if (field.required && !value) {
-        showError(`${field.label} is required.`);
+        showError(t("connectFieldRequired", field.label));
         return;
       }
       account[field.key] = value;
@@ -212,7 +213,7 @@ async function submitConnect(
     await chrome.runtime.sendMessage({ type: "SYNC_NOW" });
 
     if (!granted) {
-      showError("Saved, but self-hosted host access was denied.");
+      showError(t("hostAccessDenied"));
       return;
     }
 

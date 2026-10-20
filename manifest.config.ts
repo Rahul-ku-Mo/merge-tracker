@@ -1,19 +1,22 @@
 import { defineManifest } from "@crxjs/vite-plugin";
 import packageJson from "./package.json";
 
-const { version, description } = packageJson;
+const { version } = packageJson;
 
 /**
  * Extension manifest (source of truth for Chrome).
  *
  * CRXJS reads this at build time, bundles every referenced file (HTML, TS,
  * CSS, icons), and writes a final manifest + assets into dist/.
+ *
+ * name/description/title use __MSG_*__ keys from public/_locales/.
  */
 export default defineManifest({
   manifest_version: 3,
-  name: "MR - Merge Requests Tracker",
+  default_locale: "en",
+  name: "__MSG_extName__",
   version,
-  description,
+  description: "__MSG_extDescription__",
   author: {
     email: "rajamohanty12345@gmail.com",
   },
@@ -24,7 +27,7 @@ export default defineManifest({
   },
   action: {
     default_popup: "src/popup/popup.html",
-    default_title: "MR - Merge Requests Tracker",
+    default_title: "__MSG_extName__",
   },
   background: {
     service_worker: "src/background/service-worker.ts",

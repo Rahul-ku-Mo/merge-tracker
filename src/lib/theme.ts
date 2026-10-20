@@ -1,7 +1,14 @@
 import type { ThemeMode } from "../types/index";
+import { t } from "./i18n";
 
 /** Mode cycle order for the toggle button. */
 const MODE_CYCLE: ThemeMode[] = ["system", "light", "dark"];
+
+const MODE_LABEL_KEY: Record<ThemeMode, string> = {
+  system: "modeSystem",
+  light: "modeLight",
+  dark: "modeDark"
+};
 
 const darkQuery = (): MediaQueryList | undefined =>
   globalThis.matchMedia?.("(prefers-color-scheme: dark)");
@@ -23,7 +30,7 @@ export function applyMode(mode: ThemeMode): void {
   root.dataset.modePref = mode;
   document
     .querySelectorAll<HTMLElement>("#mode-toggle")
-    .forEach((el) => el.setAttribute("aria-label", `Theme mode: ${mode}`));
+    .forEach((el) => el.setAttribute("aria-label", t("themeModeAria", [t(MODE_LABEL_KEY[mode])])));
 }
 
 interface ModeControlOptions {

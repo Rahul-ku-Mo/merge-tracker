@@ -1,5 +1,6 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
+import { applyI18n, stateLabel, t } from "../lib/i18n";
 import { getProvider } from "../providers/registry";
 import { initModeControl } from "../lib/theme";
 import { hydrateIcons } from "../lib/icons";
@@ -14,10 +15,10 @@ const newProviderSelect = requireSelect("new-provider");
 const saveStatus = requireElement<HTMLSpanElement>("save-status");
 
 const SCOPES: { value: MrScope; label: string }[] = [
-  { value: "assigned_to_me", label: "Assigned to me" },
-  { value: "created_by_me", label: "Created by me" },
-  { value: "needs_my_review", label: "Needs my review" },
-  { value: "all", label: "All I'm involved in" }
+  { value: "assigned_to_me", label: t("scopeAssigned") },
+  { value: "created_by_me", label: t("scopeCreated") },
+  { value: "needs_my_review", label: t("scopeReview") },
+  { value: "all", label: t("scopeAll") }
 ];
 
 const STATES: NormalizedState[] = ["open", "merged", "closed"];
@@ -25,6 +26,7 @@ const STATES: NormalizedState[] = ["open", "merged", "closed"];
 let accounts: Account[] = [];
 
 async function load(): Promise<void> {
+  applyI18n();
   hydrateIcons();
   const config = await getConfig();
   initModeControl({
@@ -83,7 +85,7 @@ function accountCard(account: Account): string {
     (state) => `
       <label class="check-row">
         <input type="checkbox" data-state="${state}"${account.states.includes(state) ? " checked" : ""} />
-        ${state}
+        ${stateLabel(state)}
       </label>`
   ).join("");
 
@@ -91,28 +93,28 @@ function accountCard(account: Account): string {
     <div class="account-card card" data-id="${esc(account.id)}">
       <div class="account-head">
         <div class="account-title">
-          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="Account color" aria-label="Account color" />
+          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="${t("accountColor")}" aria-label="${t("accountColor")}" />
           <span class="badge provider-${account.provider}">${esc(provider.label)}</span>
-          <input class="input account-label" data-field="label" value="${esc(account.label)}" placeholder="Label" />
+          <input class="input account-label" data-field="label" value="${esc(account.label)}" placeholder="${t("labelPlaceholder")}" />
         </div>
         <div class="account-head-actions">
           <label class="check-row">
-            <input type="checkbox" data-field="enabled"${account.enabled ? " checked" : ""} /> Enabled
+            <input type="checkbox" data-field="enabled"${account.enabled ? " checked" : ""} /> ${t("enabled")}
           </label>
-          <button type="button" class="btn btn-sm" data-remove="${esc(account.id)}">Remove</button>
+          <button type="button" class="btn btn-sm" data-remove="${esc(account.id)}">${t("remove")}</button>
         </div>
       </div>
       ${fields}
       <p class="hint">
-        <a href="${esc(provider.tokenDocsUrl)}" target="_blank" rel="noopener">How to create a read-only token</a>
+        <a href="${esc(provider.tokenDocsUrl)}" target="_blank" rel="noopener">${t("tokenHowTo")}</a>
       </p>
       <div class="account-filters">
         <label class="field-label">
-          Scope
+          ${t("scope")}
           <select class="select" data-field="scope">${scopeOptions}</select>
         </label>
         <div>
-          <p class="hint">States:</p>
+          <p class="hint">${t("statesLabel")}</p>
           <div class="checks">${stateChecks}</div>
         </div>
       </div>
@@ -173,14 +175,14 @@ form.addEventListener("submit", (e) => {
 });
 
 async function save(): Promise<void> {
-  saveStatus.textContent = "Saving…";
+  saveStatus.textContent = t("saving");
   saveStatus.classList.remove("error");
 
   const collected = collectAccounts();
 
   const broken = collected.find((a) => a.enabled && !a.token);
   if (broken) {
-    saveStatus.textContent = `"${broken.label}" needs a token.`;
+    saveStatus.textContent = t("needsToken", broken.label);
     saveStatus.classList.add("error");
     return;
   }
@@ -211,12 +213,12 @@ async function save(): Promise<void> {
   await chrome.runtime.sendMessage({ type: "SYNC_NOW" });
 
   if (!granted) {
-    saveStatus.textContent = "Saved, but self-hosted host access was denied.";
+    saveStatus.textContent = t("hostAccessDenied");
     saveStatus.classList.add("error");
     return;
   }
 
-  saveStatus.textContent = "Saved. Background sync updated.";
+  saveStatus.textContent = t("saved");
   setTimeout(() => {
     saveStatus.textContent = "";
   }, 3000);

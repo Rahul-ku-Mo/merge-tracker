@@ -1,0 +1,347 @@
+{
+  "extName": {
+    "message": "MR - Merge Requests Tracker"
+  },
+  "extDescription": {
+    "message": "Track GitLab, GitHub, and Bitbucket merge/pull requests in one place and get notified when their status changes."
+  },
+  "optionsTitle": {
+    "message": "Merge Requests Tracker (MR) — Settings"
+  },
+  "popupTitle": {
+    "message": "Merge Requests Tracker (MR)"
+  },
+  "appName": {
+    "message": "Merge Requests Tracker"
+  },
+  "appNameMr": {
+    "message": "Merge Requests Tracker (MR)"
+  },
+  "appSub": {
+    "message": "Pull & merge requests"
+  },
+  "themeModeTitle": {
+    "message": "Theme mode (system / light / dark)"
+  },
+  "themeModeAria": {
+    "message": "Theme mode: $1"
+  },
+  "modeSystem": {
+    "message": "system"
+  },
+  "modeLight": {
+    "message": "light"
+  },
+  "modeDark": {
+    "message": "dark"
+  },
+  "syncNow": {
+    "message": "Sync"
+  },
+  "fetchLatest": {
+    "message": "Fetch latest"
+  },
+  "loading": {
+    "message": "Loading…"
+  },
+  "syncing": {
+    "message": "Syncing…"
+  },
+  "connectHeading": {
+    "message": "Connect a provider"
+  },
+  "connectLead": {
+    "message": "Pick GitHub, GitLab, or Bitbucket and paste a read-only token."
+  },
+  "connectBack": {
+    "message": "All providers"
+  },
+  "connectNotConnected": {
+    "message": "Not connected"
+  },
+  "connectAction": {
+    "message": "Connect"
+  },
+  "connectSubmit": {
+    "message": "Connect $1"
+  },
+  "connectDocs": {
+    "message": "Create a read-only token →"
+  },
+  "connectScopesTitle": {
+    "message": "Required scopes"
+  },
+  "connectNoteGithub": {
+    "message": "Fine-grained token with Pull requests: Read is enough for listing."
+  },
+  "connectNoteGitlab": {
+    "message": "Read-only access to list merge requests. Stored only on this device."
+  },
+  "connectNoteBitbucket": {
+    "message": "App password with Pull requests: Read. Username + workspace required."
+  },
+  "connectTokenLabel": {
+    "message": "Token"
+  },
+  "connectTokenRequired": {
+    "message": "Token is required."
+  },
+  "connectFieldRequired": {
+    "message": "$1 is required."
+  },
+  "hostAccessDenied": {
+    "message": "Saved, but self-hosted host access was denied."
+  },
+  "filterProject": {
+    "message": "Project"
+  },
+  "filterState": {
+    "message": "State"
+  },
+  "filterAllProjects": {
+    "message": "All projects"
+  },
+  "stateAll": {
+    "message": "All"
+  },
+  "stateOpen": {
+    "message": "Open"
+  },
+  "stateMerged": {
+    "message": "Merged"
+  },
+  "stateClosed": {
+    "message": "Closed"
+  },
+  "sortNewest": {
+    "message": "Sort: newest first"
+  },
+  "sortOldest": {
+    "message": "Sort: oldest first"
+  },
+  "openAllTabs": {
+    "message": "Open all in tabs"
+  },
+  "showAll": {
+    "message": "show all"
+  },
+  "mutedOne": {
+    "message": "1 project muted"
+  },
+  "mutedMany": {
+    "message": "$1 projects muted"
+  },
+  "emptyNoMrTitle": {
+    "message": "No merge requests"
+  },
+  "emptyNoMrDesc": {
+    "message": "Click Sync or check your filters in Settings."
+  },
+  "emptyNoMatchesTitle": {
+    "message": "No matches"
+  },
+  "emptyNoMatchesDesc": {
+    "message": "Try changing the filters above."
+  },
+  "statusNoMr": {
+    "message": "No merge requests yet. Click Sync."
+  },
+  "statusShown": {
+    "message": "$1 of $2 shown"
+  },
+  "requestsOne": {
+    "message": "1 request"
+  },
+  "requestsMany": {
+    "message": "$1 requests"
+  },
+  "statusFailed": {
+    "message": "$1 request(s) · $2 account(s) failed"
+  },
+  "justNow": {
+    "message": "just now"
+  },
+  "minutesAgo": {
+    "message": "$1m ago"
+  },
+  "hoursAgo": {
+    "message": "$1h ago"
+  },
+  "syncedAt": {
+    "message": "Synced $1"
+  },
+  "linkCopied": {
+    "message": "Link copied"
+  },
+  "copyFailed": {
+    "message": "Could not copy"
+  },
+  "copyLink": {
+    "message": "Copy link"
+  },
+  "muteProject": {
+    "message": "Mute this project"
+  },
+  "accountLabel": {
+    "message": "Account: $1"
+  },
+  "draft": {
+    "message": "draft"
+  },
+  "syncFailed": {
+    "message": "Sync failed"
+  },
+  "noConnectedAccounts": {
+    "message": "No connected accounts. Open Settings."
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "credit": {
+    "message": "crafted by Rahul KM"
+  },
+  "accounts": {
+    "message": "Accounts"
+  },
+  "add": {
+    "message": "Add"
+  },
+  "providerAria": {
+    "message": "Provider"
+  },
+  "accountsEmpty": {
+    "message": "No accounts yet. Pick a provider above and click Add."
+  },
+  "optionsLead": {
+    "message": "Connect one or more accounts. Each uses a <strong>read-only</strong> token / app password stored only on this device."
+  },
+  "syncSection": {
+    "message": "Sync & notifications"
+  },
+  "syncEvery": {
+    "message": "Sync every (minutes)"
+  },
+  "notifyNew": {
+    "message": "Notify on new PR/MR"
+  },
+  "notifyStatus": {
+    "message": "Notify on status change"
+  },
+  "popupSection": {
+    "message": "Popup display"
+  },
+  "popupHint": {
+    "message": "Hide controls you don't use to reclaim space in the popup."
+  },
+  "dispTheme": {
+    "message": "Light/dark switcher"
+  },
+  "dispFilters": {
+    "message": "Project & state filters"
+  },
+  "dispSort": {
+    "message": "Sort button"
+  },
+  "dispOpenAll": {
+    "message": "\"Open all in tabs\" button"
+  },
+  "dispCredit": {
+    "message": "\"Crafted by Rahul KM\" credit"
+  },
+  "saveChanges": {
+    "message": "Save changes"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "enabled": {
+    "message": "Enabled"
+  },
+  "labelPlaceholder": {
+    "message": "Label"
+  },
+  "accountColor": {
+    "message": "Account color"
+  },
+  "tokenHowTo": {
+    "message": "How to create a read-only token"
+  },
+  "scope": {
+    "message": "Scope"
+  },
+  "statesLabel": {
+    "message": "States:"
+  },
+  "scopeAssigned": {
+    "message": "Assigned to me"
+  },
+  "scopeCreated": {
+    "message": "Created by me"
+  },
+  "scopeReview": {
+    "message": "Needs my review"
+  },
+  "scopeAll": {
+    "message": "All I'm involved in"
+  },
+  "saving": {
+    "message": "Saving…"
+  },
+  "needsToken": {
+    "message": "\"$1\" needs a token."
+  },
+  "saved": {
+    "message": "Saved. Background sync updated."
+  },
+  "notifyNewTitle": {
+    "message": "New PR · $1"
+  },
+  "notifyStatusTitle": {
+    "message": "Status changed"
+  },
+  "fieldHost": {
+    "message": "Host"
+  },
+  "fieldApiHost": {
+    "message": "API host"
+  },
+  "fieldOrgFilter": {
+    "message": "Org filter (optional)"
+  },
+  "fieldUsername": {
+    "message": "Username"
+  },
+  "fieldWorkspace": {
+    "message": "Workspace"
+  },
+  "fieldToken": {
+    "message": "Personal access token"
+  },
+  "fieldAppPassword": {
+    "message": "App password"
+  },
+  "hintGitlabHost": {
+    "message": "Leave blank for gitlab.com, or set your self-hosted URL."
+  },
+  "hintGitlabToken": {
+    "message": "Create with the read_api scope."
+  },
+  "hintGithubHost": {
+    "message": "Leave blank for github.com, or use https://HOST/api/v3 for Enterprise."
+  },
+  "hintGithubOrg": {
+    "message": "Limit results to one organization."
+  },
+  "hintGithubToken": {
+    "message": "Fine-grained token with Pull requests: Read."
+  },
+  "hintBitbucketUsername": {
+    "message": "Used with the app password for Basic auth."
+  },
+  "hintBitbucketWorkspace": {
+    "message": "Bitbucket requires a workspace to list your PRs."
+  },
+  "hintBitbucketToken": {
+    "message": "Create one with the Pull requests: Read scope."
+  }
+}

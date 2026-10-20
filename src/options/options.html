@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Merge Requests Tracker (MR) — Settings</title>
+    <title data-i18n="optionsTitle">Merge Requests Tracker (MR) — Settings</title>
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
@@ -14,8 +14,8 @@
               <span data-icon="settings" data-size="22"></span>
             </span>
             <div>
-              <h1>Settings</h1>
-              <p class="settings-sub">Merge Requests Tracker (MR)</p>
+              <h1 data-i18n="settings">Settings</h1>
+              <p class="settings-sub" data-i18n="appNameMr">Merge Requests Tracker (MR)</p>
             </div>
           </div>
           <div class="theme-controls">
@@ -23,6 +23,7 @@
               id="mode-toggle"
               class="icon-btn"
               type="button"
+              data-i18n-title="themeModeTitle"
               title="Theme mode (system / light / dark)"
               aria-label="Theme mode: system"
             >
@@ -33,7 +34,7 @@
           </div>
         </header>
 
-        <p class="lead">
+        <p class="lead" data-i18n-html="optionsLead">
           Connect one or more accounts. Each uses a <strong>read-only</strong>
           token / app password stored only on this device.
         </p>
@@ -41,29 +42,29 @@
         <form id="config-form">
           <section class="form-section card">
             <div class="section-head">
-              <h2 class="section-title">Accounts</h2>
+              <h2 class="section-title" data-i18n="accounts">Accounts</h2>
               <div class="add-account">
-                <select class="select" id="new-provider" aria-label="Provider">
+                <select class="select" id="new-provider" data-i18n-aria="providerAria" aria-label="Provider">
                   <option value="gitlab">GitLab</option>
                   <option value="github">GitHub</option>
                   <option value="bitbucket">Bitbucket</option>
                 </select>
                 <button type="button" class="btn" id="add-account">
                   <span data-icon="plus" data-size="16"></span>
-                  Add
+                  <span data-i18n="add">Add</span>
                 </button>
               </div>
             </div>
             <div id="accounts"></div>
-            <p id="accounts-empty" class="hint" hidden>
+            <p id="accounts-empty" class="hint" hidden data-i18n="accountsEmpty">
               No accounts yet. Pick a provider above and click Add.
             </p>
           </section>
 
           <section class="form-section card">
-            <h2 class="section-title">Sync &amp; notifications</h2>
+            <h2 class="section-title" data-i18n="syncSection">Sync &amp; notifications</h2>
             <label class="field-label">
-              Sync every (minutes)
+              <span data-i18n="syncEvery">Sync every (minutes)</span>
               <input
                 class="input"
                 type="number"
@@ -75,51 +76,51 @@
             </label>
             <div class="checks">
               <label class="check-row">
-                <input type="checkbox" id="notifyNewMr" /> Notify on new PR/MR
+                <input type="checkbox" id="notifyNewMr" /> <span data-i18n="notifyNew">Notify on new PR/MR</span>
               </label>
               <label class="check-row">
                 <input type="checkbox" id="notifyStatusChange" checked />
-                Notify on status change
+                <span data-i18n="notifyStatus">Notify on status change</span>
               </label>
             </div>
           </section>
 
           <section class="form-section card">
-            <h2 class="section-title">Popup display</h2>
-            <p class="hint">
+            <h2 class="section-title" data-i18n="popupSection">Popup display</h2>
+            <p class="hint" data-i18n="popupHint">
               Hide controls you don't use to reclaim space in the popup.
             </p>
             <div class="checks">
               <label class="check-row">
                 <input type="checkbox" id="dispThemeControls" checked />
-                Light/dark switcher
+                <span data-i18n="dispTheme">Light/dark switcher</span>
               </label>
               <label class="check-row">
                 <input type="checkbox" id="dispFilters" checked />
-                Project &amp; state filters
+                <span data-i18n="dispFilters">Project &amp; state filters</span>
               </label>
               <label class="check-row">
                 <input type="checkbox" id="dispSort" checked />
-                Sort button
+                <span data-i18n="dispSort">Sort button</span>
               </label>
               <label class="check-row">
                 <input type="checkbox" id="dispOpenAll" checked />
-                "Open all in tabs" button
+                <span data-i18n="dispOpenAll">"Open all in tabs" button</span>
               </label>
               <label class="check-row">
                 <input type="checkbox" id="dispCredit" checked />
-                "Crafted by Rahul KM" credit
+                <span data-i18n="dispCredit">"Crafted by Rahul KM" credit</span>
               </label>
             </div>
           </section>
 
           <div class="actions">
-            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="submit" class="btn btn-primary" data-i18n="saveChanges">Save changes</button>
             <span id="save-status" class="save-status" role="status"></span>
           </div>
         </form>
 
-        <p class="credit">crafted by Rahul KM</p>
+        <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
       </main>
     </div>
     <script type="module" src="./options.ts"></script>
