@@ -403,5 +403,35 @@
   },
   "blockThreads": {
     "message": "Unresolved threads"
+  },
+  "notifyReviewRequested": {
+    "message": "Notify when a review is requested from me"
+  },
+  "notifyCiFailed": {
+    "message": "Notify when CI fails on my MR"
+  },
+  "notifyDigest": {
+    "message": "Batch notifications into one summary"
+  },
+  "quietHours": {
+    "message": "Quiet hours (held and sent after)"
+  },
+  "quietFrom": {
+    "message": "From (hour, 0-23)"
+  },
+  "quietTo": {
+    "message": "To (hour, 0-23)"
+  },
+  "notifyReviewTitle": {
+    "message": "Review requested"
+  },
+  "notifyCiTitle": {
+    "message": "CI failed on your MR"
+  },
+  "digestTitle": {
+    "message": "$1 MR updates"
+  },
+  "digestMore": {
+    "message": "+$1 more"
   }
 }

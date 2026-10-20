@@ -39,6 +39,12 @@ async function load(): Promise<void> {
   requireInput("syncIntervalMinutes").value = String(config.syncIntervalMinutes);
   requireInput("notifyNewMr").checked = config.notifyOn.newMr;
   requireInput("notifyStatusChange").checked = config.notifyOn.statusChange;
+  requireInput("notifyReviewRequested").checked = config.notifyOn.reviewRequested;
+  requireInput("notifyCiFailed").checked = config.notifyOn.ciFailed;
+  requireInput("notifyDigest").checked = config.digestNotifications;
+  requireInput("quietEnabled").checked = config.quietHours.enabled;
+  requireInput("quietStart").value = String(config.quietHours.start);
+  requireInput("quietEnd").value = String(config.quietHours.end);
   requireInput("dispThemeControls").checked = config.display.themeControls;
   requireInput("dispFilters").checked = config.display.filters;
   requireInput("dispSort").checked = config.display.sort;
@@ -249,7 +255,15 @@ async function save(): Promise<void> {
     notifyOn: {
       newMr: requireInput("notifyNewMr").checked,
       statusChange: requireInput("notifyStatusChange").checked,
-      newComment: false
+      newComment: false,
+      reviewRequested: requireInput("notifyReviewRequested").checked,
+      ciFailed: requireInput("notifyCiFailed").checked
+    },
+    digestNotifications: requireInput("notifyDigest").checked,
+    quietHours: {
+      enabled: requireInput("quietEnabled").checked,
+      start: clampHour(Number(requireInput("quietStart").value)),
+      end: clampHour(Number(requireInput("quietEnd").value))
     },
     display: {
       themeControls: requireInput("dispThemeControls").checked,
@@ -285,3 +299,8 @@ function esc(str: string): string {
 }
 
 void load();
+
+/** Hours are local 0-23. Anything else falls back to midnight. */
+function clampHour(value: number): number {
+  return Number.isInteger(value) && value >= 0 && value <= 23 ? value : 0;
+}

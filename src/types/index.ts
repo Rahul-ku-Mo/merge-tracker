@@ -20,6 +20,17 @@ export interface NotifyOnConfig {
   newMr: boolean;
   statusChange: boolean;
   newComment: boolean;
+  /** A review was newly requested from the signed-in user. */
+  reviewRequested: boolean;
+  /** CI on an MR you authored went from passing/running to failing. */
+  ciFailed: boolean;
+}
+
+/** Notifications are held and sent after the window ends. Hours are local time, 0-23. */
+export interface QuietHours {
+  enabled: boolean;
+  start: number;
+  end: number;
 }
 
 /**
@@ -113,6 +124,9 @@ export interface ExtensionConfig {
   accounts: Account[];
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
+  quietHours: QuietHours;
+  /** Send one summary notification per batch instead of one per event. */
+  digestNotifications: boolean;
   /** Repos (full names) the user muted: hidden from list, badge, notifications. */
   mutedRepos: string[];
   mode: ThemeMode;

@@ -403,5 +403,35 @@
   },
   "blockThreads": {
     "message": "未解決のスレッド"
+  },
+  "notifyReviewRequested": {
+    "message": "自分にレビュー依頼が来たら通知"
+  },
+  "notifyCiFailed": {
+    "message": "自分のMRでCIが失敗したら通知"
+  },
+  "notifyDigest": {
+    "message": "通知を1件のまとめにする"
+  },
+  "quietHours": {
+    "message": "おやすみ時間（保留して後で送信）"
+  },
+  "quietFrom": {
+    "message": "開始（時、0〜23）"
+  },
+  "quietTo": {
+    "message": "終了（時、0〜23）"
+  },
+  "notifyReviewTitle": {
+    "message": "レビュー依頼"
+  },
+  "notifyCiTitle": {
+    "message": "自分のMRでCI失敗"
+  },
+  "digestTitle": {
+    "message": "MRの更新 $1 件"
+  },
+  "digestMore": {
+    "message": "ほか $1 件"
   }
 }

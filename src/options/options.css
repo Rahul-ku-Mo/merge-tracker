@@ -285,3 +285,10 @@ h1 {
 .save-status.error {
   color: hsl(var(--destructive));
 }
+
+/* Quiet-hours start/end inputs sit side by side under the quiet-hours toggle. */
+.quiet-hours-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
