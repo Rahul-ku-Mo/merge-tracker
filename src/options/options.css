@@ -23,7 +23,9 @@ body {
 
 .settings-card {
   width: 100%;
+  height: 100%;
   max-width: 720px;
+  overflow-y: auto;
   margin: 0 auto;
   padding: 28px;
   box-shadow: var(--shadow-lg);
@@ -204,23 +206,27 @@ h1 {
   max-width: 220px;
 }
 
-.account-color {
-  width: 30px;
-  height: 30px;
+.account-title .badge {
   flex-shrink: 0;
-  padding: 2px;
-  border: var(--bw) solid hsl(var(--ink));
-  border-radius: var(--radius);
-  background: hsl(var(--card));
-  cursor: pointer;
+  height: 26px;
+  padding: 0 8px;
 }
 
-.account-color::-webkit-color-swatch-wrapper {
-  padding: 0;
+.account-title .badge svg {
+  display: block;
+  width: 16px;
+  height: 16px;
 }
 
-.account-color::-webkit-color-swatch {
-  border: none;
+/* The browser's default link blue is unreadable on the dark background. */
+.account-card a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.account-card a:hover {
+  color: hsl(var(--foreground));
 }
 
 .account-head-actions {

@@ -308,6 +308,9 @@
   "fieldOrgFilter": {
     "message": "組織フィルター（任意）"
   },
+  "orgLoadFailed": {
+    "message": "組織を読み込めませんでした。トークンを確認してください。"
+  },
   "fieldUsername": {
     "message": "ユーザー名"
   },

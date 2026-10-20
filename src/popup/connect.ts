@@ -35,19 +35,20 @@ export interface ConnectPanel {
   hide: () => void;
 }
 
+/** Returns the element or throws, so callers get a non-null type. */
+function required<T>(el: T | null, selector: string): T {
+  if (!el) throw new Error(`connect panel element missing: ${selector}`);
+  return el;
+}
+
 export function initConnectPanel(onConnected: () => void): ConnectPanel {
-  const root = document.getElementById("connect-panel");
-  if (!root) throw new Error("connect-panel element missing");
+  const root = required(document.getElementById("connect-panel"), "#connect-panel");
 
-  const listEl = root.querySelector<HTMLElement>("#connect-list");
-  const formWrap = root.querySelector<HTMLElement>("#connect-form-wrap");
-  const formEl = root.querySelector<HTMLFormElement>("#connect-form");
-  const backBtn = root.querySelector<HTMLButtonElement>("#connect-back");
-  const errorEl = root.querySelector<HTMLElement>("#connect-error");
-
-  if (!listEl || !formWrap || !formEl || !backBtn || !errorEl) {
-    throw new Error("connect panel elements missing");
-  }
+  const listEl = required(root.querySelector<HTMLElement>("#connect-list"), "#connect-list");
+  const formWrap = required(root.querySelector<HTMLElement>("#connect-form-wrap"), "#connect-form-wrap");
+  const formEl = required(root.querySelector<HTMLFormElement>("#connect-form"), "#connect-form");
+  const backBtn = required(root.querySelector<HTMLButtonElement>("#connect-back"), "#connect-back");
+  const errorEl = required(root.querySelector<HTMLElement>("#connect-error"), "#connect-error");
 
   let selected: ProviderId | null = null;
 

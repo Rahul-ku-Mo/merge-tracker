@@ -308,6 +308,9 @@
   "fieldOrgFilter": {
     "message": "Org filter (optional)"
   },
+  "orgLoadFailed": {
+    "message": "Could not load organizations. Check the token."
+  },
   "fieldUsername": {
     "message": "Username"
   },

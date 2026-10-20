@@ -4,6 +4,7 @@ import { applyI18n, stateLabel, t } from "../lib/i18n";
 import { getProvider } from "../providers/registry";
 import { initModeControl } from "../lib/theme";
 import { hydrateIcons } from "../lib/icons";
+import { providerIconSvg } from "../lib/provider-icons";
 import { ensureHostPermissions } from "../lib/permissions";
 import type { Account, MrScope, NormalizedState, ProviderId } from "../types/index";
 
@@ -52,7 +53,50 @@ function render(): void {
   for (const account of accounts) {
     accountsEl.insertAdjacentHTML("beforeend", accountCard(account));
   }
+  accountsEl.querySelectorAll<HTMLDivElement>(".account-card").forEach((card) => {
+    void refreshWorkspaces(card);
+  });
 }
+
+/** Dropdown options: "N/A" (no filter) first, then the orgs, keeping any saved value. */
+function workspaceOptions(names: string[], selected: string): string {
+  const all = selected && !names.includes(selected) ? [selected, ...names] : names;
+  const options = all.map(
+    (name) => `<option value="${esc(name)}"${name === selected ? " selected" : ""}>${esc(name)}</option>`
+  );
+  return [`<option value="">N/A</option>`, ...options].join("");
+}
+
+/** Fill a card's org dropdown from the token currently typed in that card. */
+async function refreshWorkspaces(card: HTMLDivElement): Promise<void> {
+  const provider = getProvider(card.dataset.provider as ProviderId);
+  const select = card.querySelector<HTMLSelectElement>('select[data-field="workspace"]');
+  const status = card.querySelector<HTMLElement>(".org-status");
+  const token = card.querySelector<HTMLInputElement>('[data-field="token"]')?.value.trim() ?? "";
+  const host = card.querySelector<HTMLInputElement>('[data-field="host"]')?.value.trim() ?? "";
+  if (!select || !provider.listWorkspaces || !token) return;
+
+  const selected = select.value;
+  select.disabled = true;
+  try {
+    const names = await provider.listWorkspaces(token, host);
+    select.innerHTML = workspaceOptions(names, selected);
+    if (status) status.textContent = "";
+  } catch {
+    select.innerHTML = workspaceOptions([], selected);
+    if (status) status.textContent = t("orgLoadFailed");
+  } finally {
+    select.disabled = false;
+  }
+}
+
+accountsEl.addEventListener("change", (e) => {
+  const target = e.target as HTMLElement;
+  if (target.dataset.field === "token" || target.dataset.field === "host") {
+    const card = target.closest<HTMLDivElement>(".account-card");
+    if (card) void refreshWorkspaces(card);
+  }
+});
 
 function accountCard(account: Account): string {
   const provider = getProvider(account.provider);
@@ -60,6 +104,15 @@ function accountCard(account: Account): string {
   const fields = provider.fields
     .map((field) => {
       const value = (account[field.key] ?? "") as string;
+      if (field.kind === "select") {
+        return `
+        <label class="field-label">
+          ${field.label}
+          <select class="select" data-field="${field.key}">${workspaceOptions([], value)}</select>
+          <span class="hint org-status"></span>
+          ${field.hint ? `<span class="hint">${esc(field.hint)}</span>` : ""}
+        </label>`;
+      }
       return `
         <label class="field-label">
           ${field.label}${field.required ? " *" : ""}
@@ -90,11 +143,10 @@ function accountCard(account: Account): string {
   ).join("");
 
   return `
-    <div class="account-card card" data-id="${esc(account.id)}">
+    <div class="account-card card" data-id="${esc(account.id)}" data-provider="${account.provider}">
       <div class="account-head">
         <div class="account-title">
-          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="${t("accountColor")}" aria-label="${t("accountColor")}" />
-          <span class="badge provider-${account.provider}">${esc(provider.label)}</span>
+          <span class="badge provider-${account.provider}" title="${esc(provider.label)}">${providerIconSvg(account.provider)}</span>
           <input class="input account-label" data-field="label" value="${esc(account.label)}" placeholder="${t("labelPlaceholder")}" />
         </div>
         <div class="account-head-actions">
@@ -148,7 +200,7 @@ function collectAccounts(): Account[] {
         "assigned_to_me") as MrScope,
       states: states.length ? states : ["open"],
       enabled: card.querySelector<HTMLInputElement>('[data-field="enabled"]')?.checked ?? true,
-      color: field("color") || existing?.color || "#e8590c"
+      color: existing?.color || "#e8590c"
     };
   });
 }

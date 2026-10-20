@@ -19,6 +19,8 @@ export interface ProviderField {
   required: boolean;
   /** password input (token) vs text. */
   secret?: boolean;
+  /** "select" renders a dropdown filled by Provider.listWorkspaces. */
+  kind?: "select";
   hint?: string;
 }
 
@@ -31,6 +33,8 @@ export interface Provider {
   tokenDocsUrl: string;
   /** Drives the dynamic options form. */
   fields: ProviderField[];
+  /** Organizations/workspaces the token can see, for the workspace dropdown. */
+  listWorkspaces?(token: string, host: string): Promise<string[]>;
   /** Fetch + normalize the account's merge/pull requests. */
   fetchMergeRequests(account: Account): Promise<MergeRequest[]>;
 }

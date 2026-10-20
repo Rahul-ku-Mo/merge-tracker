@@ -54,6 +54,7 @@ export const githubProvider: Provider = {
       label: t("fieldOrgFilter"),
       placeholder: "my-org",
       required: false,
+      kind: "select",
       hint: t("hintGithubOrg")
     },
     {
@@ -65,6 +66,25 @@ export const githubProvider: Provider = {
       hint: t("hintGithubToken")
     }
   ],
+
+  async listWorkspaces(token: string, host: string): Promise<string[]> {
+    const base = normalizeHost(host) || DEFAULT_HOST;
+    const res = await fetch(`${base}/user/orgs?per_page=100`, {
+      headers: {
+        Authorization: `Bearer ${token.trim()}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+    if (!res.ok) {
+      throw new ProviderApiError(`GitHub API error (${res.status})`, res.status);
+    }
+    const orgs = (await res.json()) as { login?: string }[];
+    return orgs
+      .map((org) => org.login ?? "")
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+  },
 
   async fetchMergeRequests(account: Account): Promise<MergeRequest[]> {
     const token = account.token.trim();

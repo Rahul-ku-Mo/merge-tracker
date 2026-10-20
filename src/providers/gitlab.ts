@@ -108,10 +108,11 @@ async function fetchByState(
     sort: "desc"
   });
 
+  // GitLab defaults to scope=created_by_me when omitted, which would hide
+  // private-project MRs authored by others. Always send an explicit scope.
+  params.set("scope", scope === "assigned_to_me" || scope === "created_by_me" ? scope : "all");
   if (scope === "needs_my_review" && reviewerUsername) {
     params.set("reviewer_username", reviewerUsername);
-  } else if (scope !== "all" && scope !== "needs_my_review") {
-    params.set("scope", scope);
   }
 
   const res = await fetch(`${base}/api/v4/merge_requests?${params}`, {
