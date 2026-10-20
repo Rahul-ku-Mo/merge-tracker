@@ -37,6 +37,11 @@ export interface Provider {
   listWorkspaces?(token: string, host: string): Promise<string[]>;
   /** Fetch + normalize the account's merge/pull requests. */
   fetchMergeRequests(account: Account): Promise<MergeRequest[]>;
+  /**
+   * Optional per-MR detail call (CI, approvals). Costs extra requests, so sync
+   * only runs it for open MRs. Throwing leaves the fields unknown.
+   */
+  enrichMergeRequest?(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>>;
 }
 
 export function normalizeHost(host: string): string {

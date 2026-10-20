@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -77,8 +77,60 @@ export const gitlabProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+    const token = account.token.trim();
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    // The URL-encoded "group/project" path works as the project identifier.
+    const mrUrl = `${base}/api/v4/projects/${encodeURIComponent(mr.repo)}/merge_requests/${mr.number}`;
+
+    const [detail, approvals] = await Promise.all([
+      getGitLabJson<GitLabMrDetail>(mrUrl, token),
+      getGitLabJson<GitLabApprovals>(`${mrUrl}/approvals`, token).catch(() => undefined)
+    ]);
+
+    return {
+      ci: gitlabCi(detail.head_pipeline?.status ?? undefined),
+      approvals: approvals?.approved_by?.length
+    };
   }
 };
+
+interface GitLabMrDetail {
+  head_pipeline?: { status?: string } | null;
+}
+
+interface GitLabApprovals {
+  approved_by?: unknown[];
+}
+
+/** GitLab pipeline status → normalized CI status. */
+function gitlabCi(status: string | undefined): CiStatus {
+  switch (status) {
+    case "success":
+      return "pass";
+    case "failed":
+      return "fail";
+    case "running":
+    case "pending":
+    case "created":
+    case "preparing":
+    case "waiting_for_resource":
+    case "scheduled":
+      return "pending";
+    default:
+      return "none";
+  }
+}
+
+async function getGitLabJson<T>(url: string, token: string): Promise<T> {
+  const res = await fetch(url, { headers: { "PRIVATE-TOKEN": token } });
+  if (!res.ok) {
+    throw new ProviderApiError(`GitLab API error (${res.status})`, res.status);
+  }
+  return (await res.json()) as T;
+}
 
 async function fetchUsername(base: string, token: string): Promise<string> {
   const res = await fetch(`${base}/api/v4/user`, {

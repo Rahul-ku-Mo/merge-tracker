@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, MrScope, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -109,8 +109,90 @@ export const githubProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+    const token = account.token.trim();
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const pullUrl = `${base}/repos/${mr.repo}/pulls/${mr.number}`;
+
+    const pull = await getGitHubJson<GitHubPullDetail>(pullUrl, token);
+    const sha = pull.head?.sha;
+    if (!sha) return {};
+
+    const [checks, status, reviews] = await Promise.all([
+      getGitHubJson<GitHubCheckRuns>(`${base}/repos/${mr.repo}/commits/${sha}/check-runs?per_page=100`, token),
+      getGitHubJson<GitHubCombinedStatus>(`${base}/repos/${mr.repo}/commits/${sha}/status`, token),
+      getGitHubJson<GitHubReview[]>(`${pullUrl}/reviews?per_page=100`, token)
+    ]);
+
+    return {
+      ci: githubCi(checks.check_runs ?? [], status),
+      approvals: countApprovals(reviews)
+    };
   }
 };
+
+interface GitHubPullDetail {
+  head?: { sha?: string };
+}
+
+interface GitHubCheckRuns {
+  check_runs?: { status: string; conclusion: string | null }[];
+}
+
+interface GitHubCombinedStatus {
+  state: string;
+  total_count: number;
+}
+
+interface GitHubReview {
+  user?: { login?: string };
+  state: string;
+}
+
+const FAILED_CONCLUSIONS = ["failure", "timed_out", "cancelled", "action_required", "startup_failure"];
+
+/** Check runs (Actions, apps) and legacy commit statuses combined into one CI state. */
+function githubCi(runs: NonNullable<GitHubCheckRuns["check_runs"]>, status: GitHubCombinedStatus): CiStatus {
+  const hasAny = runs.length > 0 || status.total_count > 0;
+  if (!hasAny) return "none";
+
+  const failed =
+    runs.some((r) => r.status === "completed" && FAILED_CONCLUSIONS.includes(r.conclusion ?? "")) ||
+    status.state === "failure" ||
+    status.state === "error";
+  if (failed) return "fail";
+
+  const pending = runs.some((r) => r.status !== "completed") || status.state === "pending";
+  return pending ? "pending" : "pass";
+}
+
+/** Count reviewers whose most recent approve/request-changes/dismiss is "APPROVED". */
+function countApprovals(reviews: GitHubReview[]): number {
+  const latest = new Map<string, string>();
+  for (const review of reviews) {
+    if (!review.user?.login) continue;
+    if (["APPROVED", "CHANGES_REQUESTED", "DISMISSED"].includes(review.state)) {
+      latest.set(review.user.login, review.state);
+    }
+  }
+  return [...latest.values()].filter((state) => state === "APPROVED").length;
+}
+
+async function getGitHubJson<T>(url: string, token: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    }
+  });
+  if (!res.ok) {
+    throw new ProviderApiError(`GitHub API error (${res.status})`, res.status);
+  }
+  return (await res.json()) as T;
+}
 
 async function search(
   base: string,

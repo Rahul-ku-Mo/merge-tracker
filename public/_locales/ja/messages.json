@@ -379,5 +379,17 @@
   },
   "kbdEsc": {
     "message": "閉じる、または検索をクリア"
+  },
+  "ciPass": {
+    "message": "CI 成功"
+  },
+  "ciFail": {
+    "message": "CI 失敗"
+  },
+  "ciPending": {
+    "message": "CI 実行中"
+  },
+  "approvalsLabel": {
+    "message": "承認: $1"
   }
 }

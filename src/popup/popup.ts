@@ -14,6 +14,7 @@ import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
 import type {
+  CiStatus,
   ExtensionConfig,
   MergeRequest,
   NormalizedState,
@@ -341,6 +342,8 @@ function itemHtml(mr: MergeRequest): string {
         ${providerBadge(mr.provider)}
         <span class="badge ${mr.state}">${stateLabel(mr.state)}</span>
         ${mr.draft ? `<span class="badge draft">${t("draft")}</span>` : ""}
+        ${ciDotHtml(mr)}
+        ${approvalsHtml(mr)}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
         <span class="mr-meta-sep">·</span>
@@ -349,6 +352,26 @@ function itemHtml(mr: MergeRequest): string {
     </li>
   `;
 }
+
+/** CI dot for open MRs with a known, non-empty pipeline result. */
+function ciDotHtml(mr: MergeRequest): string {
+  if (mr.state !== "open" || !mr.ci || mr.ci === "none") return "";
+  const label = t(CI_LABEL_KEY[mr.ci]);
+  return `<span class="ci-dot ci-${mr.ci}" title="${esc(label)}" role="img" aria-label="${esc(label)}"></span>`;
+}
+
+/** Approval count for open MRs whose detail call succeeded. */
+function approvalsHtml(mr: MergeRequest): string {
+  if (mr.state !== "open" || mr.approvals === undefined) return "";
+  const label = t("approvalsLabel", String(mr.approvals));
+  return `<span class="approvals" title="${esc(label)}" aria-label="${esc(label)}">✓ ${mr.approvals}</span>`;
+}
+
+const CI_LABEL_KEY: Record<Exclude<CiStatus, "none">, string> = {
+  pass: "ciPass",
+  fail: "ciFail",
+  pending: "ciPending"
+};
 
 function providerBadge(provider: MergeRequest["provider"]): string {
   const icon = providerIconSvg(provider);

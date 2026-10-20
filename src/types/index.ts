@@ -47,6 +47,12 @@ export interface Account {
   color: string;
 }
 
+/**
+ * Latest pipeline / check result for an MR's head commit.
+ * "none" = the provider reports no CI for it; undefined on the MR = not fetched.
+ */
+export type CiStatus = "pass" | "fail" | "pending" | "none";
+
 /** A single merge/pull request, normalized from any provider. */
 export interface MergeRequest {
   /** Stable unique key across providers/accounts. */
@@ -63,6 +69,16 @@ export interface MergeRequest {
   updatedAt: string;
   /** Draft / work-in-progress flag, when the provider exposes it cheaply. */
   draft: boolean;
+  /**
+   * Detail fields, filled by Provider.enrichMergeRequest for open MRs only.
+   * undefined = unknown (not fetched, or the detail call failed).
+   */
+  ci?: CiStatus;
+  /**
+   * Approval count. Meaning differs by provider: GitLab = approvals given;
+   * GitHub = reviewers whose latest review is "Approved"; Bitbucket = participants who approved.
+   */
+  approvals?: number;
 }
 
 /**

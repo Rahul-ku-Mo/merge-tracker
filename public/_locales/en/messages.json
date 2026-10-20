@@ -379,5 +379,17 @@
   },
   "kbdEsc": {
     "message": "Close, or clear search"
+  },
+  "ciPass": {
+    "message": "CI passing"
+  },
+  "ciFail": {
+    "message": "CI failing"
+  },
+  "ciPending": {
+    "message": "CI running"
+  },
+  "approvalsLabel": {
+    "message": "Approvals: $1"
   }
 }

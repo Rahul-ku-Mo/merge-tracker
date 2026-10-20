@@ -738,6 +738,33 @@ h1 {
   color: hsl(var(--muted-foreground));
 }
 
+/* CI dot: pass/fail/running for the MR's head pipeline. Shape + fill, not color alone. */
+.ci-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid hsl(var(--ink));
+  border-radius: 50%;
+}
+
+.ci-dot.ci-pass {
+  background: hsl(var(--success));
+}
+
+.ci-dot.ci-fail {
+  background: hsl(var(--destructive));
+}
+
+.ci-dot.ci-pending {
+  background: hsl(var(--card));
+  border-style: dashed;
+}
+
+.approvals {
+  font-weight: 700;
+  color: hsl(var(--success));
+}
+
 /* Provider chip = brand-colored square with the white logo mark. */
 .badge.mr-provider {
   padding: 2px 5px;

@@ -1,4 +1,4 @@
-import type { Account, MergeRequest, NormalizedState } from "../types/index";
+import type { Account, CiStatus, MergeRequest, NormalizedState } from "../types/index";
 import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
@@ -97,8 +97,45 @@ export const bitbucketProvider: Provider = {
     }
 
     return [...byKey.values()];
+  },
+
+  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+    const authHeader = buildAuthHeader(account);
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const prUrl = `${base}/repositories/${mr.repo}/pullrequests/${mr.number}`;
+
+    const pr = await fetchJson<BitbucketPrDetail>(prUrl, authHeader);
+    const hash = pr.source?.commit?.hash;
+    const statuses = hash
+      ? await fetchJson<BitbucketStatusPage>(
+          `${base}/repositories/${mr.repo}/commit/${hash}/statuses/build?pagelen=100`,
+          authHeader
+        )
+      : { values: [] };
+
+    return {
+      ci: bitbucketCi(statuses.values ?? []),
+      approvals: (pr.participants ?? []).filter((p) => p.approved).length
+    };
   }
 };
+
+interface BitbucketPrDetail {
+  source?: { commit?: { hash?: string } };
+  participants?: { approved?: boolean }[];
+}
+
+interface BitbucketStatusPage {
+  values?: { state: string }[];
+}
+
+/** Bitbucket Pipelines report commit build statuses; reduce them to one CI state. */
+function bitbucketCi(statuses: { state: string }[]): CiStatus {
+  if (!statuses.length) return "none";
+  if (statuses.some((s) => s.state === "FAILED" || s.state === "STOPPED")) return "fail";
+  if (statuses.some((s) => s.state === "INPROGRESS")) return "pending";
+  return statuses.every((s) => s.state === "SUCCESSFUL") ? "pass" : "pending";
+}
 
 function buildAuthHeader(account: Account): string {
   const username = account.username?.trim();

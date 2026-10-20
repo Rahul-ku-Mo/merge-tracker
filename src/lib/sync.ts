@@ -1,6 +1,7 @@
 import { getConfig, getMrSnapshot, setMrSnapshot } from "./storage";
 import { stateLabel, t } from "./i18n";
 import { getProvider } from "../providers/registry";
+import { enrichOpenMergeRequests } from "./enrich";
 import type {
   Account,
   AccountError,
@@ -59,6 +60,12 @@ export async function syncMergeRequests({
 
   const muted = new Set(config.mutedRepos);
   const visible = mergeRequests.filter((mr) => !muted.has(mr.repo));
+
+  await enrichOpenMergeRequests(
+    visible,
+    new Map(enabled.map((a) => [a.id, a] as const)),
+    prevByKey
+  );
 
   const notifications = diffAndBuildNotifications(prevByKey, visible, config, reason);
   await dispatchNotifications(notifications);
