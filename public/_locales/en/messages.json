@@ -346,5 +346,38 @@
   },
   "hintBitbucketToken": {
     "message": "Create one with the Pull requests: Read scope."
+  },
+  "searchPlaceholder": {
+    "message": "Search title, project, author…"
+  },
+  "searchLabel": {
+    "message": "Search"
+  },
+  "kbdTitle": {
+    "message": "Keyboard shortcuts"
+  },
+  "kbdClose": {
+    "message": "Close"
+  },
+  "kbdMove": {
+    "message": "Next / previous item"
+  },
+  "kbdOpen": {
+    "message": "Open selected item"
+  },
+  "kbdMute": {
+    "message": "Mute selected project"
+  },
+  "kbdSync": {
+    "message": "Sync now"
+  },
+  "kbdSearch": {
+    "message": "Search"
+  },
+  "kbdHelp": {
+    "message": "Show or hide this list"
+  },
+  "kbdEsc": {
+    "message": "Close, or clear search"
   }
 }

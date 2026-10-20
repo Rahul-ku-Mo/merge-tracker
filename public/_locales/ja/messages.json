@@ -346,5 +346,38 @@
   },
   "hintBitbucketToken": {
     "message": "Pull requests: Read スコープで作成してください。"
+  },
+  "searchPlaceholder": {
+    "message": "タイトル・プロジェクト・作成者で検索…"
+  },
+  "searchLabel": {
+    "message": "検索"
+  },
+  "kbdTitle": {
+    "message": "キーボードショートカット"
+  },
+  "kbdClose": {
+    "message": "閉じる"
+  },
+  "kbdMove": {
+    "message": "次 / 前の項目"
+  },
+  "kbdOpen": {
+    "message": "選択中の項目を開く"
+  },
+  "kbdMute": {
+    "message": "選択中のプロジェクトをミュート"
+  },
+  "kbdSync": {
+    "message": "今すぐ同期"
+  },
+  "kbdSearch": {
+    "message": "検索"
+  },
+  "kbdHelp": {
+    "message": "この一覧を表示 / 非表示"
+  },
+  "kbdEsc": {
+    "message": "閉じる、または検索をクリア"
   }
 }

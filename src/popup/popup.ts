@@ -38,6 +38,9 @@ const emptyDescEl = emptyEl.querySelector<HTMLParagraphElement>(".empty-desc");
 const syncBtn = requireElement<HTMLButtonElement>("sync-btn");
 const lastSyncEl = requireElement<HTMLSpanElement>("last-sync");
 const optionsLink = requireElement<HTMLAnchorElement>("options-link");
+const searchEl = requireElement<HTMLInputElement>("search-input");
+const helpEl = requireElement<HTMLDivElement>("kbd-help");
+const helpCloseBtn = requireElement<HTMLButtonElement>("kbd-help-close");
 
 interface AccountMeta {
   color: string;
@@ -53,6 +56,11 @@ const accountMeta = new Map<string, AccountMeta>();
 /** Whether any of the controls-bar items are visible (drives the container). */
 let showControls = true;
 let connectPanel: ReturnType<typeof initConnectPanel> | null = null;
+
+/** Free-text filter from the `/` search box. Session-only, not persisted. */
+let searchQuery = "";
+/** Key of the keyboard-selected MR. Tracked by key so it survives re-renders. */
+let cursorKey: string | null = null;
 
 optionsLink.addEventListener("click", (e) => {
   e.preventDefault();
@@ -204,7 +212,16 @@ function applyAndRender(): void {
 function matchesFilters(mr: MergeRequest): boolean {
   if (prefs.project !== "all" && mr.repo !== prefs.project) return false;
   if (prefs.state !== "all" && mr.state !== prefs.state) return false;
+  if (searchQuery && !matchesSearch(mr)) return false;
   return true;
+}
+
+function matchesSearch(mr: MergeRequest): boolean {
+  const q = searchQuery.trim().toLowerCase();
+  if (!q) return true;
+  return [mr.title, mr.repo, mr.author, `#${mr.number}`].some((field) =>
+    field.toLowerCase().includes(q)
+  );
 }
 
 function sortMrs(list: MergeRequest[]): MergeRequest[] {
@@ -244,6 +261,44 @@ function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
 
   listEl.scrollTop = scrollTop;
   if (focusSelector) listEl.querySelector<HTMLElement>(focusSelector)?.focus();
+  applyCursorClass(false);
+}
+
+function cursorRows(): HTMLElement[] {
+  return Array.from(listEl.querySelectorAll<HTMLElement>(".mr-title"));
+}
+
+function cursorRow(): HTMLElement | null {
+  if (cursorKey === null) return null;
+  return cursorRows().find((el) => el.dataset.key === cursorKey) ?? null;
+}
+
+/** Move the keyboard cursor by delta rows; starts at the top or bottom if none is set. */
+function moveCursor(delta: number): void {
+  const rows = cursorRows();
+  if (!rows.length) return;
+  const idx = rows.findIndex((el) => el.dataset.key === cursorKey);
+  const next =
+    idx < 0
+      ? delta > 0
+        ? 0
+        : rows.length - 1
+      : Math.min(rows.length - 1, Math.max(0, idx + delta));
+  cursorKey = rows[next].dataset.key ?? null;
+  applyCursorClass(true);
+}
+
+/** Sync the `is-cursor` highlight to cursorKey; clears the cursor if its row is gone. */
+function applyCursorClass(scroll: boolean): void {
+  listEl.querySelectorAll(".mr-item.is-cursor").forEach((el) => el.classList.remove("is-cursor"));
+  const row = cursorRow();
+  if (!row) {
+    cursorKey = null;
+    return;
+  }
+  const item = row.closest<HTMLElement>(".mr-item");
+  item?.classList.add("is-cursor");
+  if (scroll) item?.scrollIntoView({ block: "nearest" });
 }
 
 /** Selector that re-finds the focused row control after the list is rebuilt. */
@@ -365,6 +420,92 @@ function attachListeners(): void {
       markOpened(link.dataset.key);
     }
   });
+
+  searchEl.addEventListener("input", () => {
+    searchQuery = searchEl.value;
+    applyAndRender();
+  });
+  helpCloseBtn.addEventListener("click", () => {
+    helpEl.hidden = true;
+  });
+  document.addEventListener("keydown", onKeydown);
+}
+
+function showSearch(): void {
+  searchEl.hidden = false;
+  searchEl.focus();
+  searchEl.select();
+}
+
+function clearSearch(): void {
+  searchQuery = "";
+  searchEl.value = "";
+  searchEl.hidden = true;
+  searchEl.blur();
+  applyAndRender();
+}
+
+function onKeydown(e: KeyboardEvent): void {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // Connect view has no list; the sync button is hidden there, so skip all shortcuts.
+  if (syncBtn.hidden) return;
+
+  const target = e.target as HTMLElement;
+
+  if (target === searchEl) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      clearSearch();
+    } else if (e.key === "Enter" || e.key === "ArrowDown") {
+      e.preventDefault();
+      searchEl.blur();
+      if (e.key === "ArrowDown") moveCursor(1);
+    }
+    return;
+  }
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLSelectElement ||
+    target instanceof HTMLTextAreaElement
+  ) {
+    return;
+  }
+
+  switch (e.key) {
+    case "j":
+    case "ArrowDown":
+      e.preventDefault();
+      moveCursor(1);
+      break;
+    case "k":
+    case "ArrowUp":
+      e.preventDefault();
+      moveCursor(-1);
+      break;
+    case "Enter":
+      // Let focused buttons and links keep their native Enter behaviour.
+      if (target.closest("a, button")) return;
+      e.preventDefault();
+      cursorRow()?.click();
+      break;
+    case "m":
+      cursorRow()?.closest(".mr-item")?.querySelector<HTMLButtonElement>("[data-mute]")?.click();
+      break;
+    case "s":
+      syncBtn.click();
+      break;
+    case "/":
+      e.preventDefault();
+      showSearch();
+      break;
+    case "?":
+      helpEl.hidden = !helpEl.hidden;
+      break;
+    case "Escape":
+      if (!helpEl.hidden) helpEl.hidden = true;
+      else if (searchQuery) clearSearch();
+      break;
+  }
 }
 
 function reflectSortButton(): void {

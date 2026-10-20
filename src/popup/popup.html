@@ -108,6 +108,18 @@
         <p class="empty-desc" data-i18n="emptyNoMrDesc">Click Sync or check your filters in Settings.</p>
       </div>
 
+      <input
+        id="search-input"
+        class="input search-input"
+        type="search"
+        data-i18n-placeholder="searchPlaceholder"
+        data-i18n-aria="searchLabel"
+        placeholder="Search title, project, author…"
+        aria-label="Search"
+        autocomplete="off"
+        hidden
+      />
+
       <div id="mr-list" class="mr-list card" hidden></div>
 
       <footer class="footer">
@@ -117,6 +129,28 @@
         </a>
         <span id="last-sync" class="footer-meta"></span>
       </footer>
+
+      <div id="kbd-help" class="kbd-help card" role="dialog" aria-labelledby="kbd-help-title" hidden>
+        <div class="kbd-help-head">
+          <h2 id="kbd-help-title" class="kbd-help-title" data-i18n="kbdTitle">Keyboard shortcuts</h2>
+          <button
+            id="kbd-help-close"
+            class="icon-btn"
+            type="button"
+            data-i18n-aria="kbdClose"
+            aria-label="Close"
+          >×</button>
+        </div>
+        <dl class="kbd-list">
+          <dt><kbd>j</kbd> / <kbd>k</kbd></dt><dd data-i18n="kbdMove">Next / previous item</dd>
+          <dt><kbd>Enter</kbd></dt><dd data-i18n="kbdOpen">Open selected item</dd>
+          <dt><kbd>m</kbd></dt><dd data-i18n="kbdMute">Mute selected project</dd>
+          <dt><kbd>s</kbd></dt><dd data-i18n="kbdSync">Sync now</dd>
+          <dt><kbd>/</kbd></dt><dd data-i18n="kbdSearch">Search</dd>
+          <dt><kbd>?</kbd></dt><dd data-i18n="kbdHelp">Show or hide this list</dd>
+          <dt><kbd>Esc</kbd></dt><dd data-i18n="kbdEsc">Close, or clear search</dd>
+        </dl>
+      </div>
 
       <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
     </div>
