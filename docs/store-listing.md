@@ -52,7 +52,7 @@ Host `docs/privacy-policy.md` somewhere public (e.g. GitHub Pages or a Gist) and
 paste the URL here. Example:
 
 ```
-https://<your-username>.github.io/merge-tracker/privacy-policy.html
+https://rahul-ku-mo.github.io/merge-tracker/privacy.html
 ```
 
 ---
