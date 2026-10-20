@@ -85,7 +85,7 @@ function fetchAccount(account: Account): Promise<MergeRequest[]> {
 
 /** Show the open-MR count on the toolbar icon. */
 async function updateBadge(count: number): Promise<void> {
-  await chrome.action.setBadgeBackgroundColor({ color: "#bd4d12" });
+  await chrome.action.setBadgeBackgroundColor({ color: "#0965ce" });
   await chrome.action.setBadgeText({ text: count > 0 ? String(count) : "" });
 }
 

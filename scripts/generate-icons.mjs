@@ -24,6 +24,14 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <g transform="translate(25.6 25.6) scale(3.2)" color="#fff">${glyph}</g>
 </svg>`;
 
+// Web Store icon: 96px artwork centred in 128px with 16px transparent padding (store guideline).
+const storeSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><g transform="translate(16 16) scale(0.75)">${svg.replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g></svg>`;
+mkdirSync(join(root, "store-assets/out"), { recursive: true });
+writeFileSync(
+  join(root, "store-assets/out/store-icon-128.png"),
+  new Resvg(storeSvg, { fitTo: { mode: "width", value: 128 } }).render().asPng()
+);
+
 for (const size of [16, 48, 128]) {
   const png = new Resvg(svg, { fitTo: { mode: "width", value: size } }).render().asPng();
   writeFileSync(join(outDir, `icon${size}.png`), png);

@@ -12,7 +12,10 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "icons": "node scripts/generate-icons.mjs",
-    "icons:ui": "node scripts/build-icons.mjs"
+    "icons:ui": "node scripts/build-icons.mjs",
+    "store:assets": "pnpm demo:build && node store-assets/render.mjs",
+    "site:privacy": "node scripts/build-privacy.mjs",
+    "demo:build": "vite build --config store-assets/vite.config.ts && node store-assets/finalize-demo.mjs"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.4.0",

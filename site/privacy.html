@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — Merge Requests Tracker (MR)</title>
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .doc { max-width: 760px; margin: 0 auto; padding: 56px clamp(16px, 4vw, 32px) 96px; }
+    .doc h1 { font-size: clamp(32px, 5vw, 44px); margin-bottom: 8px; }
+    .doc h2 { margin: 48px 0 12px; font-size: 24px; letter-spacing: -0.02em; }
+    .doc p, .doc li { font-size: 17px; }
+    .doc ul { padding-left: 22px; }
+    .doc code { padding: 1px 6px; border-radius: 4px; background: hsl(var(--fg) / .08); font-size: .9em; }
+    .doc .scroll { overflow-x: auto; }
+    .doc table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .doc th, .doc td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid hsl(var(--line)); }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="index.html"><img src="assets/icon.png" alt="" width="32" height="32"><span>Merge Requests Tracker (MR)</span></a>
+    <a class="link" href="index.html">Back to home</a>
+  </header>
+  <main class="doc">
+<h1>Privacy Policy — Merge Requests Tracker (MR)</h1>
+<p><em>Last updated: 2 June 2026</em></p>
+<p>Merge Requests Tracker (MR) ("the extension") is a browser extension that displays your GitLab, GitHub, and Bitbucket merge/pull requests and notifies you when their status changes.</p>
+<h2>Summary</h2>
+<ul>
+<li>The extension runs <strong>entirely in your browser</strong>.</li>
+<li>It has <strong>no backend server</strong>. The developer never receives, stores, or sees any of your data.</li>
+<li>Your credentials and data <strong>never leave your device</strong>, except for the API requests your browser makes <strong>directly to the Git provider you configured</strong>.</li>
+<li>There is <strong>no analytics, tracking, advertising, or third‑party data sharing</strong>.</li>
+</ul>
+<h2>What data the extension handles</h2>
+<div class="scroll"><table><thead><tr><th scope="col">Data</th><th scope="col">Where it comes from</th><th scope="col">Where it is stored</th><th scope="col">Purpose</th></tr></thead><tbody><tr><td>Access tokens / app passwords</td><td>You enter them in Settings</td><td><code>chrome.storage.local</code> on your device only</td><td>Authenticate API requests to your provider</td></tr><tr><td>Account settings (host, workspace, scope, filters)</td><td>You enter them in Settings</td><td><code>chrome.storage.local</code> on your device only</td><td>Configure what to fetch</td></tr><tr><td>Merge/pull request metadata (title, state, author, URL)</td><td>The provider's API</td><td><code>chrome.storage.local</code> on your device only</td><td>Display the list and detect status changes for notifications</td></tr></tbody></table></div>
+<p>All storage is <strong>local</strong> to your browser profile. None of it is transmitted to the developer or any third party.</p>
+<h2>Where your data goes</h2>
+<p>When syncing, your browser sends authenticated HTTPS requests <strong>directly</strong> to the host(s) you configured, for example:</p>
+<ul>
+<li><code>https://gitlab.com</code> (or your self‑hosted GitLab)</li>
+<li><code>https://api.github.com</code> (or GitHub Enterprise)</li>
+<li><code>https://api.bitbucket.org</code></li>
+</ul>
+<p>These requests go from your device straight to the provider. They do not pass through any server operated by the developer.</p>
+<h2>Permissions and why they are needed</h2>
+<ul>
+<li><strong>storage</strong> — save your settings and cached requests locally.</li>
+<li><strong>alarms</strong> — schedule periodic background syncs.</li>
+<li><strong>notifications</strong> — show desktop notifications for new/changed requests.</li>
+<li><strong>Host access</strong> to the provider APIs above — make the read requests that fetch your merge/pull requests. Self‑hosted hosts are requested only when you add a custom host, and only with your explicit approval.</li>
+</ul>
+<h2>Data retention and deletion</h2>
+<ul>
+<li>Data persists locally until you remove it.</li>
+<li>Clearing the token fields and saving deletes the stored credentials.</li>
+<li><strong>Uninstalling the extension permanently deletes all locally stored data.</strong></li>
+</ul>
+<h2>Data sale and sharing</h2>
+<p>The developer does <strong>not</strong> sell, rent, or share your data with anyone. No data is collected by the developer in the first place.</p>
+<h2>Changes to this policy</h2>
+<p>Any changes will be reflected in this document with an updated date.</p>
+<h2>Contact</h2>
+<p>Created by Rahul K M. For questions about this policy, contact the developer through the support contact listed on the Chrome Web Store listing.</p>
+  </main>
+</body>
+</html>

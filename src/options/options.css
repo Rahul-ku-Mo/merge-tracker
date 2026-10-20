@@ -13,15 +13,16 @@ body {
 }
 
 .page {
-  padding: 40px 20px 56px;
   position: absolute;
   inset: 0;
+  padding: 40px 20px 56px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .settings-card {
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
   padding: 28px;
@@ -66,15 +67,15 @@ h1 {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .settings-sub {
   margin: 4px 0 0;
   font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: hsl(var(--muted-foreground));
 }
 
@@ -109,8 +110,8 @@ h1 {
   margin: 0 0 14px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   padding-bottom: 8px;
   border-bottom: var(--bw) dashed hsl(var(--ink));
 }
@@ -270,8 +271,8 @@ h1 {
 .save-status {
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: hsl(var(--success));
 }
 

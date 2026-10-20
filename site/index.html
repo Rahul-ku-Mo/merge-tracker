@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Merge Requests Tracker (MR) — GitLab, GitHub and Bitbucket reviews in one list</title>
+  <meta name="description" content="A Chrome extension that gathers your GitLab, GitHub and Bitbucket merge and pull requests into one popup and notifies you when their status changes. No server, no account.">
+  <meta name="theme-color" content="#0965ce">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="#top"><img src="assets/icon.png" alt="" width="32" height="32"><span>Merge Requests Tracker (MR)</span></a>
+    <a class="btn btn-primary" data-install href="#get">Add to Chrome</a>
+  </header>
+
+  <main id="top" class="flow">
+    <svg class="graph" aria-hidden="true" focusable="false"></svg>
+
+    <section class="hero" data-section>
+      <div class="heads" aria-hidden="true">
+        <span class="chip chip-gh"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span>
+        <span class="chip chip-gl"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.462-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/></svg></span>
+        <span class="chip chip-bb"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.778 1.213a.768.768 0 0 0-.768.892l3.263 19.81c.084.5.515.868 1.022.873H19.95a.772.772 0 0 0 .77-.646l3.27-20.03a.768.768 0 0 0-.768-.891zM14.52 15.53H9.522L8.17 8.466h7.561z"/></svg></span>
+      </div>
+      <div class="hero-copy">
+        <h1>Merge your review queue.</h1>
+        <p class="lede">Merge Requests Tracker (MR) pulls your GitLab, GitHub and Bitbucket reviews into one popup, and tells you the moment one changes.</p>
+        <div class="cta">
+          <a class="btn btn-primary btn-lg" data-install href="#get">Add to Chrome</a>
+          <a class="link" href="#connect">See how it works</a>
+        </div>
+        <p class="fine">Free. No account. Read-only tokens that never leave your browser.</p>
+      </div>
+      <figure class="device">
+        <div class="popup" style="--h:600px"><iframe title="Interactive demo of the extension popup" loading="eager" src="demo/src/popup/popup.html?scene=list"></iframe></div>
+        <figcaption>Live demo, synthetic data</figcaption>
+      </figure>
+    </section>
+
+    <section id="connect" class="step" data-section data-node="merge">
+      <div class="copy">
+        <h2>Three providers, one list.</h2>
+        <p>Connect GitHub, GitLab and Bitbucket side by side, with as many accounts as you need. Self-hosted GitLab and GitHub Enterprise work too.</p>
+        <ul class="facts">
+          <li>Everything assigned to you, created by you, or waiting for your review</li>
+          <li>Grouped by project, with a provider badge on every row</li>
+          <li>Status and draft state at a glance</li>
+        </ul>
+      </div>
+      <figure class="device">
+        <div class="popup" style="--h:400px"><iframe title="Demo of connecting a provider" loading="lazy" src="demo/src/popup/popup.html?scene=connect"></iframe></div>
+        <figcaption>Live demo, synthetic data</figcaption>
+      </figure>
+    </section>
+
+    <section class="step" data-section data-node>
+      <div class="copy">
+        <h2>Know the moment it changes.</h2>
+        <p>A desktop notification when a request opens or its status changes. Click it to jump straight to the request.</p>
+        <ul class="facts">
+          <li>Sync in the background as often as every minute</li>
+          <li>Titles in the list turn bold until you have seen the update</li>
+          <li>Choose which events notify you</li>
+        </ul>
+      </div>
+      <div class="toasts">
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Status changed</p><p class="m">Upgrade Postgres driver to 5.2 → merged</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">New PR · GitHub</p><p class="m">Add retry with backoff to the sync client</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
+        <p class="caption">Notification text is shown as the extension writes it. Titles are synthetic.</p>
+      </div>
+    </section>
+
+    <section class="step" data-section data-node>
+      <div class="copy">
+        <h2>Filter, sort, mute the noise.</h2>
+        <p>Narrow the list to one project or one state. Flip the order. Mute the projects you never review and they stay out of the list, the badge count and the notifications.</p>
+        <ul class="facts">
+          <li>Open every visible request in tabs with one click</li>
+          <li>Hide any control you don't use</li>
+          <li>Light, dark, or follow your system</li>
+        </ul>
+      </div>
+      <figure class="device">
+        <div class="popup" style="--h:470px"><iframe title="Demo of filtering and muting" loading="lazy" src="demo/src/popup/popup.html?scene=filtered"></iframe></div>
+        <figcaption>Live demo, synthetic data</figcaption>
+      </figure>
+    </section>
+
+    <section id="privacy" class="step" data-section data-node>
+      <div class="copy">
+        <h2>Private by design.</h2>
+        <p>There is no server and no account. Your tokens and the cached list live in your browser's local storage, and requests go straight from your browser to your Git provider. No analytics, no tracking.</p>
+        <p><a class="link" href="privacy.html">Read the privacy policy</a></p>
+      </div>
+      <div class="perms">
+        <table>
+          <caption>What the extension asks for, and why</caption>
+          <thead><tr><th scope="col">Permission</th><th scope="col">Why</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">storage</th><td>Save your settings and the cached list on this device</td></tr>
+            <tr><th scope="row">alarms</th><td>Schedule the background sync</td></tr>
+            <tr><th scope="row">notifications</th><td>Show desktop notifications for changes</td></tr>
+            <tr><th scope="row">gitlab.com, api.github.com, api.bitbucket.org</th><td>Read your requests directly from the provider APIs</td></tr>
+            <tr><th scope="row">Other hosts (optional)</th><td>Asked only when you add a self-hosted server, and only with your approval</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="get" class="finale" data-section data-node="end">
+      <h2>Merge it into your toolbar.</h2>
+      <p>One click to install. Paste a read-only token for each provider and your queue is in one place.</p>
+      <a class="btn btn-primary btn-lg" data-install href="#get">Add to Chrome</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Merge Requests Tracker (MR)</span>
+    <a class="link" href="privacy.html">Privacy policy</a>
+    <span>Crafted by Rahul KM. Screens on this page show synthetic demo data.</span>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

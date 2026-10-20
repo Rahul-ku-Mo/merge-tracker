@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="../../chrome-stub.js"></script>
+
+    <meta charset="UTF-8" />
+    <title>Merge Requests Tracker (MR)</title>
+    <script type="module" crossorigin src="../../assets/popup-Dn5U1l7B.js"></script>
+    <link rel="modulepreload" crossorigin href="../../assets/permissions-BHUABBja.js">
+    <link rel="stylesheet" crossorigin href="../../assets/popup-xIZ9rDaH.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">
+            <span data-icon="git-merge" data-size="16"></span>
+          </span>
+          <div>
+            <h1>Merge Requests Tracker</h1>
+            <p class="brand-sub">Pull &amp; merge requests</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button
+            id="mode-toggle"
+            class="icon-btn"
+            type="button"
+            title="Theme mode (system / light / dark)"
+            aria-label="Theme mode: system"
+          >
+            <span class="mode-moon" data-icon="moon" data-size="16"></span>
+            <span class="mode-sun" data-icon="sun" data-size="16"></span>
+            <span class="mode-system" data-icon="monitor" data-size="16"></span>
+          </button>
+          <button
+            id="sync-btn"
+            type="button"
+            class="btn btn-primary btn-sm"
+            title="Fetch latest"
+            aria-label="Fetch latest"
+          >
+            <span data-icon="refresh-cw" data-size="16"></span>
+            Sync
+          </button>
+        </div>
+      </header>
+
+      <div id="status" class="status-banner" role="status">Loading…</div>
+
+      <section id="connect-panel" class="connect-panel" hidden>
+        <div class="connect-intro">
+          <h2 class="connect-heading">Connect a provider</h2>
+          <p class="connect-lead">Pick GitHub, GitLab, or Bitbucket and paste a read-only token.</p>
+        </div>
+        <div id="connect-list" class="connect-list"></div>
+        <div id="connect-form-wrap" class="connect-form-wrap" hidden>
+          <button id="connect-back" type="button" class="connect-back"><span data-icon="arrow-left" data-size="14"></span> All providers</button>
+          <form id="connect-form" class="connect-form card"></form>
+          <p id="connect-error" class="connect-error" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <div id="controls" class="controls" hidden>
+        <select
+          id="filter-project"
+          class="select"
+          aria-label="Project"
+        ></select>
+        <select id="filter-state" class="select" aria-label="State">
+          <option value="all">All</option>
+          <option value="open">Open</option>
+          <option value="merged">Merged</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button
+          id="sort-btn"
+          type="button"
+          class="icon-btn"
+          title="Sort: newest first"
+          aria-label="Sort: newest first"
+        >
+          <span data-icon="arrow-up-down" data-size="16"></span>
+        </button>
+        <button
+          id="open-all-btn"
+          type="button"
+          class="icon-btn"
+          title="Open all in tabs"
+          aria-label="Open all in tabs"
+        >
+          <span data-icon="external-link" data-size="16"></span>
+        </button>
+      </div>
+
+      <div id="muted-bar" class="muted-bar" hidden>
+        <span id="muted-text"></span>
+        <button id="unmute-btn" type="button" class="muted-clear">
+          show all
+        </button>
+      </div>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-icon" aria-hidden="true"><span data-icon="git-pull-request" data-size="28"></span></div>
+        <p class="empty-title">No merge requests</p>
+        <p class="empty-desc">Click Sync or check your filters in Settings.</p>
+      </div>
+
+      <div id="mr-list" class="mr-list card" hidden></div>
+
+      <footer class="footer">
+        <a id="options-link" class="footer-link" href="#">
+          <span data-icon="settings" data-size="14"></span>
+          Settings
+        </a>
+        <span id="last-sync" class="footer-meta"></span>
+      </footer>
+
+      <p class="credit">crafted by Rahul KM</p>
+    </div>
+
+  </body>
+</html>

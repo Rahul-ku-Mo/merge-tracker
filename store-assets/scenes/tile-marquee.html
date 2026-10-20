@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>Marquee</title><link rel="stylesheet" href="scene.css">
+<style>
+.mq { width: 1400px; height: 560px; position: relative; background: linear-gradient(160deg, hsl(212 92% 42%), hsl(212 92% 28%)); color: #fff; }
+.mq .txt { position: absolute; left: 96px; top: 0; bottom: 0; width: 640px; display: flex; flex-direction: column; justify-content: center; }
+.mq img { width: 84px; height: 84px; border-radius: 20px; box-shadow: 0 0 0 3px hsl(0 0% 100% / .35); }
+.mq h1 { margin: 28px 0 16px; font-size: 68px; line-height: 1.02; letter-spacing: -0.03em; font-weight: 800; }
+.mq p { margin: 0; font-size: 26px; line-height: 1.35; color: hsl(212 80% 92%); max-width: 24ch; }
+.mq .name { margin-top: 32px; font-size: 20px; font-weight: 600; color: #fff; opacity: .9; }
+.pf { position: absolute; width: 440px; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px -10px hsl(215 60% 8% / .6); transform-origin: top left; }
+.pf iframe { width: 440px; border: 0; display: block; }
+.pf.a { left: 800px; top: 56px; height: 640px; transform: scale(.95); }
+.pf.a iframe { height: 640px; }
+.pf.b { left: 1180px; top: 150px; height: 400px; transform: scale(.8); }
+.pf.b iframe { height: 400px; }
+</style>
+<div class="stage mq">
+  <div class="txt">
+    <img src="/icons/icon128.png" alt="">
+    <h1>Every review,<br>in one list.</h1>
+    <p>GitLab, GitHub and Bitbucket merge requests, with notifications when they change.</p>
+    <span class="name">Merge Requests Tracker (MR)</span>
+  </div>
+  <div class="pf a"><iframe src="/site/demo/src/popup/popup.html?scene=list&mode=light"></iframe></div>
+  <div class="pf b"><iframe src="/site/demo/src/popup/popup.html?scene=connect&mode=light"></iframe></div>
+</div>

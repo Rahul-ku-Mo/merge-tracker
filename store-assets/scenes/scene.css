@@ -1,0 +1,47 @@
+/* Shared layout for the Chrome Web Store assets. Tokens mirror src/styles/tokens.css (light). */
+:root {
+  --ink: 215 28% 12%;
+  --muted: 215 14% 38%;
+  --primary: 212 92% 42%;
+  --gh: 222 12% 20%;
+  --gl: 22 80% 40%;
+  --bb: 212 84% 38%;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font);
+  color: hsl(var(--ink));
+  background: hsl(212 60% 96%);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.stage { position: relative; overflow: hidden; background: hsl(212 60% 96%); }
+.shot { width: 1280px; height: 800px; display: grid; grid-template-columns: 1fr 560px; gap: 56px; padding: 64px 88px 64px 96px; align-items: center; }
+.copy h1 { margin: 0 0 20px; font-size: 60px; line-height: 1.04; letter-spacing: -0.03em; font-weight: 800; text-wrap: balance; }
+.copy .lede { margin: 0; font-size: 22px; line-height: 1.45; color: hsl(var(--muted)); max-width: 30ch; }
+.legend { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 16px; }
+.legend li { display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start; font-size: 19px; line-height: 1.35; }
+.legend b { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: hsl(var(--primary)); color: #fff; font-size: 17px; font-weight: 700; }
+
+/* The real popup, in a window frame. Popup is 440 wide; --s scales it up. */
+.popup-wrap { position: relative; width: calc(440px * var(--s, 1.15)); height: calc(var(--h, 560px) * var(--s, 1.15)); justify-self: center; }
+.popup-frame, .pins { position: absolute; left: 0; top: 0; width: 440px; height: var(--h, 560px); transform: scale(var(--s, 1.15)); transform-origin: top left; }
+.popup-frame { border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 0 0 1px hsl(215 20% 80%), 0 24px 60px -12px hsl(215 40% 20% / .35); }
+.popup-frame iframe { width: 440px; height: var(--h, 560px); border: 0; display: block; }
+.pins { pointer-events: none; z-index: 3; }
+.dot { position: absolute; display: grid; place-items: center; width: 24px; height: 24px; transform: translate(-50%, -50%); border-radius: 50%; background: hsl(var(--primary)); color: #fff; font-size: 13px; font-weight: 700; box-shadow: 0 0 0 3px #fff, 0 2px 8px hsl(215 40% 20% / .35); }
+.legend.plain li { grid-template-columns: 1fr; }
+.legend.plain li::before { content: none; }
+
+.toast { width: 440px; margin-top: 44px; display: grid; grid-template-columns: 56px 1fr; gap: 16px; padding: 18px 20px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px hsl(215 20% 82%), 0 18px 40px -10px hsl(215 40% 20% / .35); }
+.toast img { width: 56px; height: 56px; border-radius: 13px; }
+.toast .t { font-size: 17px; font-weight: 700; margin: 0 0 3px; }
+.toast .m { font-size: 17px; line-height: 1.35; margin: 0; color: hsl(215 14% 28%); }
+.toast .a { font-size: 13px; color: hsl(215 10% 48%); margin: 6px 0 0; }
+.toast + .toast { margin-top: 14px; }
+
+/* Settings page in a browser-window frame */
+.win { width: 640px; height: 640px; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 0 0 1px hsl(215 20% 80%), 0 24px 60px -12px hsl(215 40% 20% / .35); }
+.win iframe { width: 760px; height: 900px; border: 0; transform: scale(.84); transform-origin: top left; display: block; }

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="../../chrome-stub.js"></script>
+
+    <meta charset="UTF-8" />
+    <title>Merge Requests Tracker (MR) — Settings</title>
+    <script type="module" crossorigin src="../../assets/options-BGiMfgnP.js"></script>
+    <link rel="modulepreload" crossorigin href="../../assets/permissions-BHUABBja.js">
+    <link rel="stylesheet" crossorigin href="../../assets/options-BykzxuPc.css">
+  </head>
+  <body>
+    <div class="page">
+      <main class="card settings-card">
+        <header class="settings-header">
+          <div class="settings-brand">
+            <span class="settings-brand-icon" aria-hidden="true">
+              <span data-icon="settings" data-size="22"></span>
+            </span>
+            <div>
+              <h1>Settings</h1>
+              <p class="settings-sub">Merge Requests Tracker (MR)</p>
+            </div>
+          </div>
+          <div class="theme-controls">
+            <button
+              id="mode-toggle"
+              class="icon-btn"
+              type="button"
+              title="Theme mode (system / light / dark)"
+              aria-label="Theme mode: system"
+            >
+              <span class="mode-moon" data-icon="moon" data-size="16"></span>
+              <span class="mode-sun" data-icon="sun" data-size="16"></span>
+              <span class="mode-system" data-icon="monitor" data-size="16"></span>
+            </button>
+          </div>
+        </header>
+
+        <p class="lead">
+          Connect one or more accounts. Each uses a <strong>read-only</strong>
+          token / app password stored only on this device.
+        </p>
+
+        <form id="config-form">
+          <section class="form-section card">
+            <div class="section-head">
+              <h2 class="section-title">Accounts</h2>
+              <div class="add-account">
+                <select class="select" id="new-provider" aria-label="Provider">
+                  <option value="gitlab">GitLab</option>
+                  <option value="github">GitHub</option>
+                  <option value="bitbucket">Bitbucket</option>
+                </select>
+                <button type="button" class="btn" id="add-account">
+                  <span data-icon="plus" data-size="16"></span>
+                  Add
+                </button>
+              </div>
+            </div>
+            <div id="accounts"></div>
+            <p id="accounts-empty" class="hint" hidden>
+              No accounts yet. Pick a provider above and click Add.
+            </p>
+          </section>
+
+          <section class="form-section card">
+            <h2 class="section-title">Sync &amp; notifications</h2>
+            <label class="field-label">
+              Sync every (minutes)
+              <input
+                class="input"
+                type="number"
+                id="syncIntervalMinutes"
+                min="1"
+                max="1440"
+                value="5"
+              />
+            </label>
+            <div class="checks">
+              <label class="check-row">
+                <input type="checkbox" id="notifyNewMr" /> Notify on new PR/MR
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="notifyStatusChange" checked />
+                Notify on status change
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section card">
+            <h2 class="section-title">Popup display</h2>
+            <p class="hint">
+              Hide controls you don't use to reclaim space in the popup.
+            </p>
+            <div class="checks">
+              <label class="check-row">
+                <input type="checkbox" id="dispThemeControls" checked />
+                Light/dark switcher
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispFilters" checked />
+                Project &amp; state filters
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispSort" checked />
+                Sort button
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispOpenAll" checked />
+                "Open all in tabs" button
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispCredit" checked />
+                "Crafted by Rahul KM" credit
+              </label>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <span id="save-status" class="save-status" role="status"></span>
+          </div>
+        </form>
+
+        <p class="credit">crafted by Rahul KM</p>
+      </main>
+    </div>
+  </body>
+</html>

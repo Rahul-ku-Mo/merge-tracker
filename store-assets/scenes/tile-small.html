@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><title>Small tile</title><link rel="stylesheet" href="scene.css">
+<style>
+.tile { width: 440px; height: 280px; padding: 28px 0 0 28px; position: relative; background: linear-gradient(160deg, hsl(212 92% 42%), hsl(212 92% 30%)); color: #fff; }
+.tile img { width: 48px; height: 48px; border-radius: 11px; display: block; box-shadow: 0 0 0 2px hsl(0 0% 100% / .35); }
+.tile h1 { margin: 16px 0 8px; font-size: 27px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 800; width: 230px; }
+.tile p { margin: 0; font-size: 14px; line-height: 1.35; width: 200px; color: hsl(212 80% 92%); }
+.tile .pf { position: absolute; left: 270px; top: 40px; width: 440px; height: 520px; transform: scale(.62); transform-origin: top left; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 16px 40px -8px hsl(215 60% 10% / .55); }
+.tile iframe { width: 440px; height: 520px; border: 0; display: block; }
+</style>
+<div class="stage tile">
+  <img src="/icons/icon128.png" alt="">
+  <h1>Merge Requests Tracker</h1>
+  <p>GitLab, GitHub and Bitbucket in one list.</p>
+  <div class="pf"><iframe src="/site/demo/src/popup/popup.html?scene=list&mode=light"></iframe></div>
+</div>
