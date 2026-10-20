@@ -4,3 +4,6 @@ Thumbs.db
 node_modules/
 dist/
 .impeccable/
+.cursor/
+.claude/
+PRODUCT.md

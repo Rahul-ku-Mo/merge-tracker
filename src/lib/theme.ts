@@ -38,6 +38,9 @@ export function applyTheme(theme: ThemeId, mode: ThemeMode): void {
   root.dataset.theme = theme;
   root.dataset.mode = resolveMode(mode);
   root.dataset.modePref = mode;
+  document
+    .querySelectorAll<HTMLElement>("#mode-toggle")
+    .forEach((el) => el.setAttribute("aria-label", `Theme mode: ${mode}`));
 }
 
 interface ThemeControlOptions {

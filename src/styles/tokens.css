@@ -432,3 +432,28 @@
   --ink: 213 12% 21%;
   --input-bg: hsl(215 21% 11%);
 }
+
+/* ------------------- Semantic state + provider colors -------------------- */
+/* Meaning stays fixed across palettes: open = blue, merged = green, closed = red. */
+:root {
+  --state-open: 205 80% 62%;
+  --state-open-foreground: 222 28% 14%;
+  --state-merged: 150 55% 50%;
+  --state-merged-foreground: 222 28% 14%;
+  --state-closed: 0 72% 72%;
+  --state-closed-foreground: 0 50% 18%;
+
+  --provider-gitlab: 22 80% 40%;
+  --provider-github: 222 12% 20%;
+  --provider-bitbucket: 212 84% 38%;
+  --provider-foreground: 40 50% 97%;
+}
+
+[data-mode="dark"] {
+  --state-open: 205 70% 55%;
+  --state-merged: 150 50% 42%;
+  --state-merged-foreground: 150 60% 96%;
+  --state-closed: 0 62% 58%;
+  --state-closed-foreground: 0 0% 100%;
+  --provider-github: 222 12% 34%;
+}

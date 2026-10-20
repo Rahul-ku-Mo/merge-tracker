@@ -603,7 +603,8 @@ h1 {
   transition: opacity 0.1s;
 }
 
-.mr-item:hover .mr-actions {
+.mr-item:hover .mr-actions,
+.mr-item:focus-within .mr-actions {
   opacity: 1;
 }
 
@@ -619,6 +620,15 @@ h1 {
   background: hsl(var(--card));
   color: hsl(var(--muted-foreground));
   cursor: pointer;
+}
+
+.mr-action:focus-visible,
+.mr-title:focus-visible,
+.footer-link:focus-visible,
+.connect-back:focus-visible,
+.muted-clear:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
 }
 
 .mr-action:hover {

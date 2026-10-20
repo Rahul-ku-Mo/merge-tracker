@@ -91,7 +91,7 @@ function accountCard(account: Account): string {
     <div class="account-card card" data-id="${esc(account.id)}">
       <div class="account-head">
         <div class="account-title">
-          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="Account color" />
+          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="Account color" aria-label="Account color" />
           <span class="badge provider-${account.provider}">${esc(provider.label)}</span>
           <input class="input account-label" data-field="label" value="${esc(account.label)}" placeholder="Label" />
         </div>

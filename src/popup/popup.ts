@@ -222,6 +222,8 @@ function groupByRepo(list: MergeRequest[]): { repo: string; items: MergeRequest[
 }
 
 function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
+  const focusSelector = focusedRowSelector();
+  const scrollTop = listEl.scrollTop;
   listEl.replaceChildren();
 
   for (const group of groups) {
@@ -236,6 +238,20 @@ function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
     `;
     listEl.appendChild(section);
   }
+
+  listEl.scrollTop = scrollTop;
+  if (focusSelector) listEl.querySelector<HTMLElement>(focusSelector)?.focus();
+}
+
+/** Selector that re-finds the focused row control after the list is rebuilt. */
+function focusedRowSelector(): string | null {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement) || !listEl.contains(active)) return null;
+  const { key, copy, mute } = active.dataset;
+  if (key) return `.mr-title[data-key="${CSS.escape(key)}"]`;
+  if (copy) return `[data-copy="${CSS.escape(copy)}"]`;
+  if (mute) return `[data-mute="${CSS.escape(mute)}"]`;
+  return null;
 }
 
 function itemHtml(mr: MergeRequest): string {
@@ -250,13 +266,13 @@ function itemHtml(mr: MergeRequest): string {
   return `
     <li class="${classes}">
       <div class="mr-row">
-        <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}"></span>
+        <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}" aria-label="Account: ${esc(meta?.label ?? "")}" role="img"></span>
         <a class="mr-title" href="${esc(mr.url)}" data-key="${esc(mr.key)}" target="_blank" rel="noopener">${esc(mr.title)}</a>
         <span class="mr-actions">
-          <button class="mr-action" type="button" data-copy="${esc(mr.url)}" title="Copy link">
+          <button class="mr-action" type="button" data-copy="${esc(mr.url)}" title="Copy link" aria-label="Copy link">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           </button>
-          <button class="mr-action" type="button" data-mute="${esc(mr.repo)}" title="Mute this project">
+          <button class="mr-action" type="button" data-mute="${esc(mr.repo)}" title="Mute this project" aria-label="Mute this project">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
           </button>
         </span>
@@ -350,6 +366,7 @@ function reflectSortButton(): void {
   const asc = prefs.sort === "updated_asc";
   sortBtn.classList.toggle("is-asc", asc);
   sortBtn.title = asc ? "Sort: oldest first" : "Sort: newest first";
+  sortBtn.setAttribute("aria-label", sortBtn.title);
 }
 
 function openAllVisible(): void {
