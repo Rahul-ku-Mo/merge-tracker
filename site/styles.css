@@ -11,7 +11,7 @@
   --gl: 22 80% 44%;
   --bb: 212 84% 42%;
   --beam: 212 100% 22%;
-  --rail: 152px;
+  --rail: 176px;
   --s: 1.08;
   --font:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
@@ -199,9 +199,9 @@ a {
 }
 .graph .label {
   fill: hsl(var(--muted));
-  font: 600 13px/1 var(--font);
-  letter-spacing: 0.01em;
-  font-feature-settings: "tnum";
+  font: 700 11px/1 var(--font);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   transition: fill 0.25s;
 }
 .graph .label.on {
