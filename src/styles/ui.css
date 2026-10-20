@@ -132,18 +132,21 @@
 }
 
 .badge.provider-gitlab {
-  background: hsl(var(--provider-gitlab));
-  color: hsl(var(--provider-foreground));
+  /* Neutral tile so the multi-color logos keep their own colors. */
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
 }
 
 .badge.provider-github {
-  background: hsl(var(--provider-github));
-  color: hsl(var(--provider-foreground));
+  /* Neutral tile so the multi-color logos keep their own colors. */
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
 }
 
 .badge.provider-bitbucket {
-  background: hsl(var(--provider-bitbucket));
-  color: hsl(var(--provider-foreground));
+  /* Neutral tile so the multi-color logos keep their own colors. */
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
 }
 
 .input,

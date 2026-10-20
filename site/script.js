@@ -9,7 +9,7 @@ document.querySelectorAll("[data-install]").forEach((a) => {
   a.removeAttribute("href");
   a.classList.add("pending");
   a.setAttribute("aria-disabled", "true");
-  a.textContent = "Coming soon to Chrome";
+  a.textContent = "Coming soon";
 });
 
 /* Branch graph: three provider branches run down the left and merge into one
@@ -77,7 +77,8 @@ function build() {
   nodes = marks.map(({ cy, text }) => {
     el("circle", { cx: tx, cy, r: 12, class: "ring" });
     const c = el("circle", { cx: tx, cy, r: 9, class: "node" });
-    const t = el("text", { x: tx + 18, y: cy + 4, class: "label" });
+    // Labels sit left of the trunk, right-aligned to the node, so they never touch the headings.
+    const t = el("text", { x: tx - 20, y: cy, class: "label", "text-anchor": "end", "dominant-baseline": "central" });
     t.textContent = text;
     return { c, t, cy };
   });
