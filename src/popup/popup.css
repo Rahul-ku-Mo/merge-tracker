@@ -849,3 +849,11 @@ button.footer-link {
   color: hsl(var(--muted-foreground));
   font-style: italic;
 }
+
+/* Ticket key chip (only when a ticket base URL is configured). */
+.badge.ticket {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--ink));
+  text-decoration: none;
+}

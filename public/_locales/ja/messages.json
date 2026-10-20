@@ -463,5 +463,17 @@
   },
   "stackedOn": {
     "message": "$1 の上に積み上げ"
+  },
+  "ticketSection": {
+    "message": "チケットリンク"
+  },
+  "ticketBaseLabel": {
+    "message": "チケットのベースURL"
+  },
+  "ticketBaseHint": {
+    "message": "ブランチ名またはタイトルに ABC-123 のようなキーがあるMRにリンクを表示します。Jira: https://<site>.atlassian.net/browse/ · Linear: https://linear.app/<workspace>/issue/"
+  },
+  "ticketLinkTitle": {
+    "message": "$1 を開く"
   }
 }

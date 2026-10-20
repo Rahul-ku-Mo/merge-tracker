@@ -114,6 +114,22 @@
           </section>
 
           <section class="form-section card">
+            <h2 class="section-title" data-i18n="ticketSection">Ticket links</h2>
+            <label class="field-label">
+              <span data-i18n="ticketBaseLabel">Ticket base URL</span>
+              <input
+                class="input"
+                type="url"
+                id="ticketBaseUrl"
+                placeholder="https://your-site.atlassian.net/browse/"
+              />
+            </label>
+            <p class="hint" data-i18n="ticketBaseHint">
+              Shows a link on MRs whose branch or title has a key like ABC-123. Jira: https://&lt;site&gt;.atlassian.net/browse/ · Linear: https://linear.app/&lt;workspace&gt;/issue/
+            </p>
+          </section>
+
+          <section class="form-section card">
             <h2 class="section-title" data-i18n="popupSection">Popup display</h2>
             <p class="hint" data-i18n="popupHint">
               Hide controls you don't use to reclaim space in the popup.

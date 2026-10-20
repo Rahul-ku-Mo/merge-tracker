@@ -463,5 +463,17 @@
   },
   "stackedOn": {
     "message": "Stacked on $1"
+  },
+  "ticketSection": {
+    "message": "Ticket links"
+  },
+  "ticketBaseLabel": {
+    "message": "Ticket base URL"
+  },
+  "ticketBaseHint": {
+    "message": "Shows a link on MRs whose branch or title has a key like ABC-123. Jira: https://<site>.atlassian.net/browse/ · Linear: https://linear.app/<workspace>/issue/"
+  },
+  "ticketLinkTitle": {
+    "message": "Open $1"
   }
 }

@@ -16,6 +16,7 @@ import { initConnectPanel } from "./connect";
 import { type BlockReason, blockReasons } from "../lib/blocked";
 import { buildStandup } from "../lib/standup";
 import { type StackRow, orderStacks } from "../lib/stacks";
+import { buildTicketUrl, extractTicketKey } from "../lib/tickets";
 import type {
   CiStatus,
   ExtensionConfig,
@@ -66,6 +67,8 @@ let connectPanel: ReturnType<typeof initConnectPanel> | null = null;
 let searchQuery = "";
 /** Key of the keyboard-selected MR. Tracked by key so it survives re-renders. */
 let cursorKey: string | null = null;
+/** Ticket link base from Settings. Empty = no ticket chips. */
+let ticketBase = "";
 
 optionsLink.addEventListener("click", (e) => {
   e.preventDefault();
@@ -114,6 +117,7 @@ async function enterMainView(): Promise<void> {
   accountMeta.clear();
   for (const a of config.accounts) accountMeta.set(a.id, { color: a.color, label: a.label });
   mutedRepos = new Set(config.mutedRepos);
+  ticketBase = config.ticketBaseUrl;
 
   await renderFromCache();
   await runSync(false);
@@ -355,6 +359,7 @@ function itemHtml({ mr, depth }: StackRow): string {
         ${ciDotHtml(mr)}
         ${approvalsHtml(mr)}
         ${blockChipsHtml(mr)}
+        ${ticketChipHtml(mr)}
         ${depth && mr.targetBranch ? `<span class="stack-hint">↳ ${esc(t("stackedOn", mr.targetBranch))}</span>` : ""}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
@@ -377,6 +382,15 @@ function approvalsHtml(mr: MergeRequest): string {
   if (mr.state !== "open" || mr.approvals === undefined) return "";
   const label = t("approvalsLabel", String(mr.approvals));
   return `<span class="approvals" title="${esc(label)}" aria-label="${esc(label)}">✓ ${mr.approvals}</span>`;
+}
+
+/** Ticket key chip, linked when a ticket base URL is set in Settings. */
+function ticketChipHtml(mr: MergeRequest): string {
+  if (!ticketBase) return "";
+  const key = extractTicketKey(mr);
+  if (!key) return "";
+  const url = buildTicketUrl(ticketBase, key);
+  return `<a class="badge ticket" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(t("ticketLinkTitle", key))}">${esc(key)}</a>`;
 }
 
 /** Reason chips for open MRs that need the user's action. */

@@ -128,6 +128,8 @@ export interface ExtensionConfig {
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
   quietHours: QuietHours;
+  /** Base URL for ticket links (Jira or Linear). Empty = ticket chips are off. */
+  ticketBaseUrl: string;
   /** Send one summary notification per batch instead of one per event. */
   digestNotifications: boolean;
   /** Repos (full names) the user muted: hidden from list, badge, notifications. */

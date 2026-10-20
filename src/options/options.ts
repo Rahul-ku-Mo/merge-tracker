@@ -1,4 +1,5 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
+import { normalizeTicketBase } from "../lib/tickets";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
 import { applyI18n, stateLabel, t } from "../lib/i18n";
 import { getProvider } from "../providers/registry";
@@ -43,6 +44,7 @@ async function load(): Promise<void> {
   requireInput("notifyCiFailed").checked = config.notifyOn.ciFailed;
   requireInput("notifyDigest").checked = config.digestNotifications;
   requireInput("quietEnabled").checked = config.quietHours.enabled;
+  requireInput("ticketBaseUrl").value = config.ticketBaseUrl;
   requireInput("quietStart").value = String(config.quietHours.start);
   requireInput("quietEnd").value = String(config.quietHours.end);
   requireInput("dispThemeControls").checked = config.display.themeControls;
@@ -260,6 +262,7 @@ async function save(): Promise<void> {
       ciFailed: requireInput("notifyCiFailed").checked
     },
     digestNotifications: requireInput("notifyDigest").checked,
+    ticketBaseUrl: normalizeTicketBase(requireInput("ticketBaseUrl").value),
     quietHours: {
       enabled: requireInput("quietEnabled").checked,
       start: clampHour(Number(requireInput("quietStart").value)),

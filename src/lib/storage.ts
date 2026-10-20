@@ -19,6 +19,7 @@ const DEFAULT_CONFIG: ExtensionConfig = {
   },
   quietHours: { enabled: false, start: 22, end: 8 },
   digestNotifications: false,
+  ticketBaseUrl: "",
   mutedRepos: [],
   mode: "system",
   display: {
@@ -101,6 +102,7 @@ export async function getConfig(): Promise<ExtensionConfig> {
     notifyOn: { ...DEFAULT_CONFIG.notifyOn, ...stored.notifyOn },
     quietHours: { ...DEFAULT_CONFIG.quietHours, ...stored.quietHours },
     digestNotifications: stored.digestNotifications ?? DEFAULT_CONFIG.digestNotifications,
+    ticketBaseUrl: typeof stored.ticketBaseUrl === "string" ? stored.ticketBaseUrl : "",
     mutedRepos: Array.isArray(stored.mutedRepos) ? stored.mutedRepos : [],
     mode: stored.mode ?? DEFAULT_CONFIG.mode,
     display: { ...DEFAULT_CONFIG.display, ...stored.display }
