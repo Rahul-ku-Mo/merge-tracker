@@ -10,7 +10,7 @@
   --gh: 222 12% 24%;
   --gl: 22 80% 44%;
   --bb: 212 84% 42%;
-  --rail: 112px;
+  --rail: 128px;
   --s: 1.08;
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color-scheme: light dark;
@@ -45,6 +45,8 @@ a { color: inherit; }
 .btn-primary:hover { background: hsl(var(--primary) / .88); }
 .btn:active { transform: translateY(1px); }
 .btn-lg { height: 52px; padding: 0 28px; font-size: 17px; border-radius: 10px; }
+.btn.pending { background: transparent; color: hsl(var(--primary)); border-color: hsl(var(--primary) / .5); cursor: default; }
+.btn.pending:hover { background: transparent; }
 .link { color: hsl(var(--primary)); font-weight: 600; text-underline-offset: 4px; }
 
 /* ---- the branch graph ---- */
@@ -58,6 +60,8 @@ a { color: inherit; }
 .graph .live.trunk { stroke: hsl(var(--primary)); }
 .graph .node { fill: hsl(var(--bg)); stroke: hsl(var(--line)); stroke-width: 3; transition: fill .25s, stroke .25s; }
 .graph .node.on { fill: hsl(var(--primary)); stroke: hsl(var(--primary)); }
+.graph .label { fill: hsl(var(--muted)); font: 600 12px var(--font); letter-spacing: .01em; }
+.graph .label.on { fill: hsl(var(--fg)); }
 .graph .ring { fill: none; stroke: hsl(var(--bg)); stroke-width: 6; }
 
 section[data-section] { position: relative; }
@@ -86,9 +90,9 @@ h1 { margin: 0 0 24px; font-size: clamp(44px, 6.4vw, 76px); line-height: 1.02; l
 .copy > p { margin: 0 0 24px; font-size: 19px; color: hsl(var(--muted)); }
 .facts { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
 .facts li { position: relative; padding-left: 28px; font-size: 17px; }
-.facts li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 12px; height: 12px; border-radius: 50%; border: 3px solid hsl(var(--primary)); }
+.facts li::before { content: ""; position: absolute; left: 4px; top: .7em; width: 8px; height: 8px; border-radius: 2px; background: hsl(var(--primary)); }
 
-.toasts { width: min(440px, 100%); justify-self: center; }
+.toasts { width: 100%; }
 .toast { display: grid; grid-template-columns: 52px 1fr; gap: 14px; padding: 16px 18px; border-radius: 16px; background: hsl(var(--card)); box-shadow: 0 0 0 1px hsl(var(--line)), 0 18px 40px -12px hsl(215 40% 20% / .3); }
 .toast + .toast { margin-top: 14px; }
 .toast img { width: 52px; height: 52px; border-radius: 12px; }
@@ -97,7 +101,9 @@ h1 { margin: 0 0 24px; font-size: clamp(44px, 6.4vw, 76px); line-height: 1.02; l
 .toast .m { color: hsl(var(--fg) / .85); line-height: 1.35; }
 .toast .a { margin-top: 4px; font-size: 12px; color: hsl(var(--muted)); }
 
-.perms { width: min(520px, 100%); justify-self: center; }
+.perms { width: 100%; }
+.step-perms { grid-template-columns: minmax(0, 1fr) minmax(0, 520px); }
+.step-toasts { grid-template-columns: minmax(0, 1fr) minmax(0, 440px); }
 .perms table { width: 100%; table-layout: fixed; border-collapse: collapse; background: hsl(var(--card)); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px hsl(var(--line)); font-size: 15px; }
 .perms caption { text-align: left; padding: 0 0 12px; font-weight: 700; }
 .perms th, .perms td { padding: 14px 18px; text-align: left; vertical-align: top; border-top: 1px solid hsl(var(--line)); }
@@ -114,19 +120,21 @@ h1 { margin: 0 0 24px; font-size: clamp(44px, 6.4vw, 76px); line-height: 1.02; l
 @media (max-width: 1000px) {
   .hero, .step { grid-template-columns: minmax(0, 1fr); }
   .hero { min-height: 0; padding-top: 56px; }
-  .device, .toasts, .perms { justify-self: start; }
+  .device { justify-self: start; }
+  .step-perms, .step-toasts { grid-template-columns: minmax(0, 1fr); }
   .step { padding: 72px 0; }
 }
 @media (max-width: 560px) {
+  .graph .label { display: none; }
   :root { --rail: 56px; --s: .85; }
   .brand span { font-size: 14px; }
-  .bar .btn { height: 36px; padding: 0 14px; font-size: 14px; }
+  .bar .btn { height: 44px; padding: 0 14px; font-size: 14px; }
   .chip { width: 22px; height: 22px; }
   .chip svg { width: 12px; height: 12px; }
   .foot span:last-child { margin-left: 0; }
 }
 @media (max-width: 420px) {
-  :root { --s: .72; }
+  :root { --s: .66; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
