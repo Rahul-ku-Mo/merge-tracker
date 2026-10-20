@@ -26,6 +26,17 @@ let clipRect;
 let nodes = [];
 let height = 0;
 
+/* Tracing beam: a bright head with a fading tail rides the lit line. The gradient's
+   y1/y2 follow the scroll position through a critically damped spring, so the beam
+   trails the scroll slightly and settles without overshoot. Off under reduced motion. */
+const TAIL = 240;
+let beam = null;
+let beamPos = 0;
+let beamVel = 0;
+let beamTarget = 0;
+let beamRaf = 0;
+let beamLast = 0;
+
 const el = (name, attrs, parent = svg) => {
   const n = document.createElementNS(NS, name);
   for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
@@ -69,6 +80,18 @@ function build() {
   const live = el("g", { "clip-path": `url(#${clipId})` });
   for (const p of paths) el("path", { d: p.d, class: `live ${p.k}` }, live);
 
+  beam = null;
+  if (!reduce) {
+    const defs = el("defs", {});
+    beam = el("linearGradient", { id: "beam", gradientUnits: "userSpaceOnUse", x1: 0, x2: 0, y1: 0, y2: 0 }, defs);
+    // The last stop fades to 0: gradients pad past their ends, so this keeps everything below the head clear.
+    for (const [offset, opacity] of [[0, 0], [0.65, 0.5], [0.96, 1], [1, 0]]) {
+      el("stop", { offset, "stop-opacity": opacity, class: "beam-stop" }, beam);
+    }
+    const beams = el("g", {});
+    for (const p of paths) el("path", { d: p.d, class: "beam" }, beams);
+  }
+
   const marks = [{ cy: mergeY, text: "merged" }];
   for (const s of document.querySelectorAll("[data-node]")) {
     const h = s.querySelector("h2");
@@ -87,6 +110,33 @@ function build() {
   end.c = el("circle", { cx: endX, cy: endY, r: 6, class: "node" });
   nodes.push(end);
   update();
+  // Start the beam at the scroll position instead of springing in from the top.
+  beamPos = beamTarget;
+  beamVel = 0;
+  paintBeam();
+}
+
+function paintBeam() {
+  if (!beam) return;
+  beam.setAttribute("y1", beamPos - TAIL);
+  beam.setAttribute("y2", beamPos);
+}
+
+function tickBeam(now) {
+  const dt = Math.min(0.05, (now - (beamLast || now)) / 1000);
+  beamLast = now;
+  // Spring: stiffness 120, damping 22 (about critical, no overshoot).
+  beamVel += ((beamTarget - beamPos) * 120 - beamVel * 22) * dt;
+  beamPos += beamVel * dt;
+  paintBeam();
+  if (Math.abs(beamTarget - beamPos) > 0.5 || Math.abs(beamVel) > 0.5) {
+    beamRaf = requestAnimationFrame(tickBeam);
+  } else {
+    beamRaf = 0;
+    beamLast = 0;
+    beamPos = beamTarget;
+    paintBeam();
+  }
 }
 
 function update() {
@@ -94,6 +144,8 @@ function update() {
   const top = flow.getBoundingClientRect().top + scrollY;
   const line = scrollY + innerHeight * 0.62 - top;
   if (!reduce) clipRect.setAttribute("height", Math.max(0, Math.min(height, line)));
+  beamTarget = line;
+  if (beam && !beamRaf) beamRaf = requestAnimationFrame(tickBeam);
   for (const n of nodes) {
     const on = reduce || n.cy < line;
     n.c.classList.toggle("on", on);
