@@ -819,6 +819,16 @@ h1 {
   box-shadow: none;
 }
 
+button.footer-link {
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.footer-link[hidden] {
+  display: none;
+}
+
 .footer-meta {
   font-size: 10px;
   letter-spacing: 0;

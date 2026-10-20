@@ -433,5 +433,32 @@
   },
   "digestMore": {
     "message": "+$1 more"
+  },
+  "standupButton": {
+    "message": "Standup"
+  },
+  "standupButtonTitle": {
+    "message": "Copy a standup summary as Markdown"
+  },
+  "standupTitle": {
+    "message": "Standup $1"
+  },
+  "standupMerged": {
+    "message": "Merged (last 24h)"
+  },
+  "standupWaiting": {
+    "message": "Waiting on review"
+  },
+  "standupCi": {
+    "message": "Failing CI on my MRs"
+  },
+  "standupReviews": {
+    "message": "Reviews I owe"
+  },
+  "standupNone": {
+    "message": "None"
+  },
+  "standupCopied": {
+    "message": "Standup copied"
   }
 }

@@ -14,6 +14,7 @@ import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
 import { type BlockReason, blockReasons } from "../lib/blocked";
+import { buildStandup } from "../lib/standup";
 import type {
   CiStatus,
   ExtensionConfig,
@@ -40,6 +41,7 @@ const emptyDescEl = emptyEl.querySelector<HTMLParagraphElement>(".empty-desc");
 const syncBtn = requireElement<HTMLButtonElement>("sync-btn");
 const lastSyncEl = requireElement<HTMLSpanElement>("last-sync");
 const optionsLink = requireElement<HTMLAnchorElement>("options-link");
+const standupBtn = requireElement<HTMLButtonElement>("standup-btn");
 const searchEl = requireElement<HTMLInputElement>("search-input");
 const helpEl = requireElement<HTMLDivElement>("kbd-help");
 const helpCloseBtn = requireElement<HTMLButtonElement>("kbd-help-close");
@@ -105,6 +107,7 @@ async function enterMainView(): Promise<void> {
   connectPanel?.hide();
   statusEl.hidden = false;
   syncBtn.hidden = false;
+  standupBtn.hidden = false;
 
   const config = await getConfig();
   accountMeta.clear();
@@ -122,6 +125,7 @@ function showConnectView(): void {
   emptyEl.hidden = true;
   mutedBar.hidden = true;
   syncBtn.hidden = true;
+  standupBtn.hidden = true;
   lastSyncEl.textContent = "";
   connectPanel?.show();
 }
@@ -440,6 +444,7 @@ function attachListeners(): void {
     void persistPrefsAndRender();
   });
   openAllBtn.addEventListener("click", () => openAllVisible());
+  standupBtn.addEventListener("click", () => void copyStandup());
   unmuteBtn.addEventListener("click", () => void unmuteAll());
 
   listEl.addEventListener("click", (e) => {
@@ -571,6 +576,17 @@ async function copyLink(url: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(url);
     flashStatus(t("linkCopied"));
+  } catch {
+    flashStatus(t("copyFailed"));
+  }
+}
+
+/** Copy a Markdown standup of the synced MRs (ignores filters, skips muted projects). */
+async function copyStandup(): Promise<void> {
+  const visible = allMrs.filter((mr) => !mutedRepos.has(mr.repo));
+  try {
+    await navigator.clipboard.writeText(buildStandup(visible, new Date()));
+    flashStatus(t("standupCopied"));
   } catch {
     flashStatus(t("copyFailed"));
   }

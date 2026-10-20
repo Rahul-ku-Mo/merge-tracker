@@ -433,5 +433,32 @@
   },
   "digestMore": {
     "message": "ほか $1 件"
+  },
+  "standupButton": {
+    "message": "スタンドアップ"
+  },
+  "standupButtonTitle": {
+    "message": "スタンドアップ用のまとめをMarkdownでコピー"
+  },
+  "standupTitle": {
+    "message": "スタンドアップ $1"
+  },
+  "standupMerged": {
+    "message": "マージ済み（直近24時間）"
+  },
+  "standupWaiting": {
+    "message": "レビュー待ち"
+  },
+  "standupCi": {
+    "message": "自分のMRでCI失敗"
+  },
+  "standupReviews": {
+    "message": "自分が対応すべきレビュー"
+  },
+  "standupNone": {
+    "message": "なし"
+  },
+  "standupCopied": {
+    "message": "スタンドアップをコピーしました"
   }
 }
