@@ -391,5 +391,17 @@
   },
   "approvalsLabel": {
     "message": "Approvals: $1"
+  },
+  "stateBlocked": {
+    "message": "Blocked on me"
+  },
+  "blockReview": {
+    "message": "Review owed"
+  },
+  "blockCi": {
+    "message": "My CI failing"
+  },
+  "blockThreads": {
+    "message": "Unresolved threads"
   }
 }

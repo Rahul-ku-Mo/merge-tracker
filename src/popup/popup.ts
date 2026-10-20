@@ -13,6 +13,7 @@ import { initModeControl } from "../lib/theme";
 import { hydrateIcons, iconSvg } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
+import { type BlockReason, blockReasons } from "../lib/blocked";
 import type {
   CiStatus,
   ExtensionConfig,
@@ -212,7 +213,11 @@ function applyAndRender(): void {
 
 function matchesFilters(mr: MergeRequest): boolean {
   if (prefs.project !== "all" && mr.repo !== prefs.project) return false;
-  if (prefs.state !== "all" && mr.state !== prefs.state) return false;
+  if (prefs.state === "blocked") {
+    if (!blockReasons(mr).length) return false;
+  } else if (prefs.state !== "all" && mr.state !== prefs.state) {
+    return false;
+  }
   if (searchQuery && !matchesSearch(mr)) return false;
   return true;
 }
@@ -344,6 +349,7 @@ function itemHtml(mr: MergeRequest): string {
         ${mr.draft ? `<span class="badge draft">${t("draft")}</span>` : ""}
         ${ciDotHtml(mr)}
         ${approvalsHtml(mr)}
+        ${blockChipsHtml(mr)}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
         <span class="mr-meta-sep">·</span>
@@ -366,6 +372,19 @@ function approvalsHtml(mr: MergeRequest): string {
   const label = t("approvalsLabel", String(mr.approvals));
   return `<span class="approvals" title="${esc(label)}" aria-label="${esc(label)}">✓ ${mr.approvals}</span>`;
 }
+
+/** Reason chips for open MRs that need the user's action. */
+function blockChipsHtml(mr: MergeRequest): string {
+  return blockReasons(mr)
+    .map((reason) => `<span class="badge block-reason">${t(BLOCK_LABEL_KEY[reason])}</span>`)
+    .join("");
+}
+
+const BLOCK_LABEL_KEY: Record<BlockReason, string> = {
+  review: "blockReview",
+  ci: "blockCi",
+  threads: "blockThreads"
+};
 
 const CI_LABEL_KEY: Record<Exclude<CiStatus, "none">, string> = {
   pass: "ciPass",
@@ -412,7 +431,7 @@ function attachListeners(): void {
     void persistPrefsAndRender();
   });
   stateEl.addEventListener("change", () => {
-    prefs.state = stateEl.value as NormalizedState | "all";
+    prefs.state = stateEl.value as PopupPrefs["state"];
     void persistPrefsAndRender();
   });
   sortBtn.addEventListener("click", () => {

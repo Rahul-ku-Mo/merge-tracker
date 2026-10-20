@@ -391,5 +391,17 @@
   },
   "approvalsLabel": {
     "message": "承認: $1"
+  },
+  "stateBlocked": {
+    "message": "自分の対応待ち"
+  },
+  "blockReview": {
+    "message": "レビュー待ち"
+  },
+  "blockCi": {
+    "message": "自分のMRのCI失敗"
+  },
+  "blockThreads": {
+    "message": "未解決のスレッド"
   }
 }

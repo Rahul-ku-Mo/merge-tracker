@@ -26,7 +26,7 @@ interface BitbucketPr {
   draft?: boolean;
   updated_on: string;
   links?: { html?: { href?: string } };
-  author?: { display_name?: string; nickname?: string };
+  author?: { display_name?: string; nickname?: string; uuid?: string };
   destination?: { repository?: { full_name?: string } };
 }
 
@@ -99,7 +99,17 @@ export const bitbucketProvider: Provider = {
     return [...byKey.values()];
   },
 
-  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+  async fetchIdentity(account: Account): Promise<string> {
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const me = await fetchJson<BitbucketUser>(`${base}/user`, buildAuthHeader(account));
+    return me.uuid;
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
     const authHeader = buildAuthHeader(account);
     const base = normalizeHost(account.host) || DEFAULT_HOST;
     const prUrl = `${base}/repositories/${mr.repo}/pullrequests/${mr.number}`;
@@ -113,16 +123,22 @@ export const bitbucketProvider: Provider = {
         )
       : { values: [] };
 
+    const participants = pr.participants ?? [];
+    const reviewRequestedFromMe = me
+      ? participants.some((p) => p.role === "REVIEWER" && p.user?.uuid === me && !p.approved)
+      : undefined;
+
     return {
       ci: bitbucketCi(statuses.values ?? []),
-      approvals: (pr.participants ?? []).filter((p) => p.approved).length
+      approvals: participants.filter((p) => p.approved).length,
+      reviewRequestedFromMe
     };
   }
 };
 
 interface BitbucketPrDetail {
   source?: { commit?: { hash?: string } };
-  participants?: { approved?: boolean }[];
+  participants?: { role?: string; approved?: boolean; user?: { uuid?: string } }[];
 }
 
 interface BitbucketStatusPage {
@@ -194,6 +210,7 @@ function toMergeRequest(
     author: pr.author?.display_name ?? pr.author?.nickname ?? "unknown",
     repo,
     updatedAt: pr.updated_on,
-    draft: Boolean(pr.draft)
+    draft: Boolean(pr.draft),
+    authorId: pr.author?.uuid
   };
 }

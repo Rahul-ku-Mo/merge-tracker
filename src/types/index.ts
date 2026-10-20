@@ -79,6 +79,17 @@ export interface MergeRequest {
    * GitHub = reviewers whose latest review is "Approved"; Bitbucket = participants who approved.
    */
   approvals?: number;
+  /** Provider user id of the author (GitLab username, GitHub login, Bitbucket uuid). */
+  authorId?: string;
+  /** True when the signed-in user (per account) is the author. */
+  authoredByMe?: boolean;
+  /** True while a review is requested from the signed-in user and not yet given. */
+  reviewRequestedFromMe?: boolean;
+  /**
+   * GitLab only: false when the MR has unresolved threads that block merge.
+   * GitHub's REST API does not expose review-thread resolution, so this stays undefined there.
+   */
+  threadsResolved?: boolean;
 }
 
 /**
@@ -115,7 +126,8 @@ export type MrSortKey = "updated_desc" | "updated_asc";
 /** Popup filter/sort selections, persisted so they survive reopening. */
 export interface PopupPrefs {
   project: string;
-  state: NormalizedState | "all";
+  /** "blocked" = open MRs that need the signed-in user's action (see lib/blocked.ts). */
+  state: NormalizedState | "all" | "blocked";
   sort: MrSortKey;
 }
 

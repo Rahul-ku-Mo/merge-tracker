@@ -111,14 +111,29 @@ export const githubProvider: Provider = {
     return [...byKey.values()];
   },
 
-  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+  async fetchIdentity(account: Account): Promise<string> {
+    const base = normalizeHost(account.host) || DEFAULT_HOST;
+    const user = await getGitHubJson<{ login?: string }>(`${base}/user`, account.token.trim());
+    if (!user.login) throw new ProviderApiError("Could not resolve GitHub login.");
+    return user.login;
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
     const token = account.token.trim();
     const base = normalizeHost(account.host) || DEFAULT_HOST;
     const pullUrl = `${base}/repos/${mr.repo}/pulls/${mr.number}`;
 
     const pull = await getGitHubJson<GitHubPullDetail>(pullUrl, token);
     const sha = pull.head?.sha;
-    if (!sha) return {};
+    // Requested reviewers drop off once they submit a review, so presence means "still owed".
+    const reviewRequestedFromMe = me
+      ? (pull.requested_reviewers ?? []).some((r) => r.login === me)
+      : undefined;
+    if (!sha) return { reviewRequestedFromMe };
 
     const [checks, status, reviews] = await Promise.all([
       getGitHubJson<GitHubCheckRuns>(`${base}/repos/${mr.repo}/commits/${sha}/check-runs?per_page=100`, token),
@@ -128,13 +143,15 @@ export const githubProvider: Provider = {
 
     return {
       ci: githubCi(checks.check_runs ?? [], status),
-      approvals: countApprovals(reviews)
+      approvals: countApprovals(reviews),
+      reviewRequestedFromMe
     };
   }
 };
 
 interface GitHubPullDetail {
   head?: { sha?: string };
+  requested_reviewers?: { login?: string }[];
 }
 
 interface GitHubCheckRuns {
@@ -253,6 +270,7 @@ function toMergeRequest(account: Account, item: GitHubIssueItem): MergeRequest {
     author: item.user?.login ?? "unknown",
     repo,
     updatedAt: item.updated_at,
-    draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title)
+    draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title),
+    authorId: item.user?.login
   };
 }

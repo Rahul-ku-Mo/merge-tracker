@@ -826,3 +826,10 @@ h1 {
   color: hsl(var(--muted-foreground));
   text-align: right;
 }
+
+/* Reason chip on open MRs that need the user's action (Blocked on me). */
+.badge.block-reason {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border: 1px solid hsl(var(--ink));
+}

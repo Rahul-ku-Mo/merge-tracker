@@ -79,7 +79,15 @@ export const gitlabProvider: Provider = {
     return [...byKey.values()];
   },
 
-  async enrichMergeRequest(account: Account, mr: MergeRequest): Promise<Partial<MergeRequest>> {
+  async fetchIdentity(account: Account): Promise<string> {
+    return fetchUsername(normalizeHost(account.host) || DEFAULT_HOST, account.token.trim());
+  },
+
+  async enrichMergeRequest(
+    account: Account,
+    mr: MergeRequest,
+    me: string | undefined
+  ): Promise<Partial<MergeRequest>> {
     const token = account.token.trim();
     const base = normalizeHost(account.host) || DEFAULT_HOST;
     // The URL-encoded "group/project" path works as the project identifier.
@@ -90,19 +98,28 @@ export const gitlabProvider: Provider = {
       getGitLabJson<GitLabApprovals>(`${mrUrl}/approvals`, token).catch(() => undefined)
     ]);
 
+    const approvedBy = (approvals?.approved_by ?? []).map((a) => a.user?.username);
+    const reviewRequestedFromMe = me
+      ? (detail.reviewers ?? []).some((r) => r.username === me) && !approvedBy.includes(me)
+      : undefined;
+
     return {
       ci: gitlabCi(detail.head_pipeline?.status ?? undefined),
-      approvals: approvals?.approved_by?.length
+      approvals: approvals?.approved_by?.length,
+      threadsResolved: detail.blocking_discussions_resolved,
+      reviewRequestedFromMe
     };
   }
 };
 
 interface GitLabMrDetail {
   head_pipeline?: { status?: string } | null;
+  reviewers?: { username?: string }[];
+  blocking_discussions_resolved?: boolean;
 }
 
 interface GitLabApprovals {
-  approved_by?: unknown[];
+  approved_by?: { user?: { username?: string } }[];
 }
 
 /** GitLab pipeline status → normalized CI status. */
@@ -201,6 +218,7 @@ function toMergeRequest(
     author: mr.author?.name ?? mr.author?.username ?? "unknown",
     repo,
     updatedAt: mr.updated_at,
-    draft: Boolean(mr.draft ?? mr.work_in_progress)
+    draft: Boolean(mr.draft ?? mr.work_in_progress),
+    authorId: mr.author?.username
   };
 }
