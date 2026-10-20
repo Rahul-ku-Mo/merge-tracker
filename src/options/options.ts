@@ -1,6 +1,8 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
 import { getProvider } from "../providers/registry";
+import { initThemeControls } from "../lib/theme";
+import { ensureHostPermissions } from "../lib/permissions";
 import type { Account, MrScope, NormalizedState, ProviderId } from "../types/index";
 
 const form = requireForm("config-form");
@@ -13,6 +15,7 @@ const saveStatus = requireElement<HTMLSpanElement>("save-status");
 const SCOPES: { value: MrScope; label: string }[] = [
   { value: "assigned_to_me", label: "Assigned to me" },
   { value: "created_by_me", label: "Created by me" },
+  { value: "needs_my_review", label: "Needs my review" },
   { value: "all", label: "All I'm involved in" }
 ];
 
@@ -22,10 +25,22 @@ let accounts: Account[] = [];
 
 async function load(): Promise<void> {
   const config = await getConfig();
+  initThemeControls({
+    selectId: "theme-select",
+    toggleId: "mode-toggle",
+    theme: config.theme,
+    mode: config.mode,
+    onChange: (theme, mode) => void setConfig({ theme, mode })
+  });
   accounts = config.accounts;
   requireInput("syncIntervalMinutes").value = String(config.syncIntervalMinutes);
   requireInput("notifyNewMr").checked = config.notifyOn.newMr;
   requireInput("notifyStatusChange").checked = config.notifyOn.statusChange;
+  requireInput("dispThemeControls").checked = config.display.themeControls;
+  requireInput("dispFilters").checked = config.display.filters;
+  requireInput("dispSort").checked = config.display.sort;
+  requireInput("dispOpenAll").checked = config.display.openAll;
+  requireInput("dispCredit").checked = config.display.credit;
   render();
 }
 
@@ -76,6 +91,7 @@ function accountCard(account: Account): string {
     <div class="account-card card" data-id="${esc(account.id)}">
       <div class="account-head">
         <div class="account-title">
+          <input class="account-color" type="color" data-field="color" value="${esc(account.color)}" title="Account color" />
           <span class="badge provider-${account.provider}">${esc(provider.label)}</span>
           <input class="input account-label" data-field="label" value="${esc(account.label)}" placeholder="Label" />
         </div>
@@ -129,7 +145,8 @@ function collectAccounts(): Account[] {
       scope: (card.querySelector<HTMLSelectElement>('[data-field="scope"]')?.value ??
         "assigned_to_me") as MrScope,
       states: states.length ? states : ["open"],
-      enabled: card.querySelector<HTMLInputElement>('[data-field="enabled"]')?.checked ?? true
+      enabled: card.querySelector<HTMLInputElement>('[data-field="enabled"]')?.checked ?? true,
+      color: field("color") || existing?.color || "#e8590c"
     };
   });
 }
@@ -137,7 +154,7 @@ function collectAccounts(): Account[] {
 addBtn.addEventListener("click", () => {
   const provider = newProviderSelect.value as ProviderId;
   accounts = collectAccounts();
-  accounts.push(createAccount(provider, getProvider(provider).label));
+  accounts.push(createAccount(provider, getProvider(provider).label, accounts.length));
   render();
 });
 
@@ -179,6 +196,13 @@ async function save(): Promise<void> {
       newMr: requireInput("notifyNewMr").checked,
       statusChange: requireInput("notifyStatusChange").checked,
       newComment: false
+    },
+    display: {
+      themeControls: requireInput("dispThemeControls").checked,
+      filters: requireInput("dispFilters").checked,
+      sort: requireInput("dispSort").checked,
+      openAll: requireInput("dispOpenAll").checked,
+      credit: requireInput("dispCredit").checked
     }
   });
 
@@ -196,40 +220,6 @@ async function save(): Promise<void> {
   setTimeout(() => {
     saveStatus.textContent = "";
   }, 3000);
-}
-
-/** Turn a host URL into a Chrome match pattern, e.g. https://gitlab.acme.com/*. */
-function originPattern(host: string): string | null {
-  try {
-    const url = new URL(host);
-    return `${url.protocol}//${url.host}/*`;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Request host permission for any account using a custom (self-hosted) host.
- * Default cloud hosts are already covered by the manifest, so accounts that
- * leave host blank need nothing here. Must be called within a user gesture.
- */
-async function ensureHostPermissions(list: Account[]): Promise<boolean> {
-  const origins = new Set<string>();
-  for (const account of list) {
-    if (!account.enabled) continue;
-    const host = account.host.trim();
-    if (!host) continue;
-    const pattern = originPattern(host);
-    if (pattern) origins.add(pattern);
-  }
-
-  if (!origins.size) return true;
-
-  const requested = [...origins];
-  if (await chrome.permissions.contains({ origins: requested })) {
-    return true;
-  }
-  return chrome.permissions.request({ origins: requested });
 }
 
 function esc(str: string): string {

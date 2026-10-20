@@ -11,6 +11,7 @@ import type {
 
 interface PendingNotification {
   id: string;
+  url: string;
   options: chrome.notifications.NotificationOptions<true>;
 }
 
@@ -21,6 +22,7 @@ export async function syncMergeRequests({
   const enabled = config.accounts.filter((a) => a.enabled && a.token.trim());
 
   if (!enabled.length) {
+    await updateBadge(0);
     return { ok: false, error: "No connected accounts. Open Settings.", reason };
   }
 
@@ -54,16 +56,19 @@ export async function syncMergeRequests({
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 
-  const notifications = diffAndBuildNotifications(prevByKey, mergeRequests, config, reason);
-  for (const n of notifications) {
-    await chrome.notifications.create(`mr-${n.id}`, n.options);
-  }
+  const muted = new Set(config.mutedRepos);
+  const visible = mergeRequests.filter((mr) => !muted.has(mr.repo));
+
+  const notifications = diffAndBuildNotifications(prevByKey, visible, config, reason);
+  await dispatchNotifications(notifications);
 
   await setMrSnapshot({
     mergeRequests,
     lastSyncAt: new Date().toISOString(),
     lastSyncReason: reason
   });
+
+  await updateBadge(visible.filter((mr) => mr.state === "open").length);
 
   return {
     ok: true,
@@ -76,6 +81,30 @@ export async function syncMergeRequests({
 
 function fetchAccount(account: Account): Promise<MergeRequest[]> {
   return getProvider(account.provider).fetchMergeRequests(account);
+}
+
+/** Show the open-MR count on the toolbar icon. */
+async function updateBadge(count: number): Promise<void> {
+  await chrome.action.setBadgeBackgroundColor({ color: "#bd4d12" });
+  await chrome.action.setBadgeText({ text: count > 0 ? String(count) : "" });
+}
+
+async function dispatchNotifications(notifications: PendingNotification[]): Promise<void> {
+  if (!notifications.length) return;
+
+  const links: Record<string, string> = {};
+  for (const n of notifications) {
+    const notificationId = `mr-${n.id}`;
+    await chrome.notifications.create(notificationId, n.options);
+    if (n.url) links[notificationId] = n.url;
+  }
+
+  // Persist id → URL so the service worker can open the right MR on click,
+  // even after it has been suspended and restarted.
+  const { notifLinks } = await chrome.storage.local.get("notifLinks");
+  await chrome.storage.local.set({
+    notifLinks: { ...(notifLinks as Record<string, string> | undefined), ...links }
+  });
 }
 
 function diffAndBuildNotifications(
@@ -93,6 +122,7 @@ function diffAndBuildNotifications(
     if (!prev && notifyOn.newMr && reason !== "install") {
       out.push({
         id: `new-${mr.key}`,
+        url: mr.url,
         options: notificationFor(`New PR · ${mr.accountLabel}`, mr.title)
       });
       continue;
@@ -101,6 +131,7 @@ function diffAndBuildNotifications(
     if (prev && prev.state !== mr.state && notifyOn.statusChange) {
       out.push({
         id: `status-${mr.key}-${mr.state}`,
+        url: mr.url,
         options: notificationFor("Status changed", `${mr.title} → ${mr.state}`)
       });
     }

@@ -8,8 +8,19 @@
 
 export type ProviderId = "gitlab" | "github" | "bitbucket";
 
+export type ThemeId =
+  | "retro"
+  | "shadcn"
+  | "ocean"
+  | "nord"
+  | "dracula"
+  | "solarized"
+  | "github";
+
+export type ThemeMode = "light" | "dark" | "system";
+
 /** What the user wants to track. Each provider maps this to its own filters. */
-export type MrScope = "assigned_to_me" | "created_by_me" | "all";
+export type MrScope = "assigned_to_me" | "created_by_me" | "needs_my_review" | "all";
 
 /** Normalized MR lifecycle state across all providers. */
 export type NormalizedState = "open" | "merged" | "closed";
@@ -41,6 +52,8 @@ export interface Account {
   scope: MrScope;
   states: NormalizedState[];
   enabled: boolean;
+  /** Accent color for visually distinguishing this account in the list. */
+  color: string;
 }
 
 /** A single merge/pull request, normalized from any provider. */
@@ -57,12 +70,57 @@ export interface MergeRequest {
   author: string;
   repo: string;
   updatedAt: string;
+  /** Draft / work-in-progress flag, when the provider exposes it cheaply. */
+  draft: boolean;
+}
+
+/**
+ * Popup chrome the user can hide to declutter / reclaim space.
+ * All default to true (everything shown).
+ */
+export interface DisplayPrefs {
+  /** Theme <select> + light/dark toggle in the popup header. */
+  themeControls: boolean;
+  /** Project + state filter dropdowns. */
+  filters: boolean;
+  /** Sort (newest/oldest) toggle button. */
+  sort: boolean;
+  /** "Open all in tabs" button. */
+  openAll: boolean;
+  /** "Crafted by Rahul K M" maker's mark. */
+  credit: boolean;
 }
 
 export interface ExtensionConfig {
   accounts: Account[];
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
+  /** Repos (full names) the user muted: hidden from list, badge, notifications. */
+  mutedRepos: string[];
+  theme: ThemeId;
+  mode: ThemeMode;
+  /** Which popup controls to show. */
+  display: DisplayPrefs;
+}
+
+/** Newest-first or oldest-first by update time. */
+export type MrSortKey = "updated_desc" | "updated_asc";
+
+/** Popup filter/sort selections, persisted so they survive reopening. */
+export interface PopupPrefs {
+  project: string;
+  state: NormalizedState | "all";
+  sort: MrSortKey;
+}
+
+/**
+ * Local view state for unread/seen tracking.
+ * - seen: key → the updatedAt we last showed, so newer updates can be flagged.
+ * - opened: keys the user has clicked through to.
+ */
+export interface UiState {
+  seen: Record<string, string>;
+  opened: string[];
 }
 
 export type SyncReason = "manual" | "alarm" | "install";

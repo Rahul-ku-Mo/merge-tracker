@@ -15,20 +15,20 @@ export default defineManifest({
   version,
   description,
   author: {
-    email: "rajamohanty12345@gmail.com"
+    email: "rajamohanty12345@gmail.com",
   },
   icons: {
     16: "icons/icon16.png",
     48: "icons/icon48.png",
-    128: "icons/icon128.png"
+    128: "icons/icon128.png",
   },
   action: {
     default_popup: "src/popup/popup.html",
-    default_title: "Merge Requests"
+    default_title: "Merge Requests",
   },
   background: {
     service_worker: "src/background/service-worker.ts",
-    type: "module"
+    type: "module",
   },
   options_page: "src/options/options.html",
   permissions: ["storage", "alarms", "notifications"],
@@ -37,10 +37,10 @@ export default defineManifest({
   host_permissions: [
     "https://gitlab.com/*",
     "https://api.github.com/*",
-    "https://api.bitbucket.org/*"
+    "https://api.bitbucket.org/*",
   ],
   // Optional: self-hosted GitLab / GitHub Enterprise. Requested at runtime
   // (with a user gesture) only when someone adds a custom host, so most users
   // never grant it.
-  optional_host_permissions: ["https://*/*"]
+  optional_host_permissions: ["https://*/*"],
 });

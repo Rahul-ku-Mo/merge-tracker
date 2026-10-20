@@ -1,4 +1,11 @@
-import type { Account, ExtensionConfig, MrSnapshot, NormalizedState } from "../types/index";
+import type {
+  Account,
+  ExtensionConfig,
+  MrSnapshot,
+  NormalizedState,
+  PopupPrefs,
+  UiState
+} from "../types/index";
 
 const DEFAULT_CONFIG: ExtensionConfig = {
   accounts: [],
@@ -7,8 +14,21 @@ const DEFAULT_CONFIG: ExtensionConfig = {
     newMr: true,
     statusChange: true,
     newComment: false
+  },
+  mutedRepos: [],
+  theme: "shadcn",
+  mode: "system",
+  display: {
+    themeControls: true,
+    filters: true,
+    sort: true,
+    openAll: true,
+    credit: true
   }
 };
+
+/** Accent colors cycled through as accounts are added. */
+const ACCOUNT_COLORS = ["#e8590c", "#1971c2", "#2f9e44", "#9c36b5", "#e03131", "#0c8599"];
 
 /** Old single-account (GitLab-only) config shape, kept for migration. */
 interface LegacyConfig {
@@ -46,9 +66,18 @@ function migrateLegacy(raw: LegacyConfig): Account[] {
       token: raw.accessToken,
       scope: raw.scope ?? "assigned_to_me",
       states: normalizeLegacyStates(raw.states),
-      enabled: true
+      enabled: true,
+      color: ACCOUNT_COLORS[0]
     }
   ];
+}
+
+/** Backfill fields that older stored accounts may be missing. */
+function normalizeAccount(account: Account, index: number): Account {
+  return {
+    ...account,
+    color: account.color || ACCOUNT_COLORS[index % ACCOUNT_COLORS.length]
+  };
 }
 
 export async function getConfig(): Promise<ExtensionConfig> {
@@ -59,14 +88,18 @@ export async function getConfig(): Promise<ExtensionConfig> {
     return { ...DEFAULT_CONFIG };
   }
 
-  const accounts = Array.isArray(stored.accounts)
+  const rawAccounts = Array.isArray(stored.accounts)
     ? stored.accounts
     : migrateLegacy(stored);
 
   return {
-    accounts,
+    accounts: rawAccounts.map(normalizeAccount),
     syncIntervalMinutes: stored.syncIntervalMinutes ?? DEFAULT_CONFIG.syncIntervalMinutes,
-    notifyOn: { ...DEFAULT_CONFIG.notifyOn, ...stored.notifyOn }
+    notifyOn: { ...DEFAULT_CONFIG.notifyOn, ...stored.notifyOn },
+    mutedRepos: Array.isArray(stored.mutedRepos) ? stored.mutedRepos : [],
+    theme: stored.theme ?? DEFAULT_CONFIG.theme,
+    mode: stored.mode ?? DEFAULT_CONFIG.mode,
+    display: { ...DEFAULT_CONFIG.display, ...stored.display }
   };
 }
 
@@ -77,7 +110,11 @@ export async function setConfig(partial: Partial<ExtensionConfig>): Promise<Exte
   return next;
 }
 
-export function createAccount(provider: Account["provider"], label: string): Account {
+export function createAccount(
+  provider: Account["provider"],
+  label: string,
+  index = 0
+): Account {
   return {
     id: generateId(),
     provider,
@@ -88,7 +125,8 @@ export function createAccount(provider: Account["provider"], label: string): Acc
     workspace: "",
     scope: "assigned_to_me",
     states: ["open"],
-    enabled: true
+    enabled: true,
+    color: ACCOUNT_COLORS[index % ACCOUNT_COLORS.length]
   };
 }
 
@@ -102,4 +140,29 @@ export async function setMrSnapshot(snapshot: MrSnapshot): Promise<void> {
   await chrome.storage.local.set({ mrSnapshot: snapshot });
 }
 
-export type { Account, ExtensionConfig, MrSnapshot };
+const DEFAULT_POPUP_PREFS: PopupPrefs = {
+  project: "all",
+  state: "all",
+  sort: "updated_desc"
+};
+
+export async function getPopupPrefs(): Promise<PopupPrefs> {
+  const { popupPrefs } = await chrome.storage.local.get("popupPrefs");
+  return { ...DEFAULT_POPUP_PREFS, ...(popupPrefs as Partial<PopupPrefs> | undefined) };
+}
+
+export async function setPopupPrefs(prefs: PopupPrefs): Promise<void> {
+  await chrome.storage.local.set({ popupPrefs: prefs });
+}
+
+export async function getUiState(): Promise<UiState> {
+  const { uiState } = await chrome.storage.local.get("uiState");
+  const state = uiState as Partial<UiState> | undefined;
+  return { seen: state?.seen ?? {}, opened: state?.opened ?? [] };
+}
+
+export async function setUiState(state: UiState): Promise<void> {
+  await chrome.storage.local.set({ uiState: state });
+}
+
+export type { Account, ExtensionConfig, MrSnapshot, PopupPrefs, UiState };

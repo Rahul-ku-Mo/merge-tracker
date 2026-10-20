@@ -15,6 +15,19 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   }
 });
 
+// Open the corresponding merge request when its notification is clicked.
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  const { notifLinks } = await chrome.storage.local.get("notifLinks");
+  const links = (notifLinks as Record<string, string> | undefined) ?? {};
+  const url = links[notificationId];
+  if (url) {
+    await chrome.tabs.create({ url });
+    chrome.notifications.clear(notificationId);
+    delete links[notificationId];
+    await chrome.storage.local.set({ notifLinks: links });
+  }
+});
+
 chrome.runtime.onMessage.addListener(
   (
     message: ExtensionMessage,

@@ -22,6 +22,7 @@ interface BitbucketPr {
   id: number;
   title: string;
   state: string;
+  draft?: boolean;
   updated_on: string;
   links?: { html?: { href?: string } };
   author?: { display_name?: string; nickname?: string };
@@ -154,6 +155,7 @@ function toMergeRequest(
     url: pr.links?.html?.href ?? "",
     author: pr.author?.display_name ?? pr.author?.nickname ?? "unknown",
     repo,
-    updatedAt: pr.updated_on
+    updatedAt: pr.updated_on,
+    draft: Boolean(pr.draft)
   };
 }

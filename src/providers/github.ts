@@ -7,6 +7,7 @@ const DEFAULT_HOST = "https://api.github.com";
 const SCOPE_QUALIFIER: Record<MrScope, string> = {
   assigned_to_me: "assignee:@me",
   created_by_me: "author:@me",
+  needs_my_review: "review-requested:@me",
   all: "involves:@me"
 };
 
@@ -21,6 +22,7 @@ interface GitHubIssueItem {
   number: number;
   title: string;
   state: string;
+  draft?: boolean;
   html_url: string;
   updated_at: string;
   repository_url: string;
@@ -147,6 +149,7 @@ function toMergeRequest(account: Account, item: GitHubIssueItem): MergeRequest {
     url: item.html_url,
     author: item.user?.login ?? "unknown",
     repo,
-    updatedAt: item.updated_at
+    updatedAt: item.updated_at,
+    draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title)
   };
 }

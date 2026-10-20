@@ -28,6 +28,72 @@
               <p class="settings-sub">Merge Request Tracker</p>
             </div>
           </div>
+          <div class="theme-controls">
+            <select
+              id="theme-select"
+              class="select"
+              aria-label="Theme"
+            ></select>
+            <button
+              id="mode-toggle"
+              class="icon-btn"
+              type="button"
+              title="Theme mode (system / light / dark)"
+            >
+              <svg
+                class="mode-moon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+              <svg
+                class="mode-sun"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" />
+                <path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="m6.34 17.66-1.41 1.41" />
+                <path d="m19.07 4.93-1.41 1.41" />
+              </svg>
+              <svg
+                class="mode-system"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="20" height="14" x="2" y="3" rx="2" />
+                <line x1="8" x2="16" y1="21" y2="21" />
+                <line x1="12" x2="12" y1="17" y2="21" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         <p class="lead">
@@ -91,6 +157,35 @@
               <label class="check-row">
                 <input type="checkbox" id="notifyStatusChange" checked />
                 Notify on status change
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section card">
+            <h2 class="section-title">Popup display</h2>
+            <p class="hint">
+              Hide controls you don't use to reclaim space in the popup.
+            </p>
+            <div class="checks">
+              <label class="check-row">
+                <input type="checkbox" id="dispThemeControls" checked />
+                Theme &amp; light/dark switcher
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispFilters" checked />
+                Project &amp; state filters
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispSort" checked />
+                Sort button
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispOpenAll" checked />
+                "Open all in tabs" button
+              </label>
+              <label class="check-row">
+                <input type="checkbox" id="dispCredit" checked />
+                "Crafted by Rahul KM" credit
               </label>
             </div>
           </section>

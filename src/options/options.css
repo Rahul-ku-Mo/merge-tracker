@@ -9,10 +9,7 @@ body {
   line-height: 1.5;
   color: hsl(var(--foreground));
   background-color: hsl(var(--background));
-  background-image: repeating-linear-gradient(
-    hsl(var(--ink) / 0.03) 0 1px,
-    transparent 1px 4px
-  );
+  background-image: var(--bg-image);
 }
 
 .page {
@@ -27,9 +24,13 @@ body {
 }
 
 .settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
   padding-bottom: 16px;
-  border-bottom: 2px solid hsl(var(--ink));
+  border-bottom: var(--bw) solid hsl(var(--ink));
 }
 
 .settings-brand {
@@ -44,7 +45,7 @@ body {
   justify-content: center;
   width: 44px;
   height: 44px;
-  border: 2px solid hsl(var(--ink));
+  border: var(--bw) solid hsl(var(--ink));
   border-radius: var(--radius);
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
@@ -106,7 +107,7 @@ h1 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding-bottom: 8px;
-  border-bottom: 2px dashed hsl(var(--ink));
+  border-bottom: var(--bw) dashed hsl(var(--ink));
 }
 
 .hint {
@@ -180,7 +181,7 @@ h1 {
   gap: 12px;
   margin-bottom: 14px;
   padding-bottom: 12px;
-  border-bottom: 2px dashed hsl(var(--ink));
+  border-bottom: var(--bw) dashed hsl(var(--ink));
 }
 
 .account-title {
@@ -195,6 +196,25 @@ h1 {
   height: 30px;
   font-size: 13px;
   max-width: 220px;
+}
+
+.account-color {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  padding: 2px;
+  border: var(--bw) solid hsl(var(--ink));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  cursor: pointer;
+}
+
+.account-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.account-color::-webkit-color-swatch {
+  border: none;
 }
 
 .account-head-actions {
@@ -239,7 +259,7 @@ h1 {
   gap: 14px;
   margin-top: 8px;
   padding-top: 16px;
-  border-top: 2px solid hsl(var(--ink));
+  border-top: var(--bw) solid hsl(var(--ink));
 }
 
 .save-status {

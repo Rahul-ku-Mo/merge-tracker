@@ -17,6 +17,8 @@ interface GitLabMr {
   state: string;
   web_url?: string;
   updated_at: string;
+  draft?: boolean;
+  work_in_progress?: boolean;
   author?: { name?: string; username?: string };
   references?: { full?: string };
 }
@@ -54,8 +56,15 @@ export const gitlabProvider: Provider = {
     const base = normalizeHost(account.host) || DEFAULT_HOST;
     const states = account.states.length ? account.states : ["open" as const];
 
+    // "Needs my review" has no scope value in GitLab; it filters by
+    // reviewer_username, which requires knowing the current user.
+    const reviewerUsername =
+      account.scope === "needs_my_review" ? await fetchUsername(base, token) : undefined;
+
     const lists = await Promise.all(
-      states.map((state) => fetchByState(base, token, account.scope, state))
+      states.map((state) =>
+        fetchByState(base, token, account.scope, state, reviewerUsername)
+      )
     );
 
     const byKey = new Map<string, MergeRequest>();
@@ -70,11 +79,26 @@ export const gitlabProvider: Provider = {
   }
 };
 
+async function fetchUsername(base: string, token: string): Promise<string> {
+  const res = await fetch(`${base}/api/v4/user`, {
+    headers: { "PRIVATE-TOKEN": token }
+  });
+  if (!res.ok) {
+    throw new ProviderApiError(`GitLab API error (${res.status})`, res.status);
+  }
+  const user = (await res.json()) as { username?: string };
+  if (!user.username) {
+    throw new ProviderApiError("Could not resolve GitLab username.");
+  }
+  return user.username;
+}
+
 async function fetchByState(
   base: string,
   token: string,
   scope: MrScope,
-  state: NormalizedState
+  state: NormalizedState,
+  reviewerUsername: string | undefined
 ): Promise<[NormalizedState, GitLabMr[]]> {
   const params = new URLSearchParams({
     state: STATE_PARAM[state],
@@ -82,7 +106,10 @@ async function fetchByState(
     order_by: "updated_at",
     sort: "desc"
   });
-  if (scope !== "all") {
+
+  if (scope === "needs_my_review" && reviewerUsername) {
+    params.set("reviewer_username", reviewerUsername);
+  } else if (scope !== "all" && scope !== "needs_my_review") {
     params.set("scope", scope);
   }
 
@@ -119,6 +146,7 @@ function toMergeRequest(
     url: mr.web_url ?? `${base}/${mr.references?.full ?? ""}`,
     author: mr.author?.name ?? mr.author?.username ?? "unknown",
     repo,
-    updatedAt: mr.updated_at
+    updatedAt: mr.updated_at,
+    draft: Boolean(mr.draft ?? mr.work_in_progress)
   };
 }
