@@ -460,5 +460,8 @@
   },
   "standupCopied": {
     "message": "Standup copied"
+  },
+  "stackedOn": {
+    "message": "Stacked on $1"
   }
 }

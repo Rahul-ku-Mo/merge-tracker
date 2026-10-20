@@ -843,3 +843,9 @@ button.footer-link {
   color: hsl(var(--accent-foreground));
   border: 1px solid hsl(var(--ink));
 }
+
+/* Stacked MR (its target branch is another open MR's source). Indented per level in markup. */
+.stack-hint {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}

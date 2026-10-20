@@ -90,6 +90,9 @@ export interface MergeRequest {
    * GitHub = reviewers whose latest review is "Approved"; Bitbucket = participants who approved.
    */
   approvals?: number;
+  /** Branch the MR comes from and the branch it merges into. Used for stacked-MR detection. */
+  sourceBranch?: string;
+  targetBranch?: string;
   /** Provider user id of the author (GitLab username, GitHub login, Bitbucket uuid). */
   authorId?: string;
   /** True when the signed-in user (per account) is the author. */

@@ -20,6 +20,8 @@ interface GitLabMr {
   updated_at: string;
   draft?: boolean;
   work_in_progress?: boolean;
+  source_branch?: string;
+  target_branch?: string;
   author?: { name?: string; username?: string };
   references?: { full?: string };
 }
@@ -219,6 +221,8 @@ function toMergeRequest(
     repo,
     updatedAt: mr.updated_at,
     draft: Boolean(mr.draft ?? mr.work_in_progress),
-    authorId: mr.author?.username
+    authorId: mr.author?.username,
+    sourceBranch: mr.source_branch,
+    targetBranch: mr.target_branch
   };
 }

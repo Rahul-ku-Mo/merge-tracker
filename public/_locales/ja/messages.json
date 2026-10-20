@@ -460,5 +460,8 @@
   },
   "standupCopied": {
     "message": "スタンドアップをコピーしました"
+  },
+  "stackedOn": {
+    "message": "$1 の上に積み上げ"
   }
 }

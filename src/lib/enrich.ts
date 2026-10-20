@@ -62,4 +62,6 @@ async function enrichOne(
   mr.approvals ??= prev?.approvals;
   mr.reviewRequestedFromMe ??= prev?.reviewRequestedFromMe;
   mr.threadsResolved ??= prev?.threadsResolved;
+  mr.sourceBranch ??= prev?.sourceBranch;
+  mr.targetBranch ??= prev?.targetBranch;
 }

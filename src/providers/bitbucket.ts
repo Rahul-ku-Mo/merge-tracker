@@ -27,7 +27,8 @@ interface BitbucketPr {
   updated_on: string;
   links?: { html?: { href?: string } };
   author?: { display_name?: string; nickname?: string; uuid?: string };
-  destination?: { repository?: { full_name?: string } };
+  source?: { branch?: { name?: string } };
+  destination?: { repository?: { full_name?: string }; branch?: { name?: string } };
 }
 
 interface BitbucketPrPage {
@@ -211,6 +212,8 @@ function toMergeRequest(
     repo,
     updatedAt: pr.updated_on,
     draft: Boolean(pr.draft),
-    authorId: pr.author?.uuid
+    authorId: pr.author?.uuid,
+    sourceBranch: pr.source?.branch?.name,
+    targetBranch: pr.destination?.branch?.name
   };
 }

@@ -133,7 +133,9 @@ export const githubProvider: Provider = {
     const reviewRequestedFromMe = me
       ? (pull.requested_reviewers ?? []).some((r) => r.login === me)
       : undefined;
-    if (!sha) return { reviewRequestedFromMe };
+    // The search API has no branch names, so they come from the pull detail.
+    const branches = { sourceBranch: pull.head?.ref, targetBranch: pull.base?.ref };
+    if (!sha) return { ...branches, reviewRequestedFromMe };
 
     const [checks, status, reviews] = await Promise.all([
       getGitHubJson<GitHubCheckRuns>(`${base}/repos/${mr.repo}/commits/${sha}/check-runs?per_page=100`, token),
@@ -142,6 +144,7 @@ export const githubProvider: Provider = {
     ]);
 
     return {
+      ...branches,
       ci: githubCi(checks.check_runs ?? [], status),
       approvals: countApprovals(reviews),
       reviewRequestedFromMe
@@ -150,7 +153,8 @@ export const githubProvider: Provider = {
 };
 
 interface GitHubPullDetail {
-  head?: { sha?: string };
+  head?: { sha?: string; ref?: string };
+  base?: { ref?: string };
   requested_reviewers?: { login?: string }[];
 }
 

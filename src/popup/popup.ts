@@ -15,6 +15,7 @@ import { providerIconSvg } from "../lib/provider-icons";
 import { initConnectPanel } from "./connect";
 import { type BlockReason, blockReasons } from "../lib/blocked";
 import { buildStandup } from "../lib/standup";
+import { type StackRow, orderStacks } from "../lib/stacks";
 import type {
   CiStatus,
   ExtensionConfig,
@@ -241,17 +242,17 @@ function sortMrs(list: MergeRequest[]): MergeRequest[] {
   );
 }
 
-function groupByRepo(list: MergeRequest[]): { repo: string; items: MergeRequest[] }[] {
+function groupByRepo(list: MergeRequest[]): { repo: string; items: StackRow[] }[] {
   const map = new Map<string, MergeRequest[]>();
   for (const mr of list) {
     const items = map.get(mr.repo) ?? [];
     items.push(mr);
     map.set(mr.repo, items);
   }
-  return [...map.entries()].map(([repo, items]) => ({ repo, items }));
+  return [...map.entries()].map(([repo, items]) => ({ repo, items: orderStacks(items) }));
 }
 
-function renderGroups(groups: { repo: string; items: MergeRequest[] }[]): void {
+function renderGroups(groups: { repo: string; items: StackRow[] }[]): void {
   const focusSelector = focusedRowSelector();
   const scrollTop = listEl.scrollTop;
   listEl.replaceChildren();
@@ -322,7 +323,7 @@ function focusedRowSelector(): string | null {
   return null;
 }
 
-function itemHtml(mr: MergeRequest): string {
+function itemHtml({ mr, depth }: StackRow): string {
   const meta = accountMeta.get(mr.accountId);
   const color = meta?.color ?? "#888";
   const copyLabel = t("copyLink");
@@ -334,7 +335,7 @@ function itemHtml(mr: MergeRequest): string {
     .join(" ");
 
   return `
-    <li class="${classes}">
+    <li class="${classes}"${depth ? ` style="margin-left: ${depth * 16}px"` : ""}>
       <div class="mr-row">
         <span class="acct-dot" style="background:${esc(color)}" title="${esc(meta?.label ?? "")}" aria-label="${esc(t("accountLabel", meta?.label ?? ""))}" role="img"></span>
         <a class="mr-title" href="${esc(mr.url)}" data-key="${esc(mr.key)}" target="_blank" rel="noopener">${esc(mr.title)}</a>
@@ -354,6 +355,7 @@ function itemHtml(mr: MergeRequest): string {
         ${ciDotHtml(mr)}
         ${approvalsHtml(mr)}
         ${blockChipsHtml(mr)}
+        ${depth && mr.targetBranch ? `<span class="stack-hint">↳ ${esc(t("stackedOn", mr.targetBranch))}</span>` : ""}
         <span class="mr-meta-sep">·</span>
         <span>#${mr.number}</span>
         <span class="mr-meta-sep">·</span>
