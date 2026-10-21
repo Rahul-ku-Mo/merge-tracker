@@ -5,51 +5,30 @@
 
     <meta charset="UTF-8" />
     <title data-i18n="popupTitle">Merge Requests Tracker (MR)</title>
-    <script type="module" crossorigin src="../../assets/popup-DdT_wkHl.js"></script>
-    <link rel="modulepreload" crossorigin href="../../assets/permissions-CNVku4kR.js">
-    <link rel="stylesheet" crossorigin href="../../assets/popup-DTcuWpSA.css">
+    <script type="module" crossorigin src="../../assets/popup-DzANqdPw.js"></script>
+    <link rel="modulepreload" crossorigin href="../../assets/permissions-D_nkGKA9.js">
+    <link rel="stylesheet" crossorigin href="../../assets/popup-lDp3cCF_.css">
   </head>
   <body>
     <div class="app">
       <header class="header">
-        <div class="brand">
-          <span class="brand-icon" aria-hidden="true">
-            <span data-icon="git-merge" data-size="16"></span>
-          </span>
-          <div>
-            <h1 data-i18n="appName">Merge Requests Tracker</h1>
-            <p class="brand-sub" data-i18n="appSub">Pull &amp; merge requests</p>
-          </div>
-        </div>
-        <div class="header-actions">
-          <button
-            id="mode-toggle"
-            class="icon-btn"
-            type="button"
-            data-i18n-title="themeModeTitle"
-            title="Theme mode (system / light / dark)"
-            aria-label="Theme mode: system"
-          >
-            <span class="mode-moon" data-icon="moon" data-size="16"></span>
-            <span class="mode-sun" data-icon="sun" data-size="16"></span>
-            <span class="mode-system" data-icon="monitor" data-size="16"></span>
-          </button>
-          <button
-            id="sync-btn"
-            type="button"
-            class="btn btn-primary btn-sm"
-            data-i18n-title="fetchLatest"
-            data-i18n-aria="fetchLatest"
-            title="Fetch latest"
-            aria-label="Fetch latest"
-          >
-            <span data-icon="refresh-cw" data-size="16"></span>
-            <span data-i18n="syncNow">Sync</span>
-          </button>
-        </div>
+        <span class="brand-icon" aria-hidden="true"><span data-icon="git-branch" data-size="16"></span></span>
+        <h1 data-i18n="appNameShort">MR Tracker</h1>
+        <button id="mode-toggle" class="ib" type="button" data-i18n-title="themeModeTitle" title="Theme mode (system / light / dark)" aria-label="Theme mode: system">
+          <span class="mode-moon" data-icon="moon" data-size="16"></span>
+          <span class="mode-sun" data-icon="sun" data-size="16"></span>
+          <span class="mode-system" data-icon="monitor" data-size="16"></span>
+        </button>
+        <button id="standup-btn" class="ib" type="button" data-i18n-title="standupButtonTitle" data-i18n-aria="standupButtonTitle" title="Copy a standup summary as Markdown" hidden>
+          <span data-icon="copy" data-size="16"></span>
+        </button>
+        <button id="sync-btn" class="ib" type="button" data-i18n-title="fetchLatest" data-i18n-aria="fetchLatest" title="Fetch latest" aria-label="Fetch latest">
+          <span data-icon="refresh-cw" data-size="16"></span>
+        </button>
+        <button id="options-btn" class="ib" type="button" data-i18n-title="settings" data-i18n-aria="settings" title="Settings" aria-label="Settings">
+          <span data-icon="sliders-horizontal" data-size="16"></span>
+        </button>
       </header>
-
-      <div id="status" class="status-banner" role="status" data-i18n="loading">Loading…</div>
 
       <section id="connect-panel" class="connect-panel" hidden>
         <div class="connect-intro">
@@ -64,111 +43,78 @@
         </div>
       </section>
 
+      <div id="tabs" class="tabs" role="tablist" aria-label="Merge request views" hidden></div>
+
       <div id="controls" class="controls" hidden>
-        <select
-          id="filter-project"
-          class="select"
-          data-i18n-aria="filterProject"
-          aria-label="Project"
-        ></select>
-        <select id="filter-state" class="select" data-i18n-aria="filterState" aria-label="State">
-          <option value="all" data-i18n="stateAll">All</option>
-          <option value="open" data-i18n="stateOpen">Open</option>
-          <option value="merged" data-i18n="stateMerged">Merged</option>
-          <option value="closed" data-i18n="stateClosed">Closed</option>
-          <option value="blocked" data-i18n="stateBlocked">Blocked on me</option>
-        </select>
-        <button
-          id="sort-btn"
-          type="button"
-          class="icon-btn"
-          title="Sort: newest first"
-          aria-label="Sort: newest first"
-        >
-          <span data-icon="arrow-up-down" data-size="16"></span>
+        <label class="search">
+          <span data-icon="search" data-size="15"></span>
+          <input id="search-input" type="search" data-i18n-placeholder="searchPlaceholderLong" data-i18n-aria="searchLabel" placeholder="Title, ticket, branch" aria-label="Search" autocomplete="off" />
+          <kbd>/</kbd>
+        </label>
+        <label id="group-wrap" class="group-sel">
+          <span class="group-sel-label" data-i18n="groupLabel">Group</span>
+          <select id="group-select" aria-label="Group">
+            <option value="priority" data-i18n="groupPriority">Priority</option>
+            <option value="project" data-i18n="groupProject">Project</option>
+          </select>
+          <span id="group-value" class="group-sel-value"></span>
+          <span data-icon="chevron-down" data-size="14"></span>
+        </label>
+        <button id="sort-btn" type="button" class="ctl-btn" title="Sort: newest first" aria-label="Sort: newest first">
+          <span data-icon="arrow-up-down" data-size="15"></span>
         </button>
-        <button
-          id="open-all-btn"
-          type="button"
-          class="icon-btn"
-          data-i18n-title="openAllTabs"
-          data-i18n-aria="openAllTabs"
-          title="Open all in tabs"
-          aria-label="Open all in tabs"
-        >
-          <span data-icon="external-link" data-size="16"></span>
+        <button id="open-all-btn" type="button" class="ctl-btn" data-i18n-title="openAllTabs" data-i18n-aria="openAllTabs" title="Open all in tabs" aria-label="Open all in tabs">
+          <span data-icon="external-link" data-size="15"></span>
         </button>
+      </div>
+
+      <div id="sync-alert" class="sync-alert" role="alert" hidden>
+        <span class="sync-alert-icon" data-icon="triangle-alert" data-size="18"></span>
+        <div class="sync-alert-body">
+          <div id="sync-alert-title" class="sync-alert-title"></div>
+          <div id="sync-alert-text" class="sync-alert-text"></div>
+          <button id="sync-alert-settings" type="button" class="sync-alert-btn" data-i18n="openSettings">Open settings</button>
+        </div>
       </div>
 
       <div id="muted-bar" class="muted-bar" hidden>
         <span id="muted-text"></span>
-        <button id="unmute-btn" type="button" class="muted-clear" data-i18n="showAll">
-          show all
-        </button>
+        <button id="unmute-btn" type="button" class="muted-clear" data-i18n="showAll">show all</button>
       </div>
 
       <div id="empty-state" class="empty-state" hidden>
-        <div class="empty-icon" aria-hidden="true"><span data-icon="git-pull-request" data-size="28"></span></div>
+        <div class="empty-icon" aria-hidden="true"><span id="empty-icon" data-icon="git-pull-request" data-size="22"></span></div>
         <p class="empty-title" data-i18n="emptyNoMrTitle">No merge requests</p>
         <p class="empty-desc" data-i18n="emptyNoMrDesc">Click Sync or check your filters in Settings.</p>
+        <button id="empty-action" type="button" class="empty-action" hidden></button>
       </div>
 
-      <input
-        id="search-input"
-        class="input search-input"
-        type="search"
-        data-i18n-placeholder="searchPlaceholder"
-        data-i18n-aria="searchLabel"
-        placeholder="Search title, project, author…"
-        aria-label="Search"
-        autocomplete="off"
-        hidden
-      />
+      <div id="mr-list" class="mr-list" hidden></div>
 
-      <div id="mr-list" class="mr-list card" hidden></div>
-
-      <footer class="footer">
-        <a id="options-link" class="footer-link" href="#">
-          <span data-icon="settings" data-size="14"></span>
-          <span data-i18n="settings">Settings</span>
-        </a>
-        <button
-          id="standup-btn"
-          class="footer-link"
-          type="button"
-          data-i18n-title="standupButtonTitle"
-          title="Copy a standup summary as Markdown"
-          hidden
-        >
-          <span data-icon="copy" data-size="14"></span>
-          <span data-i18n="standupButton">Standup</span>
-        </button>
-        <span id="last-sync" class="footer-meta"></span>
+      <footer id="footer" class="footer">
+        <span class="footer-left"><span id="sync-dot" class="sync-dot" aria-hidden="true"></span><span id="last-sync"></span></span>
+        <span id="footer-right" class="footer-right"></span>
       </footer>
 
       <div id="kbd-help" class="kbd-help card" role="dialog" aria-labelledby="kbd-help-title" hidden>
         <div class="kbd-help-head">
           <h2 id="kbd-help-title" class="kbd-help-title" data-i18n="kbdTitle">Keyboard shortcuts</h2>
-          <button
-            id="kbd-help-close"
-            class="icon-btn"
-            type="button"
-            data-i18n-aria="kbdClose"
-            aria-label="Close"
-          >×</button>
+          <button id="kbd-help-close" class="ib" type="button" data-i18n-aria="kbdClose" aria-label="Close">×</button>
         </div>
         <dl class="kbd-list">
           <dt><kbd>j</kbd> / <kbd>k</kbd></dt><dd data-i18n="kbdMove">Next / previous item</dd>
           <dt><kbd>Enter</kbd></dt><dd data-i18n="kbdOpen">Open selected item</dd>
+          <dt><kbd>b</kbd></dt><dd data-i18n="kbdBranch">Copy branch name</dd>
           <dt><kbd>m</kbd></dt><dd data-i18n="kbdMute">Mute selected project</dd>
+          <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd data-i18n="kbdTabs">Switch tab</dd>
+          <dt><kbd>g</kbd></dt><dd data-i18n="kbdGroup">Toggle grouping</dd>
           <dt><kbd>s</kbd></dt><dd data-i18n="kbdSync">Sync now</dd>
           <dt><kbd>/</kbd></dt><dd data-i18n="kbdSearch">Search</dd>
           <dt><kbd>?</kbd></dt><dd data-i18n="kbdHelp">Show or hide this list</dd>
           <dt><kbd>Esc</kbd></dt><dd data-i18n="kbdEsc">Close, or clear search</dd>
         </dl>
+        <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
       </div>
-
-      <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
     </div>
 
   </body>

@@ -27,7 +27,14 @@ const NAMES = [
   "monitor",
   "plus",
   "arrow-left",
-  "inbox"
+  "inbox",
+  "git-branch",
+  "link",
+  "search",
+  "chevron-down",
+  "sliders-horizontal",
+  "triangle-alert",
+  "check"
 ];
 
 const entries = NAMES.map((name) => {

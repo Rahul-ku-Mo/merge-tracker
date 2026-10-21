@@ -148,7 +148,14 @@ export interface PopupPrefs {
   /** "blocked" = open MRs that need the signed-in user's action (see lib/blocked.ts). */
   state: NormalizedState | "all" | "blocked";
   sort: MrSortKey;
+  /** Popup view tab. */
+  tab: PopupTab;
+  /** Popup grouping: by what needs doing, or by repository. */
+  group: PopupGroup;
 }
+
+export type PopupTab = "needs" | "mine" | "reviewing" | "all";
+export type PopupGroup = "priority" | "project";
 
 /**
  * Local view state for unread/seen tracking.
@@ -158,6 +165,8 @@ export interface PopupPrefs {
 export interface UiState {
   seen: Record<string, string>;
   opened: string[];
+  /** key → updatedAt at the time the user hid it; shown again once the MR changes. */
+  hidden: Record<string, string>;
 }
 
 export type SyncReason = "manual" | "alarm" | "install";

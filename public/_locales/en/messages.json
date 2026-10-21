@@ -475,5 +475,134 @@
   },
   "ticketLinkTitle": {
     "message": "Open $1"
+  },
+  "tabNeeds": {
+    "message": "Needs you"
+  },
+  "tabMine": {
+    "message": "Mine"
+  },
+  "tabReviewing": {
+    "message": "Reviewing"
+  },
+  "tabAll": {
+    "message": "All"
+  },
+  "groupLabel": {
+    "message": "Group"
+  },
+  "groupPriority": {
+    "message": "Priority"
+  },
+  "groupProject": {
+    "message": "Project"
+  },
+  "groupNeeds": {
+    "message": "Needs you"
+  },
+  "groupReady": {
+    "message": "Ready to merge"
+  },
+  "groupWaiting": {
+    "message": "Waiting on others"
+  },
+  "reasonReview": {
+    "message": "Review requested"
+  },
+  "reasonCi": {
+    "message": "CI failing"
+  },
+  "reasonThreads": {
+    "message": "Threads to resolve"
+  },
+  "reasonReady": {
+    "message": "Ready to merge"
+  },
+  "reasonWaiting": {
+    "message": "Awaiting review"
+  },
+  "reasonOpen": {
+    "message": "Open"
+  },
+  "searchPlaceholderLong": {
+    "message": "Title, ticket, branch"
+  },
+  "signalApprovals": {
+    "message": "$1 approvals"
+  },
+  "refMine": {
+    "message": "mine"
+  },
+  "hideUntilChange": {
+    "message": "Hide until it changes"
+  },
+  "copyBranch": {
+    "message": "Copy branch name"
+  },
+  "branchCopied": {
+    "message": "Branch name copied"
+  },
+  "hiddenUntilChange": {
+    "message": "Hidden until it changes"
+  },
+  "emptyNeedsTitle": {
+    "message": "Nothing needs you"
+  },
+  "emptyNeedsDesc": {
+    "message": "No reviews requested, no failing pipelines, no open threads."
+  },
+  "emptyNeedsAction": {
+    "message": "View waiting on others"
+  },
+  "recentClosed": {
+    "message": "$1 merged or closed in the last 24 hours"
+  },
+  "show": {
+    "message": "Show"
+  },
+  "hide": {
+    "message": "Hide"
+  },
+  "lastSyncedAt": {
+    "message": "Last synced $1"
+  },
+  "sourcesAll": {
+    "message": "$1 sources connected"
+  },
+  "sourcesSome": {
+    "message": "$1 of $2 sources connected"
+  },
+  "syncErrTitle": {
+    "message": "$1 sync failed"
+  },
+  "syncErrBody": {
+    "message": "The list below is from the last successful sync and may be out of date."
+  },
+  "openSettings": {
+    "message": "Open settings"
+  },
+  "hintMove": {
+    "message": "move"
+  },
+  "hintOpen": {
+    "message": "open"
+  },
+  "hintBranch": {
+    "message": "copy branch"
+  },
+  "kbdBranch": {
+    "message": "Copy branch name"
+  },
+  "kbdTabs": {
+    "message": "Switch tab"
+  },
+  "kbdGroup": {
+    "message": "Toggle grouping"
+  },
+  "collapseGroup": {
+    "message": "Collapse or expand"
+  },
+  "appNameShort": {
+    "message": "MR Tracker"
   }
 }

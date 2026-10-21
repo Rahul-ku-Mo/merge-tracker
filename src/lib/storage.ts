@@ -149,7 +149,9 @@ export async function setMrSnapshot(snapshot: MrSnapshot): Promise<void> {
 const DEFAULT_POPUP_PREFS: PopupPrefs = {
   project: "all",
   state: "all",
-  sort: "updated_desc"
+  sort: "updated_desc",
+  tab: "needs",
+  group: "priority"
 };
 
 export async function getPopupPrefs(): Promise<PopupPrefs> {
@@ -164,7 +166,7 @@ export async function setPopupPrefs(prefs: PopupPrefs): Promise<void> {
 export async function getUiState(): Promise<UiState> {
   const { uiState } = await chrome.storage.local.get("uiState");
   const state = uiState as Partial<UiState> | undefined;
-  return { seen: state?.seen ?? {}, opened: state?.opened ?? [] };
+  return { seen: state?.seen ?? {}, opened: state?.opened ?? [], hidden: state?.hidden ?? {} };
 }
 
 export async function setUiState(state: UiState): Promise<void> {

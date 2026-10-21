@@ -72,17 +72,18 @@
     display: { themeControls: true, filters: true, sort: true, openAll: true, credit: false }
   };
 
-  const popupPrefs =
-    scene === "filtered"
-      ? { project: "platform/api-gateway", state: "all", sort: "updated_desc" }
-      : scene === "blocked"
-        ? { project: "all", state: "blocked", sort: "updated_desc" }
-        : { project: "all", state: "all", sort: "updated_desc" };
+  const popupPrefs = {
+    project: "all",
+    state: "all",
+    sort: "updated_desc",
+    tab: scene === "blocked" ? "mine" : scene === "filtered" ? "all" : "needs",
+    group: scene === "filtered" ? "project" : "priority"
+  };
 
   const data = {
     config,
     popupPrefs,
-    uiState: { seen, opened },
+    uiState: { seen, opened, hidden: {} },
     mrSnapshot: { mergeRequests, lastSyncAt: ago(1), lastSyncReason: "alarm" }
   };
 

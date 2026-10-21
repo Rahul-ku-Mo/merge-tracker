@@ -475,5 +475,134 @@
   },
   "ticketLinkTitle": {
     "message": "$1 を開く"
+  },
+  "tabNeeds": {
+    "message": "あなた待ち"
+  },
+  "tabMine": {
+    "message": "自分の"
+  },
+  "tabReviewing": {
+    "message": "レビュー中"
+  },
+  "tabAll": {
+    "message": "すべて"
+  },
+  "groupLabel": {
+    "message": "グループ"
+  },
+  "groupPriority": {
+    "message": "優先度"
+  },
+  "groupProject": {
+    "message": "プロジェクト"
+  },
+  "groupNeeds": {
+    "message": "あなた待ち"
+  },
+  "groupReady": {
+    "message": "マージ可能"
+  },
+  "groupWaiting": {
+    "message": "他の人待ち"
+  },
+  "reasonReview": {
+    "message": "レビュー依頼"
+  },
+  "reasonCi": {
+    "message": "CI失敗"
+  },
+  "reasonThreads": {
+    "message": "未解決のスレッド"
+  },
+  "reasonReady": {
+    "message": "マージ可能"
+  },
+  "reasonWaiting": {
+    "message": "レビュー待ち"
+  },
+  "reasonOpen": {
+    "message": "オープン"
+  },
+  "searchPlaceholderLong": {
+    "message": "タイトル、チケット、ブランチ"
+  },
+  "signalApprovals": {
+    "message": "承認 $1 件"
+  },
+  "refMine": {
+    "message": "自分"
+  },
+  "hideUntilChange": {
+    "message": "更新があるまで非表示"
+  },
+  "copyBranch": {
+    "message": "ブランチ名をコピー"
+  },
+  "branchCopied": {
+    "message": "ブランチ名をコピーしました"
+  },
+  "hiddenUntilChange": {
+    "message": "更新があるまで非表示にしました"
+  },
+  "emptyNeedsTitle": {
+    "message": "あなたの対応は不要です"
+  },
+  "emptyNeedsDesc": {
+    "message": "レビュー依頼、失敗中のパイプライン、未解決のスレッドはありません。"
+  },
+  "emptyNeedsAction": {
+    "message": "他の人待ちを表示"
+  },
+  "recentClosed": {
+    "message": "直近24時間にマージまたはクローズ: $1 件"
+  },
+  "show": {
+    "message": "表示"
+  },
+  "hide": {
+    "message": "隠す"
+  },
+  "lastSyncedAt": {
+    "message": "最終同期 $1"
+  },
+  "sourcesAll": {
+    "message": "$1 件のソースに接続中"
+  },
+  "sourcesSome": {
+    "message": "$2 件中 $1 件のソースに接続中"
+  },
+  "syncErrTitle": {
+    "message": "$1 の同期に失敗しました"
+  },
+  "syncErrBody": {
+    "message": "以下は前回成功した同期の内容で、古い可能性があります。"
+  },
+  "openSettings": {
+    "message": "設定を開く"
+  },
+  "hintMove": {
+    "message": "移動"
+  },
+  "hintOpen": {
+    "message": "開く"
+  },
+  "hintBranch": {
+    "message": "ブランチをコピー"
+  },
+  "kbdBranch": {
+    "message": "ブランチ名をコピー"
+  },
+  "kbdTabs": {
+    "message": "タブを切り替え"
+  },
+  "kbdGroup": {
+    "message": "グループ切り替え"
+  },
+  "collapseGroup": {
+    "message": "折りたたみ/展開"
+  },
+  "appNameShort": {
+    "message": "MR Tracker"
   }
 }
