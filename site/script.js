@@ -1,5 +1,5 @@
 // Install link: set this once the Chrome Web Store listing is live.
-const INSTALL_URL = "";
+const INSTALL_URL = "https://chromewebstore.google.com/detail/delejheceigjocgnjanpgmkbnfingmnh?utm_source=item-share-cb";
 document.querySelectorAll("[data-install]").forEach((a) => {
   if (INSTALL_URL) {
     a.href = INSTALL_URL;
@@ -9,7 +9,7 @@ document.querySelectorAll("[data-install]").forEach((a) => {
   a.removeAttribute("href");
   a.classList.add("pending");
   a.setAttribute("aria-disabled", "true");
-  a.textContent = "Coming soon";
+  a.textContent = "Add to Chrome";
 });
 
 /* Branch graph: three provider branches run down the left and merge into one

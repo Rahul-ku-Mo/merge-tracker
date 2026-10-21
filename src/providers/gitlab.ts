@@ -1,5 +1,5 @@
 import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
-import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { type FetchOptions, type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://gitlab.com";
@@ -23,6 +23,7 @@ interface GitLabMr {
   source_branch?: string;
   target_branch?: string;
   author?: { name?: string; username?: string };
+  assignees?: { name?: string; username?: string }[];
   references?: { full?: string };
 }
 
@@ -50,23 +51,35 @@ export const gitlabProvider: Provider = {
     }
   ],
 
-  async fetchMergeRequests(account: Account): Promise<MergeRequest[]> {
+  async fetchMergeRequests(account: Account, options: FetchOptions = {}): Promise<MergeRequest[]> {
     const token = account.token.trim();
     if (!token) {
       throw new ProviderApiError("GitLab token is not set.");
     }
 
     const base = normalizeHost(account.host) || DEFAULT_HOST;
-    const states = account.states.length ? account.states : ["open" as const];
+    const states = options.states?.length
+      ? options.states
+      : account.states.length
+        ? account.states
+        : ["open" as const];
 
+    // GitLab's own scope=all returns every MR the token can see, not just yours.
+    // "All I'm involved in" is the union of created, assigned and review-requested.
+    const involved = account.scope === "all";
     // "Needs my review" has no scope value in GitLab; it filters by
     // reviewer_username, which requires knowing the current user.
     const reviewerUsername =
-      account.scope === "needs_my_review" ? await fetchUsername(base, token) : undefined;
+      involved || account.scope === "needs_my_review" ? await fetchUsername(base, token) : undefined;
+    const scopes: MrScope[] = involved
+      ? ["created_by_me", "assigned_to_me", "needs_my_review"]
+      : [account.scope];
 
     const lists = await Promise.all(
-      states.map((state) =>
-        fetchByState(base, token, account.scope, state, reviewerUsername)
+      scopes.flatMap((scope) =>
+        states.map((state) =>
+          fetchByState(base, token, scope, state, reviewerUsername, options.updatedAfter)
+        )
       )
     );
 
@@ -170,7 +183,8 @@ async function fetchByState(
   token: string,
   scope: MrScope,
   state: NormalizedState,
-  reviewerUsername: string | undefined
+  reviewerUsername: string | undefined,
+  updatedAfter: string | undefined
 ): Promise<[NormalizedState, GitLabMr[]]> {
   const params = new URLSearchParams({
     state: STATE_PARAM[state],
@@ -178,6 +192,9 @@ async function fetchByState(
     order_by: "updated_at",
     sort: "desc"
   });
+  if (updatedAfter) {
+    params.set("updated_after", updatedAfter);
+  }
 
   // GitLab defaults to scope=created_by_me when omitted, which would hide
   // private-project MRs authored by others. Always send an explicit scope.
@@ -222,6 +239,7 @@ function toMergeRequest(
     updatedAt: mr.updated_at,
     draft: Boolean(mr.draft ?? mr.work_in_progress),
     authorId: mr.author?.username,
+    assignees: (mr.assignees ?? []).map((a) => a.name ?? a.username ?? "").filter(Boolean),
     sourceBranch: mr.source_branch,
     targetBranch: mr.target_branch
   };

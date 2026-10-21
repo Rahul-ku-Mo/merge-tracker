@@ -23,9 +23,12 @@
   --green-bg: rgba(24, 114, 47, 0.12);
   --gray-bg: rgba(86, 97, 112, 0.12);
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Native controls (the date picker's calendar icon) follow the app theme. */
+  color-scheme: light;
 }
 
 [data-mode="dark"] {
+  color-scheme: dark;
   --bg: #0d0f12;
   --surface: #13161a;
   --raised: #1a1e24;
@@ -61,7 +64,7 @@ body {
   height: 600px;
   margin: 0;
   overflow: hidden;
-  font-family: Inter, var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   line-height: 1.4;
   color: var(--text);
@@ -186,23 +189,29 @@ h1 {
   display: flex;
   flex: none;
   align-items: stretch;
+  justify-content: space-between;
   gap: 2px;
   height: 40px;
-  padding: 0 8px;
+  padding: 0 4px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
 
 .tab {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
-  gap: 7px;
-  padding: 0 10px;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 0 6px;
   border: 0;
   background: transparent;
   color: var(--muted);
   font: inherit;
+  font-size: 12.5px;
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -217,7 +226,7 @@ h1 {
 }
 
 .tab-count {
-  padding: 0 6px;
+  padding: 0 5px;
   border-radius: 9px;
   background: var(--gray-bg);
   color: var(--muted);
@@ -237,6 +246,24 @@ h1 {
   flex: none;
   gap: 8px;
   padding: 10px 16px;
+}
+
+/* Recent tab only: the row scrolls sideways when it is wider than the popup, with no scrollbar. */
+.controls.is-scrollable {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.controls.is-scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.controls.is-scrollable > * {
+  flex: none;
+}
+
+.controls.is-scrollable .search {
+  flex: 1 0 140px;
 }
 
 .search,
@@ -297,6 +324,27 @@ h1 {
 
 .group-sel-value {
   color: var(--text);
+}
+
+/* Recent tab: closed-date filter. The explicit [hidden] rules beat .group-sel's display:flex. */
+#recent-wrap[hidden],
+.recent-day[hidden] {
+  display: none;
+}
+
+.recent-day {
+  /* Size to the chosen date rather than the browser's default input width. */
+  width: auto;
+  field-sizing: content;
+  flex: none;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
 }
 
 .ctl-btn {

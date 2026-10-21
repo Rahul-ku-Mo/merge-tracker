@@ -604,5 +604,62 @@
   },
   "appNameShort": {
     "message": "MR Tracker"
+  },
+  "tabRecent": {
+    "message": "最近"
+  },
+  "recentDateLabel": {
+    "message": "終了日"
+  },
+  "recentAny": {
+    "message": "期間指定なし"
+  },
+  "recentToday": {
+    "message": "今日"
+  },
+  "recent7": {
+    "message": "過去7日"
+  },
+  "recent30": {
+    "message": "過去30日"
+  },
+  "recentPickDay": {
+    "message": "日付を選択"
+  },
+  "recentEmptyTitle": {
+    "message": "マージ・クローズされたMRはありません"
+  },
+  "recentEmptyDesc": {
+    "message": "マージ・クローズしたMRは$1の間ここに表示されます。"
+  },
+  "recentDone": {
+    "message": "完了して一覧から削除"
+  },
+  "recentRemoved": {
+    "message": "「最近」から削除しました"
+  },
+  "recentRetentionLabel": {
+    "message": "マージ・クローズ済みMRを残す期間"
+  },
+  "recentRetentionHint": {
+    "message": "期間が過ぎるまで「最近」タブに表示されます。完了したものはそこで削除できます。"
+  },
+  "dayOne": {
+    "message": "1日"
+  },
+  "daysMany": {
+    "message": "$1日"
+  },
+  "recentSection": {
+    "message": "「最近」タブ"
+  },
+  "recentShortAny": {
+    "message": "全期間"
+  },
+  "recentShort7": {
+    "message": "7日"
+  },
+  "recentShort30": {
+    "message": "30日"
   }
 }

@@ -1,5 +1,5 @@
 import type { Account, CiStatus, MergeRequest, MrScope, NormalizedState } from "../types/index";
-import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { type FetchOptions, type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://api.github.com";
@@ -28,6 +28,7 @@ interface GitHubIssueItem {
   updated_at: string;
   repository_url: string;
   user?: { login?: string };
+  assignees?: { login?: string }[];
   pull_request?: { merged_at: string | null };
 }
 
@@ -86,18 +87,24 @@ export const githubProvider: Provider = {
       .sort((a, b) => a.localeCompare(b));
   },
 
-  async fetchMergeRequests(account: Account): Promise<MergeRequest[]> {
+  async fetchMergeRequests(account: Account, options: FetchOptions = {}): Promise<MergeRequest[]> {
     const token = account.token.trim();
     if (!token) {
       throw new ProviderApiError("GitHub token is not set.");
     }
 
     const base = normalizeHost(account.host) || DEFAULT_HOST;
-    const states = account.states.length ? account.states : ["open" as const];
+    const states = options.states?.length
+      ? options.states
+      : account.states.length
+        ? account.states
+        : ["open" as const];
     const org = account.workspace?.trim();
 
     const lists = await Promise.all(
-      states.map((state) => search(base, token, account.scope, state, org))
+      states.map((state) =>
+        search(base, token, account.scope, state, org, options.updatedAfter)
+      )
     );
 
     const byKey = new Map<string, MergeRequest>();
@@ -220,11 +227,16 @@ async function search(
   token: string,
   scope: MrScope,
   state: NormalizedState,
-  org: string | undefined
+  org: string | undefined,
+  updatedAfter: string | undefined
 ): Promise<GitHubIssueItem[]> {
   const qualifiers = ["is:pr", SCOPE_QUALIFIER[scope], STATE_QUALIFIER[state]];
   if (org) {
     qualifiers.push(`org:${org}`);
+  }
+  if (updatedAfter) {
+    // Search qualifiers take a date; the time of day is dropped, so this is a coarse pre-filter.
+    qualifiers.push(`updated:>=${updatedAfter.slice(0, 10)}`);
   }
 
   const params = new URLSearchParams({
@@ -275,6 +287,7 @@ function toMergeRequest(account: Account, item: GitHubIssueItem): MergeRequest {
     repo,
     updatedAt: item.updated_at,
     draft: Boolean(item.draft) || /^\s*(\[?(wip|draft)\]?)[:\s-]/i.test(item.title),
-    authorId: item.user?.login
+    authorId: item.user?.login,
+    assignees: (item.assignees ?? []).map((a) => a.login ?? "").filter(Boolean)
   };
 }

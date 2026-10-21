@@ -2,11 +2,14 @@ import {
   getConfig,
   getMrSnapshot,
   getPopupPrefs,
+  getRecentMrs,
   getUiState,
   setConfig,
   setPopupPrefs,
+  setRecentMrs,
   setUiState
 } from "../lib/storage";
+import { DEFAULT_RETENTION_DAYS, localDayKey, matchesRecentDate } from "../lib/recent";
 import { requireElement } from "../lib/dom";
 import { applyI18n, t } from "../lib/i18n";
 import { initModeControl } from "../lib/theme";
@@ -23,16 +26,19 @@ import type {
   PopupGroup,
   PopupPrefs,
   PopupTab,
+  RecentDateFilter,
+  RecentMr,
   SyncResult,
   UiState
 } from "../types/index";
 
-const TABS: PopupTab[] = ["needs", "mine", "reviewing", "all"];
+const TABS: PopupTab[] = ["needs", "mine", "reviewing", "all", "recent"];
 const TAB_LABEL_KEY: Record<PopupTab, string> = {
   needs: "tabNeeds",
   mine: "tabMine",
   reviewing: "tabReviewing",
-  all: "tabAll"
+  all: "tabAll",
+  recent: "tabRecent"
 };
 const BUCKET_LABEL_KEY: Record<Bucket, string> = {
   needs: "groupNeeds",
@@ -47,6 +53,10 @@ const controlsEl = requireElement<HTMLDivElement>("controls");
 const groupWrap = requireElement<HTMLLabelElement>("group-wrap");
 const groupEl = requireElement<HTMLSelectElement>("group-select");
 const groupValueEl = requireElement<HTMLSpanElement>("group-value");
+const recentWrapEl = requireElement<HTMLLabelElement>("recent-wrap");
+const recentDateEl = requireElement<HTMLSelectElement>("recent-date-select");
+const recentDateValueEl = requireElement<HTMLSpanElement>("recent-date-value");
+const recentDayEl = requireElement<HTMLInputElement>("recent-day");
 const sortBtn = requireElement<HTMLButtonElement>("sort-btn");
 const openAllBtn = requireElement<HTMLButtonElement>("open-all-btn");
 const mutedBar = requireElement<HTMLDivElement>("muted-bar");
@@ -79,6 +89,9 @@ interface AccountMeta {
 }
 
 let allMrs: MergeRequest[] = [];
+/** Merged/closed MRs from the sync archive, keyed by MR key. Feeds the Recent tab. */
+let recentByKey: Record<string, RecentMr> = {};
+let retentionDays = DEFAULT_RETENTION_DAYS;
 let prefs: PopupPrefs;
 let uiState: UiState;
 let mutedRepos = new Set<string>();
@@ -115,6 +128,7 @@ async function init(): Promise<void> {
   prefs = await getPopupPrefs();
   uiState = await getUiState();
   groupEl.value = prefs.group;
+  recentDateEl.value = prefs.recentDate;
   syncGroupLabel();
   reflectSortButton();
   buildTabs();
@@ -144,6 +158,7 @@ function loadConfig(config: ExtensionConfig): void {
   for (const a of config.accounts) accountMeta.set(a.id, { color: a.color, label: a.label });
   mutedRepos = new Set(config.mutedRepos);
   ticketBase = config.ticketBaseUrl;
+  retentionDays = config.recentRetentionDays;
   enabledAccountCount = config.accounts.filter((a) => a.enabled && a.token.trim()).length;
 }
 
@@ -187,6 +202,7 @@ async function renderFromCache(): Promise<void> {
   const { mergeRequests, lastSyncAt } = await getMrSnapshot();
   allMrs = mergeRequests;
   lastSyncAtIso = lastSyncAt;
+  recentByKey = await getRecentMrs();
   applyAndRender();
   void updateBadge();
 }
@@ -236,20 +252,33 @@ function tabItems(pool: MergeRequest[], tab: PopupTab): MergeRequest[] {
 
 function applyAndRender(): void {
   syncGroupLabel();
+  syncRecentControls();
   updateMutedBar();
   renderAlert();
   renderFooter();
 
   const pool = candidates();
+  const recentRows = recentEntries();
   tabsEl.querySelectorAll<HTMLButtonElement>(".tab").forEach((btn) => {
     const tab = btn.dataset.tab as PopupTab;
     const active = tab === prefs.tab;
     btn.setAttribute("aria-selected", String(active));
     btn.classList.toggle("is-active", active);
-    const count = tab === "all" ? pool.filter((mr) => mr.state === "open").length : tabItems(pool, tab).length;
+    const count =
+      tab === "all"
+        ? pool.filter((mr) => mr.state === "open").length
+        : tab === "recent"
+          ? recentRows.length
+          : tabItems(pool, tab).length;
     const countEl = btn.querySelector(".tab-count");
     if (countEl) countEl.textContent = String(count);
   });
+
+  // The Recent tab is independent of the open list, so it still works with no open MRs.
+  if (prefs.tab === "recent") {
+    renderRecent(recentRows.map((e) => e.mr));
+    return;
+  }
 
   if (!allMrs.length) {
     controlsEl.hidden = true;
@@ -279,6 +308,70 @@ function applyAndRender(): void {
   markSeen();
 }
 
+/** Recent tab rows: not removed, inside retention, past the muted/date/search filters. Sorted by close time. */
+function recentEntries(): RecentMr[] {
+  const now = Date.now();
+  const cutoff = now - retentionDays * DAY_MS;
+  const dir = prefs.sort === "updated_asc" ? 1 : -1;
+  return Object.values(recentByKey)
+    .filter(
+      (e) =>
+        !e.removed &&
+        new Date(e.closedAt).getTime() >= cutoff &&
+        !mutedRepos.has(e.mr.repo) &&
+        matchesRecentDate(e.closedAt, prefs.recentDate, prefs.recentDay, now) &&
+        (!searchQuery || matchesSearch(e.mr))
+    )
+    .sort((a, b) => dir * (new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()));
+}
+
+function renderRecent(items: MergeRequest[]): void {
+  controlsEl.hidden = !showControls;
+  if (!items.length) {
+    listEl.hidden = true;
+    if (searchQuery) {
+      showEmpty(t("emptyNoMatchesTitle"), t("emptyNoMatchesDesc"), "inbox");
+    } else {
+      showEmpty(t("recentEmptyTitle"), t("recentEmptyDesc", retentionText(retentionDays)), "inbox");
+    }
+    return;
+  }
+  emptyEl.hidden = true;
+  renderSections(buildSections(items), 0);
+  listEl.hidden = false;
+}
+
+/** Show the closed-date filter only on the Recent tab, and keep it in step with prefs. */
+function syncRecentControls(): void {
+  const onRecent = prefs.tab === "recent";
+  controlsEl.classList.toggle("is-scrollable", onRecent);
+  recentWrapEl.hidden = !onRecent;
+  recentDayEl.hidden = !(onRecent && prefs.recentDate === "day");
+  recentDateEl.value = prefs.recentDate;
+  recentDateValueEl.textContent = recentDateShort();
+  recentDayEl.value = prefs.recentDay;
+}
+
+/** Compact value for the Recent date filter, so the search box keeps its width. */
+function recentDateShort(): string {
+  switch (prefs.recentDate) {
+    case "all":
+      return t("recentShortAny");
+    case "today":
+      return t("recentToday");
+    case "7d":
+      return t("recentShort7");
+    case "30d":
+      return t("recentShort30");
+    case "day":
+      return prefs.recentDay ? prefs.recentDay.slice(5) : t("recentPickDay");
+  }
+}
+
+function retentionText(days: number): string {
+  return days === 1 ? t("dayOne") : t("daysMany", String(days));
+}
+
 interface Section {
   id: string;
   header: string;
@@ -298,6 +391,10 @@ function buildSections(items: MergeRequest[]): Section[] {
       provider: list[0].provider,
       items: orderStacks(list)
     }));
+  }
+
+  if (prefs.tab === "recent") {
+    return [{ id: "recent", header: t("tabRecent"), items: orderStacks(items) }];
   }
 
   const open = items.filter((mr) => mr.state === "open");
@@ -409,29 +506,37 @@ function applyCursorClass(scroll: boolean): void {
 function focusedRowSelector(): string | null {
   const active = document.activeElement;
   if (!(active instanceof HTMLElement) || !listEl.contains(active)) return null;
-  const { key, copy, branch, hide, collapse } = active.dataset;
+  const { key, copy, branch, hide, remove, collapse } = active.dataset;
   if (key) return `.mr-title[data-key="${CSS.escape(key)}"]`;
   if (copy) return `[data-copy="${CSS.escape(copy)}"]`;
   if (branch) return `[data-branch="${CSS.escape(branch)}"]`;
   if (hide) return `[data-hide="${CSS.escape(hide)}"]`;
+  if (remove) return `[data-remove="${CSS.escape(remove)}"]`;
   if (collapse) return `[data-collapse="${CSS.escape(collapse)}"]`;
   return null;
 }
 
 function itemHtml({ mr, depth }: StackRow): string {
-  const isNew = isUpdatedSinceSeen(mr);
+  const recent = prefs.tab === "recent";
+  // Recent rows show when the MR closed, and get a "done" button instead of hide.
+  const isNew = !recent && isUpdatedSinceSeen(mr);
   const isRead = uiState.opened.includes(mr.key);
   const reason = headlineReason(mr);
   const classes = ["mr-item", isNew ? "is-new" : "", isRead ? "is-read" : ""].filter(Boolean).join(" ");
   const copyLabel = t("copyLink");
   const branchLabel = t("copyBranch");
   const hideLabel = t("hideUntilChange");
+  const doneLabel = t("recentDone");
   const ticket = ticketChipHtml(mr);
   const ref = refText(mr);
+  const age = recent ? recentByKey[mr.key]?.closedAt ?? mr.updatedAt : mr.updatedAt;
 
   const branchBtn = mr.sourceBranch
     ? `<button class="ib sm" type="button" data-branch="${esc(mr.sourceBranch)}" title="${esc(branchLabel)}" aria-label="${esc(branchLabel)}">${iconSvg("git-branch", 15)}</button>`
     : "";
+  const trailingBtn = recent
+    ? `<button class="ib sm" type="button" data-remove="${esc(mr.key)}" title="${esc(doneLabel)}" aria-label="${esc(doneLabel)}">${iconSvg("check", 15)}</button>`
+    : `<button class="ib sm" type="button" data-hide="${esc(mr.key)}" title="${esc(hideLabel)}" aria-label="${esc(hideLabel)}">${iconSvg("eye-off", 15)}</button>`;
 
   return `
     <li class="${classes}"${depth ? ` style="--depth:${depth}"` : ""}>
@@ -442,9 +547,9 @@ function itemHtml({ mr, depth }: StackRow): string {
           <span class="mr-actions">
             ${branchBtn}
             <button class="ib sm" type="button" data-copy="${esc(mr.url)}" title="${esc(copyLabel)}" aria-label="${esc(copyLabel)}">${iconSvg("link", 15)}</button>
-            <button class="ib sm" type="button" data-hide="${esc(mr.key)}" title="${esc(hideLabel)}" aria-label="${esc(hideLabel)}">${iconSvg("eye-off", 15)}</button>
+            ${trailingBtn}
           </span>
-          <span class="mr-age">${esc(shortAge(mr.updatedAt))}</span>
+          <span class="mr-age">${esc(shortAge(age))}</span>
         </div>
         <div class="mr-line">
           <span class="chip tone-${reason.tone}">${esc(t(reason.key))}</span>
@@ -469,7 +574,9 @@ function dotTone(mr: MergeRequest): string {
 function refText(mr: MergeRequest): string {
   const who = mr.authoredByMe ? t("refMine") : mr.author;
   const head = prefs.group === "project" ? "" : `${mr.repo.split("/").pop() ?? mr.repo} `;
-  return `${head}!${mr.number}${who && (prefs.group === "project" || !mr.authoredByMe) ? ` · ${who}` : ""}`;
+  const by = who && (prefs.group === "project" || !mr.authoredByMe) ? ` · ${who}` : "";
+  const to = mr.assignees?.length ? ` → ${mr.assignees.join(", ")}` : "";
+  return `${head}!${mr.number}${by}${to}`;
 }
 
 /** Third line: CI, approvals, unresolved threads, stacking. Only what the provider reported. */
@@ -602,6 +709,11 @@ function attachListeners(): void {
       hideMr(hideBtn.dataset.hide ?? "");
       return;
     }
+    const removeBtn = target.closest<HTMLButtonElement>("[data-remove]");
+    if (removeBtn) {
+      void removeRecent(removeBtn.dataset.remove ?? "");
+      return;
+    }
     if (target.closest("[data-recent]")) {
       showRecentClosed = !showRecentClosed;
       applyAndRender();
@@ -624,6 +736,15 @@ function attachListeners(): void {
     searchQuery = searchEl.value;
     applyAndRender();
   });
+  recentDateEl.addEventListener("change", () => {
+    prefs.recentDate = recentDateEl.value as RecentDateFilter;
+    if (prefs.recentDate === "day" && !prefs.recentDay) prefs.recentDay = localDayKey(new Date());
+    void persistPrefsAndRender();
+  });
+  recentDayEl.addEventListener("change", () => {
+    prefs.recentDay = recentDayEl.value;
+    void persistPrefsAndRender();
+  });
   helpCloseBtn.addEventListener("click", () => {
     helpEl.hidden = true;
   });
@@ -644,7 +765,8 @@ function clearSearch(): void {
 
 function selectedMr(): MergeRequest | undefined {
   const key = cursorKey;
-  return key ? allMrs.find((mr) => mr.key === key) : undefined;
+  if (!key) return undefined;
+  return allMrs.find((mr) => mr.key === key) ?? recentByKey[key]?.mr;
 }
 
 function onKeydown(e: KeyboardEvent): void {
@@ -704,6 +826,7 @@ function onKeydown(e: KeyboardEvent): void {
     case "2":
     case "3":
     case "4":
+    case "5":
       setTab(TABS[Number(e.key) - 1]);
       break;
     case "g":
@@ -736,7 +859,10 @@ function reflectSortButton(): void {
 }
 
 function openAllVisible(): void {
-  const visible = sortMrs(tabItems(candidates(), prefs.tab));
+  const visible =
+    prefs.tab === "recent"
+      ? recentEntries().map((e) => e.mr)
+      : sortMrs(tabItems(candidates(), prefs.tab));
   for (const mr of visible) {
     if (mr.url) void chrome.tabs.create({ url: mr.url, active: false });
   }
@@ -756,6 +882,21 @@ async function copyText(text: string, message: string): Promise<void> {
 async function copyStandup(): Promise<void> {
   const visible = allMrs.filter((mr) => !mutedRepos.has(mr.repo));
   await copyText(buildStandup(visible, new Date()), t("standupCopied"));
+}
+
+/**
+ * Mark a Recent row done. Reads the archive fresh so a sync that ran meanwhile is not
+ * overwritten by a stale copy; the removed flag keeps the MR out after later syncs.
+ */
+async function removeRecent(key: string): Promise<void> {
+  const archive = await getRecentMrs();
+  const entry = archive[key];
+  if (!entry) return;
+  entry.removed = true;
+  await setRecentMrs(archive);
+  recentByKey = archive;
+  applyAndRender();
+  flashStatus(t("recentRemoved"));
 }
 
 function hideMr(key: string): void {

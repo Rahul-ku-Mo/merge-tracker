@@ -34,7 +34,8 @@ const NAMES = [
   "chevron-down",
   "sliders-horizontal",
   "triangle-alert",
-  "check"
+  "check",
+  "calendar"
 ];
 
 const entries = NAMES.map((name) => {

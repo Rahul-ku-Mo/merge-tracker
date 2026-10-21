@@ -1,8 +1,9 @@
-import { getConfig, getMrSnapshot, setMrSnapshot } from "./storage";
+import { getConfig, getMrSnapshot, getRecentMrs, setMrSnapshot, setRecentMrs } from "./storage";
 import { stateLabel, t } from "./i18n";
 import { getProvider } from "../providers/registry";
 import { enrichOpenMergeRequests } from "./enrich";
 import { isQuietNow } from "./quiet-hours";
+import { mergeRecent, retentionCutoffIso } from "./recent";
 import type {
   Account,
   AccountError,
@@ -43,14 +44,17 @@ export async function syncMergeRequests({
   );
 
   const mergeRequests: MergeRequest[] = [];
+  const closedRequests: MergeRequest[] = [];
   const errors: AccountError[] = [];
 
   // Each account is fetched independently; one failing account does not
   // abort the others.
-  const results = await Promise.allSettled(enabled.map((a) => fetchAccount(a)));
+  const updatedAfter = retentionCutoffIso(config.recentRetentionDays);
+  const results = await Promise.allSettled(enabled.map((a) => fetchAccount(a, updatedAfter)));
   results.forEach((result, i) => {
     if (result.status === "fulfilled") {
-      mergeRequests.push(...result.value);
+      mergeRequests.push(...result.value.open);
+      closedRequests.push(...result.value.closed);
     } else {
       const account = enabled[i];
       const message =
@@ -85,6 +89,11 @@ export async function syncMergeRequests({
     lastSyncReason: reason
   });
 
+  const recentIncoming = [...closedRequests, ...mergeRequests.filter((mr) => mr.state !== "open")];
+  await setRecentMrs(
+    mergeRecent(await getRecentMrs(), recentIncoming, config.recentRetentionDays)
+  );
+
   await updateBadge(visible.filter((mr) => mr.state === "open").length);
 
   return {
@@ -96,8 +105,22 @@ export async function syncMergeRequests({
   };
 }
 
-function fetchAccount(account: Account): Promise<MergeRequest[]> {
-  return getProvider(account.provider).fetchMergeRequests(account);
+/**
+ * Open MRs (the snapshot) plus merged/closed MRs updated since the retention cutoff (the
+ * Recent archive). The closed call is best-effort: if it fails, the open list still lands.
+ */
+async function fetchAccount(
+  account: Account,
+  updatedAfter: string
+): Promise<{ open: MergeRequest[]; closed: MergeRequest[] }> {
+  const provider = getProvider(account.provider);
+  const [open, closed] = await Promise.all([
+    provider.fetchMergeRequests(account),
+    provider
+      .fetchMergeRequests(account, { states: ["merged", "closed"], updatedAfter })
+      .catch((): MergeRequest[] => [])
+  ]);
+  return { open, closed };
 }
 
 /** Show the open-MR count on the toolbar icon. */

@@ -22,7 +22,7 @@ export function bucketOf(mr: MergeRequest): Bucket {
   return "waiting";
 }
 
-/** Which tabs an MR belongs to. Only open MRs appear in the first three; "all" is filtered by the caller. */
+/** Which tabs an MR belongs to. Only open MRs appear in the first three; "all" and "recent" are filtered by the caller. */
 export function inTab(mr: MergeRequest, tab: PopupTab): boolean {
   switch (tab) {
     case "needs":
@@ -33,6 +33,9 @@ export function inTab(mr: MergeRequest, tab: PopupTab): boolean {
       return mr.state === "open" && !!mr.reviewRequestedFromMe;
     case "all":
       return true;
+    // Recent rows come from the merged/closed archive, not the open list.
+    case "recent":
+      return false;
   }
 }
 

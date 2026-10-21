@@ -1,4 +1,12 @@
-import type { Account, MergeRequest, ProviderId } from "../types/index";
+import type { Account, MergeRequest, NormalizedState, ProviderId } from "../types/index";
+
+/** Overrides for one list fetch. Omitted fields fall back to the account's own settings. */
+export interface FetchOptions {
+  /** States to fetch instead of account.states. */
+  states?: NormalizedState[];
+  /** Only MRs updated at or after this ISO time. Providers that cannot filter by date ignore it. */
+  updatedAfter?: string;
+}
 
 /** Raised by any provider adapter; carries the HTTP status when available. */
 export class ProviderApiError extends Error {
@@ -36,7 +44,7 @@ export interface Provider {
   /** Organizations/workspaces the token can see, for the workspace dropdown. */
   listWorkspaces?(token: string, host: string): Promise<string[]>;
   /** Fetch + normalize the account's merge/pull requests. */
-  fetchMergeRequests(account: Account): Promise<MergeRequest[]>;
+  fetchMergeRequests(account: Account, options?: FetchOptions): Promise<MergeRequest[]>;
   /** Provider id of the signed-in user for this account (matches MergeRequest.authorId). */
   fetchIdentity?(account: Account): Promise<string>;
   /**

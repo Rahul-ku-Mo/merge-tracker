@@ -4,8 +4,10 @@ import type {
   MrSnapshot,
   NormalizedState,
   PopupPrefs,
+  RecentMr,
   UiState
 } from "../types/index";
+import { DEFAULT_RETENTION_DAYS, normalizeRetention } from "./recent";
 
 const DEFAULT_CONFIG: ExtensionConfig = {
   accounts: [],
@@ -28,7 +30,8 @@ const DEFAULT_CONFIG: ExtensionConfig = {
     sort: true,
     openAll: true,
     credit: true
-  }
+  },
+  recentRetentionDays: DEFAULT_RETENTION_DAYS
 };
 
 /** Accent colors cycled through as accounts are added. */
@@ -105,7 +108,8 @@ export async function getConfig(): Promise<ExtensionConfig> {
     ticketBaseUrl: typeof stored.ticketBaseUrl === "string" ? stored.ticketBaseUrl : "",
     mutedRepos: Array.isArray(stored.mutedRepos) ? stored.mutedRepos : [],
     mode: stored.mode ?? DEFAULT_CONFIG.mode,
-    display: { ...DEFAULT_CONFIG.display, ...stored.display }
+    display: { ...DEFAULT_CONFIG.display, ...stored.display },
+    recentRetentionDays: normalizeRetention(stored.recentRetentionDays)
   };
 }
 
@@ -129,7 +133,7 @@ export function createAccount(
     token: "",
     username: "",
     workspace: "",
-    scope: "assigned_to_me",
+    scope: "all",
     states: ["open"],
     enabled: true,
     color: ACCOUNT_COLORS[index % ACCOUNT_COLORS.length]
@@ -151,7 +155,9 @@ const DEFAULT_POPUP_PREFS: PopupPrefs = {
   state: "all",
   sort: "updated_desc",
   tab: "needs",
-  group: "priority"
+  group: "priority",
+  recentDate: "all",
+  recentDay: ""
 };
 
 export async function getPopupPrefs(): Promise<PopupPrefs> {
@@ -161,6 +167,16 @@ export async function getPopupPrefs(): Promise<PopupPrefs> {
 
 export async function setPopupPrefs(prefs: PopupPrefs): Promise<void> {
   await chrome.storage.local.set({ popupPrefs: prefs });
+}
+
+/** Merged/closed MRs kept for the Recent tab, keyed by MR key. */
+export async function getRecentMrs(): Promise<Record<string, RecentMr>> {
+  const { recentMrs } = await chrome.storage.local.get("recentMrs");
+  return (recentMrs as Record<string, RecentMr> | undefined) ?? {};
+}
+
+export async function setRecentMrs(recent: Record<string, RecentMr>): Promise<void> {
+  await chrome.storage.local.set({ recentMrs: recent });
 }
 
 export async function getUiState(): Promise<UiState> {

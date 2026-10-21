@@ -56,6 +56,18 @@
           <span id="group-value" class="group-sel-value"></span>
           <span data-icon="chevron-down" data-size="14"></span>
         </label>
+        <label id="recent-wrap" class="group-sel" data-i18n-title="recentDateLabel" title="Closed date" hidden>
+          <span data-icon="calendar" data-size="15"></span>
+          <select id="recent-date-select" aria-label="Closed date">
+            <option value="all" data-i18n="recentAny">Any time</option>
+            <option value="today" data-i18n="recentToday">Today</option>
+            <option value="7d" data-i18n="recent7">Last 7 days</option>
+            <option value="30d" data-i18n="recent30">Last 30 days</option>
+            <option value="day" data-i18n="recentPickDay">Pick a day</option>
+          </select>
+          <span id="recent-date-value" class="group-sel-value"></span>
+        </label>
+        <input id="recent-day" class="recent-day" type="date" data-i18n-aria="recentDateLabel" aria-label="Closed day" hidden />
         <button id="sort-btn" type="button" class="ctl-btn" title="Sort: newest first" aria-label="Sort: newest first">
           <span data-icon="arrow-up-down" data-size="15"></span>
         </button>
@@ -102,7 +114,7 @@
           <dt><kbd>Enter</kbd></dt><dd data-i18n="kbdOpen">Open selected item</dd>
           <dt><kbd>b</kbd></dt><dd data-i18n="kbdBranch">Copy branch name</dd>
           <dt><kbd>m</kbd></dt><dd data-i18n="kbdMute">Mute selected project</dd>
-          <dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd data-i18n="kbdTabs">Switch tab</dd>
+          <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd data-i18n="kbdTabs">Switch tab</dd>
           <dt><kbd>g</kbd></dt><dd data-i18n="kbdGroup">Toggle grouping</dd>
           <dt><kbd>s</kbd></dt><dd data-i18n="kbdSync">Sync now</dd>
           <dt><kbd>/</kbd></dt><dd data-i18n="kbdSearch">Search</dd>

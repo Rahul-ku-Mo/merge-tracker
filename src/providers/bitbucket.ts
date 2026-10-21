@@ -1,5 +1,5 @@
 import type { Account, CiStatus, MergeRequest, NormalizedState } from "../types/index";
-import { type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
+import { type FetchOptions, type Provider, ProviderApiError, makeMrKey, normalizeHost } from "./types";
 import { t } from "../lib/i18n";
 
 const DEFAULT_HOST = "https://api.bitbucket.org/2.0";
@@ -66,7 +66,7 @@ export const bitbucketProvider: Provider = {
     }
   ],
 
-  async fetchMergeRequests(account: Account): Promise<MergeRequest[]> {
+  async fetchMergeRequests(account: Account, options: FetchOptions = {}): Promise<MergeRequest[]> {
     const token = account.token.trim();
     const workspace = account.workspace?.trim();
     if (!token) {
@@ -82,7 +82,11 @@ export const bitbucketProvider: Provider = {
     const me = await fetchJson<BitbucketUser>(`${base}/user`, authHeader);
     const selectedUser = encodeURIComponent(me.uuid);
 
-    const states = account.states.length ? account.states : ["open" as const];
+    const states = options.states?.length
+      ? options.states
+      : account.states.length
+        ? account.states
+        : ["open" as const];
     const lists = await Promise.all(
       states.map((state) =>
         fetchPrs(base, workspace, selectedUser, authHeader, state)

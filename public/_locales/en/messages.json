@@ -604,5 +604,62 @@
   },
   "appNameShort": {
     "message": "MR Tracker"
+  },
+  "tabRecent": {
+    "message": "Recent"
+  },
+  "recentDateLabel": {
+    "message": "Closed"
+  },
+  "recentAny": {
+    "message": "Any time"
+  },
+  "recentToday": {
+    "message": "Today"
+  },
+  "recent7": {
+    "message": "Last 7 days"
+  },
+  "recent30": {
+    "message": "Last 30 days"
+  },
+  "recentPickDay": {
+    "message": "Pick a day"
+  },
+  "recentEmptyTitle": {
+    "message": "Nothing merged or closed"
+  },
+  "recentEmptyDesc": {
+    "message": "MRs you merge or close stay here for $1."
+  },
+  "recentDone": {
+    "message": "Done, remove from list"
+  },
+  "recentRemoved": {
+    "message": "Removed from Recent"
+  },
+  "recentRetentionLabel": {
+    "message": "Keep merged or closed MRs for"
+  },
+  "recentRetentionHint": {
+    "message": "They stay in the Recent tab until they age out. Mark one done there to remove it sooner."
+  },
+  "dayOne": {
+    "message": "1 day"
+  },
+  "daysMany": {
+    "message": "$1 days"
+  },
+  "recentSection": {
+    "message": "Recent tab"
+  },
+  "recentShortAny": {
+    "message": "All"
+  },
+  "recentShort7": {
+    "message": "7d"
+  },
+  "recentShort30": {
+    "message": "30d"
   }
 }

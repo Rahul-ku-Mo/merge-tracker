@@ -1,4 +1,5 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
+import { RECENT_RETENTION_DAYS, normalizeRetention } from "../lib/recent";
 import { normalizeTicketBase } from "../lib/tickets";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
 import { applyI18n, stateLabel, t } from "../lib/i18n";
@@ -52,7 +53,22 @@ async function load(): Promise<void> {
   requireInput("dispSort").checked = config.display.sort;
   requireInput("dispOpenAll").checked = config.display.openAll;
   requireInput("dispCredit").checked = config.display.credit;
+  fillRetentionOptions(config.recentRetentionDays);
   render();
+}
+
+/** Retention choices for the Recent tab. Labels are built here so each one is localized. */
+function fillRetentionOptions(selected: number): void {
+  const select = requireSelect("recentRetention");
+  select.replaceChildren(
+    ...RECENT_RETENTION_DAYS.map((days) => {
+      const option = document.createElement("option");
+      option.value = String(days);
+      option.textContent = days === 1 ? t("dayOne") : t("daysMany", String(days));
+      option.selected = days === selected;
+      return option;
+    })
+  );
 }
 
 function render(): void {
@@ -274,7 +290,8 @@ async function save(): Promise<void> {
       sort: requireInput("dispSort").checked,
       openAll: requireInput("dispOpenAll").checked,
       credit: requireInput("dispCredit").checked
-    }
+    },
+    recentRetentionDays: normalizeRetention(Number(requireSelect("recentRetention").value))
   });
 
   accounts = collected;

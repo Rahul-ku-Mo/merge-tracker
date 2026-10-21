@@ -93,6 +93,8 @@ export interface MergeRequest {
   /** Branch the MR comes from and the branch it merges into. Used for stacked-MR detection. */
   sourceBranch?: string;
   targetBranch?: string;
+  /** Display names of the assignees, when the provider reports them. */
+  assignees?: string[];
   /** Provider user id of the author (GitLab username, GitHub login, Bitbucket uuid). */
   authorId?: string;
   /** True when the signed-in user (per account) is the author. */
@@ -137,6 +139,8 @@ export interface ExtensionConfig {
   mode: ThemeMode;
   /** Which popup controls to show. */
   display: DisplayPrefs;
+  /** How long merged/closed MRs stay in the Recent tab, in days. */
+  recentRetentionDays: number;
 }
 
 /** Newest-first or oldest-first by update time. */
@@ -152,9 +156,15 @@ export interface PopupPrefs {
   tab: PopupTab;
   /** Popup grouping: by what needs doing, or by repository. */
   group: PopupGroup;
+  /** Recent tab: which closed dates to show. */
+  recentDate: RecentDateFilter;
+  /** Recent tab: local calendar day (YYYY-MM-DD) used when recentDate is "day". */
+  recentDay: string;
 }
 
-export type PopupTab = "needs" | "mine" | "reviewing" | "all";
+export type PopupTab = "needs" | "mine" | "reviewing" | "all" | "recent";
+/** Closed-date filter for the Recent tab. "day" uses PopupPrefs.recentDay. */
+export type RecentDateFilter = "all" | "today" | "7d" | "30d" | "day";
 export type PopupGroup = "priority" | "project";
 
 /**
@@ -167,6 +177,17 @@ export interface UiState {
   opened: string[];
   /** key → updatedAt at the time the user hid it; shown again once the MR changes. */
   hidden: Record<string, string>;
+}
+
+/**
+ * A merged or closed MR kept for the Recent tab.
+ * - closedAt: when we first saw it closed (ISO). Drives retention and the date filter.
+ * - removed: the user marked it done. Kept as a tombstone so sync doesn't bring it back.
+ */
+export interface RecentMr {
+  mr: MergeRequest;
+  closedAt: string;
+  removed: boolean;
 }
 
 export type SyncReason = "manual" | "alarm" | "install";
