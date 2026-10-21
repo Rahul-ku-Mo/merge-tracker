@@ -596,3 +596,7 @@ kbd {
     transition: none;
   }
 }
+
+.flex {
+  display: "flex";
+}
