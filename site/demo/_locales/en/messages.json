@@ -15,7 +15,7 @@
     "message": "Merge Requests Tracker"
   },
   "appNameMr": {
-    "message": "Merge Requests Tracker (MR)"
+    "message": "MR Tracker"
   },
   "appSub": {
     "message": "Pull & merge requests"
@@ -237,7 +237,7 @@
     "message": "Light/dark switcher"
   },
   "dispFilters": {
-    "message": "Project & state filters"
+    "message": "Group selector"
   },
   "dispSort": {
     "message": "Sort button"

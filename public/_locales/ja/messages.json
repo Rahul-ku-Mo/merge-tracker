@@ -237,7 +237,7 @@
     "message": "ライト／ダーク切り替え"
   },
   "dispFilters": {
-    "message": "プロジェクトと状態のフィルター"
+    "message": "グループ切り替え"
   },
   "dispSort": {
     "message": "並び替えボタン"

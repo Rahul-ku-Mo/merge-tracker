@@ -76,7 +76,7 @@
     project: "all",
     state: "all",
     sort: "updated_desc",
-    tab: scene === "blocked" ? "mine" : scene === "filtered" ? "all" : "needs",
+    tab: scene === "blocked" ? "needs" : "all",
     group: scene === "filtered" ? "project" : "priority"
   };
 

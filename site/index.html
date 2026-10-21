@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Merge Requests Tracker (MR): GitLab, GitHub and Bitbucket reviews in one list</title>
-  <meta name="description" content="A Chrome extension that lists your GitLab, GitHub and Bitbucket merge and pull requests in one popup, with CI status, a Blocked on me view and the notifications you choose. No server, no account.">
+  <meta name="description" content="A Chrome extension that lists your GitLab, GitHub and Bitbucket merge and pull requests in one popup, with CI status, a Needs you tab and the notifications you choose. No server, no account.">
   <meta name="theme-color" content="#0965ce">
   <link rel="icon" href="assets/favicon.png">
   <link rel="stylesheet" href="styles.css">
@@ -54,12 +54,12 @@
       </figure>
     </section>
 
-    <section class="step" data-section data-node="blocked">
+    <section class="step" data-section data-node="triage">
       <div class="copy">
         <h2>See what is waiting on you.</h2>
-        <p>Blocked on me keeps only the open requests where the next move is yours: a review someone asked you for, failing CI on your own request, or unresolved threads on your GitLab merge request.</p>
+        <p>The Needs you tab keeps only the open requests where the next move is yours: a review someone asked you for, failing CI on your own request, or unresolved threads on your GitLab merge request. Mine and Reviewing narrow it by role; All shows everything.</p>
         <ul class="facts">
-          <li>Every open row shows its CI result, its approval count and, here, why it is waiting</li>
+          <li>Every open row shows a chip for why it is waiting, plus its CI result and approval count</li>
           <li>Requests built on another branch sit under the request they depend on</li>
           <li>Ticket keys such as PLAT-212 link to Jira or Linear once you set the address</li>
           <li>Standup copies a Markdown summary: merged in the last 24 hours, waiting on review, failing CI, reviews you owe</li>
@@ -67,8 +67,8 @@
         <p class="note">GitHub's API does not report unresolved review threads, so that check covers GitLab only.</p>
       </div>
       <figure class="device">
-        <div class="popup" style="--h:600px"><iframe title="Demo of the Blocked on me view" loading="lazy" src="demo/src/popup/popup.html?scene=blocked"></iframe></div>
-        <figcaption>Blocked on me, with the reason on each row</figcaption>
+        <div class="popup" style="--h:600px"><iframe title="Demo of the Needs you tab" loading="lazy" src="demo/src/popup/popup.html?scene=blocked"></iframe></div>
+        <figcaption>Needs you, with the reason on each row</figcaption>
       </figure>
     </section>
 
@@ -83,9 +83,9 @@
         </ul>
       </div>
       <div class="toasts">
-        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Review requested</p><p class="m">Per-key quota editor in the admin UI</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
-        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">CI failed on your MR</p><p class="m">Add retry with backoff to the sync client</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
-        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Status changed</p><p class="m">Upgrade Postgres driver to 5.2 → merged</p><p class="a">Merge Requests Tracker (MR)</p></div></div>
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Review requested</p><p class="m">Per-key quota editor in the admin UI</p><p class="a">MR Tracker</p></div></div>
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">CI failed on your MR</p><p class="m">Add retry with backoff to the sync client</p><p class="a">MR Tracker</p></div></div>
+        <div class="toast"><img src="assets/icon.png" alt=""><div><p class="t">Status changed</p><p class="m">Upgrade Postgres driver to 5.2 → merged</p><p class="a">MR Tracker</p></div></div>
         <p class="caption">Notification text is shown as the extension writes it. Titles are synthetic.</p>
       </div>
     </section>
@@ -93,16 +93,17 @@
     <section class="step" data-section data-node="keys">
       <div class="copy">
         <h2>Work the list from the keyboard.</h2>
-        <p>Press <kbd>j</kbd> and <kbd>k</kbd> to move, <kbd>Enter</kbd> to open, <kbd>/</kbd> to search by title, project, author or number, <kbd>s</kbd> to sync, and <kbd>?</kbd> for the full list.</p>
+        <p>Press <kbd>j</kbd> and <kbd>k</kbd> to move, <kbd>Enter</kbd> to open, <kbd>/</kbd> to search by title, ticket, branch or author, <kbd>1</kbd>–<kbd>4</kbd> to switch tabs, <kbd>g</kbd> to change grouping, <kbd>b</kbd> to copy the branch, <kbd>s</kbd> to sync, and <kbd>?</kbd> for the full list.</p>
         <ul class="facts">
-          <li>Filter to one project or one state, newest or oldest first</li>
+          <li>Group by priority or by project, with collapsible repositories, and sort newest or oldest first</li>
+          <li>Hover a row to copy its branch or link, or hide it until it changes</li>
           <li>Press <kbd>m</kbd> to mute a project: it leaves the list, the badge count and the notifications</li>
           <li>Open every visible request in tabs at once</li>
         </ul>
       </div>
       <figure class="device">
-        <div class="popup" style="--h:470px"><iframe title="Demo of filtering and muting" loading="lazy" src="demo/src/popup/popup.html?scene=filtered"></iframe></div>
-        <figcaption>Filtered to one project, with another project muted</figcaption>
+        <div class="popup" style="--h:600px"><iframe title="Demo of grouping by project and muting" loading="lazy" src="demo/src/popup/popup.html?scene=filtered"></iframe></div>
+        <figcaption>Grouped by project, with another project muted</figcaption>
       </figure>
     </section>
 
