@@ -321,40 +321,52 @@ h1 {
 }
 
 .step {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(32px, 5vw, 80px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 56px clamp(32px, 5vw, 80px);
   align-items: center;
   padding: 96px 0;
+}
+/* Text takes the spare width; the visual keeps its own width and wraps below when the row is too narrow. */
+.step > .device {
+  flex: 0 0 auto;
 }
 .step h2,
 .finale h2 {
   margin: 0 0 20px;
-  font-size: clamp(32px, 4.2vw, 52px);
-  line-height: 1.06;
+  font-weight: 700;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
   letter-spacing: -0.03em;
-  font-weight: 800;
   text-wrap: balance;
 }
 .copy {
-  max-width: 520px;
+  flex: 1 1 380px;
+  min-width: 0;
+  max-width: 540px;
 }
 .copy > p {
   margin: 0 0 24px;
-  font-size: 19px;
+  font-size: 18px;
+  line-height: 1.6;
   color: hsl(var(--muted));
+  text-wrap: pretty;
 }
 .facts {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 .facts li {
-  position: relative;
-  padding-left: 28px;
-  font-size: 17px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: hsl(var(--fg));
+  padding-top: 14px;
+  border-top: 1px solid hsl(var(--line));
+  text-wrap: pretty;
 }
 .copy > p.note {
   margin: 24px 0 0;
@@ -377,19 +389,10 @@ kbd {
     monospace;
   text-align: center;
 }
-.facts li::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0.7em;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: hsl(var(--primary));
-}
 
 .toasts {
-  width: 100%;
+  flex: 0 1 440px;
+  min-width: 0;
 }
 .toast {
   display: grid;
@@ -427,13 +430,8 @@ kbd {
 }
 
 .perms {
-  width: 100%;
-}
-.step-perms {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
-}
-.step-toasts {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  flex: 0 1 520px;
+  min-width: 0;
 }
 .perms table {
   width: 100%;
@@ -531,20 +529,13 @@ kbd {
 }
 
 @media (max-width: 1000px) {
-  .hero,
-  .step {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .hero {
+    grid-template-columns: minmax(0, 1fr);
     min-height: 0;
     padding-top: 56px;
   }
   .device {
     justify-self: start;
-  }
-  .step-perms,
-  .step-toasts {
-    grid-template-columns: minmax(0, 1fr);
   }
   .step {
     padding: 72px 0;
