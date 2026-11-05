@@ -15,6 +15,8 @@ import { applyI18n, t } from "../lib/i18n";
 import { initModeControl } from "../lib/theme";
 import { hydrateIcons, iconSvg } from "../lib/icons";
 import { initConnectPanel } from "./connect";
+import { askProfile } from "./profile-picker";
+import { FALLBACK_PROFILE, PROFILE_PRESETS, type ProfilePreset } from "../lib/profile";
 import { type Bucket, bucketOf, headlineReason, inTab, shortAge } from "../lib/triage";
 import { buildStandup } from "../lib/standup";
 import { type StackRow, orderStacks } from "../lib/stacks";
@@ -26,13 +28,13 @@ import type {
   PopupGroup,
   PopupPrefs,
   PopupTab,
+  Profile,
   RecentDateFilter,
   RecentMr,
   SyncResult,
   UiState
 } from "../types/index";
 
-const TABS: PopupTab[] = ["needs", "mine", "reviewing", "all", "recent"];
 const TAB_LABEL_KEY: Record<PopupTab, string> = {
   needs: "tabNeeds",
   mine: "tabMine",
@@ -101,6 +103,20 @@ let lastSyncAtIso: string | null = null;
 /** Accounts that failed on the last sync this session. Cleared by the next clean sync. */
 let syncErrors: AccountError[] = [];
 
+/** Layout preset in effect: tabs and row signals. Team until the user answers the profile question. */
+let preset: ProfilePreset = PROFILE_PRESETS[FALLBACK_PROFILE];
+
+function tabLabel(tab: PopupTab): string {
+  return t(preset.tabLabels[tab] ?? TAB_LABEL_KEY[tab]);
+}
+
+/** Switch to a profile's layout. Keeps the saved tab when it still exists, else falls back to the preset's default. */
+function applyProfile(profile: Profile | null): void {
+  preset = PROFILE_PRESETS[profile ?? FALLBACK_PROFILE];
+  if (!preset.tabs.includes(prefs.tab)) prefs.tab = preset.defaultTab;
+  buildTabs();
+}
+
 let showControls = true;
 let connectPanel: ReturnType<typeof initConnectPanel> | null = null;
 
@@ -131,7 +147,6 @@ async function init(): Promise<void> {
   recentDateEl.value = prefs.recentDate;
   syncGroupLabel();
   reflectSortButton();
-  buildTabs();
   attachListeners();
 
   const config = await getConfig();
@@ -141,6 +156,7 @@ async function init(): Promise<void> {
     onChange: (mode) => void setConfig({ mode })
   });
   loadConfig(config);
+  applyProfile(config.profile);
   applyDisplayPrefs(config.display);
   connectPanel = initConnectPanel(() => void enterMainView());
 
@@ -164,6 +180,17 @@ function loadConfig(config: ExtensionConfig): void {
 
 async function enterMainView(): Promise<void> {
   connectPanel?.hide();
+
+  // Asked once: new users right after connecting, existing users the first time they open the popup.
+  const config = await getConfig();
+  if (!config.profile) {
+    hideMainChrome();
+    const profile = await askProfile();
+    await setConfig({ profile });
+    applyProfile(profile);
+    await setPopupPrefs(prefs);
+  }
+
   syncBtn.hidden = false;
   standupBtn.hidden = false;
   footerEl.hidden = false;
@@ -175,6 +202,11 @@ async function enterMainView(): Promise<void> {
 }
 
 function showConnectView(): void {
+  hideMainChrome();
+  connectPanel?.show();
+}
+
+function hideMainChrome(): void {
   tabsEl.hidden = true;
   controlsEl.hidden = true;
   listEl.hidden = true;
@@ -184,7 +216,6 @@ function showConnectView(): void {
   footerEl.hidden = true;
   syncBtn.hidden = true;
   standupBtn.hidden = true;
-  connectPanel?.show();
 }
 
 /** Hide popup chrome the user opted out of (configured in Settings). */
@@ -209,13 +240,13 @@ async function renderFromCache(): Promise<void> {
 
 function buildTabs(): void {
   tabsEl.replaceChildren();
-  for (const tab of TABS) {
+  for (const tab of preset.tabs) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "tab";
     btn.dataset.tab = tab;
     btn.setAttribute("role", "tab");
-    btn.innerHTML = `${esc(t(TAB_LABEL_KEY[tab]))}<span class="tab-count"></span>`;
+    btn.innerHTML = `${esc(tabLabel(tab))}<span class="tab-count"></span>`;
     btn.addEventListener("click", () => setTab(tab));
     tabsEl.appendChild(btn);
   }
@@ -394,7 +425,7 @@ function buildSections(items: MergeRequest[]): Section[] {
   }
 
   if (prefs.tab === "recent") {
-    return [{ id: "recent", header: t("tabRecent"), items: orderStacks(items) }];
+    return [{ id: "recent", header: tabLabel("recent"), items: orderStacks(items) }];
   }
 
   const open = items.filter((mr) => mr.state === "open");
@@ -406,7 +437,7 @@ function buildSections(items: MergeRequest[]): Section[] {
       sections.push({ id: bucket, header: t(BUCKET_LABEL_KEY[bucket]), items: orderStacks(list) });
     }
   }
-  if (rest.length) sections.push({ id: "closed", header: t("tabAll"), items: orderStacks(rest) });
+  if (rest.length) sections.push({ id: "closed", header: t("sectionRecentClosed"), items: orderStacks(rest) });
   return sections;
 }
 
@@ -589,11 +620,11 @@ function signalsHtml(mr: MergeRequest, depth: number): string {
     const tone = mr.ci === "pass" ? "green" : mr.ci === "fail" ? "red" : "amber";
     parts.push(`<span class="sig tone-${tone}">${esc(t(key))}</span>`);
   }
-  if (mr.approvals !== undefined) {
+  if (preset.signals.approvals && mr.approvals !== undefined) {
     const ready = bucketOf(mr) === "ready";
     parts.push(`<span class="sig${ready ? " tone-green" : ""}">${esc(t("signalApprovals", String(mr.approvals)))}</span>`);
   }
-  if (mr.threadsResolved === false) {
+  if (preset.signals.threads && mr.threadsResolved === false) {
     parts.push(`<span class="sig tone-amber">${esc(t("blockThreads"))}</span>`);
   }
   if (depth && mr.targetBranch) {
@@ -826,9 +857,11 @@ function onKeydown(e: KeyboardEvent): void {
     case "2":
     case "3":
     case "4":
-    case "5":
-      setTab(TABS[Number(e.key) - 1]);
+    case "5": {
+      const tab = preset.tabs[Number(e.key) - 1];
+      if (tab) setTab(tab);
       break;
+    }
     case "g":
       prefs.group = prefs.group === "priority" ? "project" : "priority";
       groupEl.value = prefs.group;

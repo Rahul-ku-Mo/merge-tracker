@@ -477,16 +477,16 @@
     "message": "Open $1"
   },
   "tabNeeds": {
-    "message": "Needs you"
+    "message": "Action needed"
   },
   "tabMine": {
-    "message": "Mine"
+    "message": "My MRs"
   },
   "tabReviewing": {
-    "message": "Reviewing"
+    "message": "To review"
   },
   "tabAll": {
-    "message": "All"
+    "message": "Everything open"
   },
   "groupLabel": {
     "message": "Group"
@@ -606,7 +606,7 @@
     "message": "MR Tracker"
   },
   "tabRecent": {
-    "message": "Recent"
+    "message": "Merged & closed"
   },
   "recentDateLabel": {
     "message": "Closed"
@@ -661,5 +661,50 @@
   },
   "recentShort30": {
     "message": "30d"
+  },
+  "tabOpenSolo": {
+    "message": "Open"
+  },
+  "tabMergedSolo": {
+    "message": "Merged"
+  },
+  "sectionRecentClosed": {
+    "message": "Closed in the last 24 hours"
+  },
+  "profileHeading": {
+    "message": "How do you work?"
+  },
+  "profileLead": {
+    "message": "We'll set up the popup to match. You can change this any time in Settings."
+  },
+  "profileSoloTitle": {
+    "message": "On my own"
+  },
+  "profileSoloDesc": {
+    "message": "Just my own MRs. Two tabs: open and merged."
+  },
+  "profileTeamTitle": {
+    "message": "Small team or startup"
+  },
+  "profileTeamDesc": {
+    "message": "Reviews go back and forth. Action needed, my MRs, to review."
+  },
+  "profileOrgTitle": {
+    "message": "Large organization"
+  },
+  "profileOrgDesc": {
+    "message": "Many repos and reviewers. Lead with what's asked of me."
+  },
+  "profileSection": {
+    "message": "Popup layout"
+  },
+  "profileLabel": {
+    "message": "I work"
+  },
+  "profileUnset": {
+    "message": "Not chosen yet"
+  },
+  "profileHint": {
+    "message": "Sets which tabs and row details the popup shows. Your notification and display choices below are not changed."
   }
 }

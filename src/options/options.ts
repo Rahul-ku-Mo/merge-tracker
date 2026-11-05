@@ -1,4 +1,5 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
+import { PROFILES, PROFILE_TITLE_KEY, isProfile } from "../lib/profile";
 import { RECENT_RETENTION_DAYS, normalizeRetention } from "../lib/recent";
 import { normalizeTicketBase } from "../lib/tickets";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
@@ -8,7 +9,7 @@ import { initModeControl } from "../lib/theme";
 import { hydrateIcons } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { ensureHostPermissions } from "../lib/permissions";
-import type { Account, MrScope, NormalizedState, ProviderId } from "../types/index";
+import type { Account, MrScope, NormalizedState, Profile, ProviderId } from "../types/index";
 
 const form = requireForm("config-form");
 const accountsEl = requireElement<HTMLDivElement>("accounts");
@@ -53,8 +54,29 @@ async function load(): Promise<void> {
   requireInput("dispSort").checked = config.display.sort;
   requireInput("dispOpenAll").checked = config.display.openAll;
   requireInput("dispCredit").checked = config.display.credit;
+  fillProfileOptions(config.profile);
   fillRetentionOptions(config.recentRetentionDays);
   render();
+}
+
+/** Profile choices. Until one is picked, a placeholder keeps the popup's one-time question pending. */
+function fillProfileOptions(selected: Profile | null): void {
+  const select = requireSelect("profile");
+  const options = PROFILES.map((profile) => {
+    const option = document.createElement("option");
+    option.value = profile;
+    option.textContent = t(PROFILE_TITLE_KEY[profile]);
+    option.selected = profile === selected;
+    return option;
+  });
+  if (!selected) {
+    const unset = document.createElement("option");
+    unset.value = "";
+    unset.textContent = t("profileUnset");
+    unset.selected = true;
+    options.unshift(unset);
+  }
+  select.replaceChildren(...options);
 }
 
 /** Retention choices for the Recent tab. Labels are built here so each one is localized. */
@@ -267,8 +289,10 @@ async function save(): Promise<void> {
   // so request them now (we're still inside the submit user gesture).
   const granted = await ensureHostPermissions(collected);
 
+  const profile = requireSelect("profile").value;
   await setConfig({
     accounts: collected,
+    ...(isProfile(profile) ? { profile } : {}),
     syncIntervalMinutes: Number(requireInput("syncIntervalMinutes").value),
     notifyOn: {
       newMr: requireInput("notifyNewMr").checked,

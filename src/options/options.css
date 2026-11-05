@@ -36,9 +36,22 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 16px;
+  /* Keep Save reachable while scrolling a long form. Negative margins stretch the header over the
+     card's padding so scrolled content can't show above or beside it. */
+  position: sticky;
+  top: -30px;
+  z-index: 5;
+  margin: -28px -28px 12px;
+  padding: 28px 28px 16px;
   border-bottom: var(--bw) solid hsl(var(--ink));
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: hsl(var(--card));
+}
+
+.theme-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .settings-brand {
@@ -265,14 +278,6 @@ h1 {
   gap: 12px;
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 8px;
-  padding-top: 16px;
-  border-top: var(--bw) solid hsl(var(--ink));
-}
 
 .save-status {
   font-size: 12px;

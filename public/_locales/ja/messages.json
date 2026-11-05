@@ -477,16 +477,16 @@
     "message": "$1 を開く"
   },
   "tabNeeds": {
-    "message": "あなた待ち"
+    "message": "要対応"
   },
   "tabMine": {
-    "message": "自分の"
+    "message": "自分のMR"
   },
   "tabReviewing": {
-    "message": "レビュー中"
+    "message": "レビュー待ち"
   },
   "tabAll": {
-    "message": "すべて"
+    "message": "オープン中すべて"
   },
   "groupLabel": {
     "message": "グループ"
@@ -606,7 +606,7 @@
     "message": "MR Tracker"
   },
   "tabRecent": {
-    "message": "最近"
+    "message": "マージ済み・クローズ済み"
   },
   "recentDateLabel": {
     "message": "終了日"
@@ -661,5 +661,50 @@
   },
   "recentShort30": {
     "message": "30日"
+  },
+  "tabOpenSolo": {
+    "message": "オープン"
+  },
+  "tabMergedSolo": {
+    "message": "マージ済み"
+  },
+  "sectionRecentClosed": {
+    "message": "直近24時間にクローズ"
+  },
+  "profileHeading": {
+    "message": "どのように働いていますか?"
+  },
+  "profileLead": {
+    "message": "それに合わせてポップアップを設定します。設定からいつでも変更できます。"
+  },
+  "profileSoloTitle": {
+    "message": "ひとりで"
+  },
+  "profileSoloDesc": {
+    "message": "自分のMRだけ。オープンとマージ済みの2タブ。"
+  },
+  "profileTeamTitle": {
+    "message": "小規模チーム・スタートアップ"
+  },
+  "profileTeamDesc": {
+    "message": "レビューを送り合います。要対応、自分のMR、レビュー待ち。"
+  },
+  "profileOrgTitle": {
+    "message": "大規模な組織"
+  },
+  "profileOrgDesc": {
+    "message": "多数のリポジトリとレビュアー。自分への依頼を最優先で表示。"
+  },
+  "profileSection": {
+    "message": "ポップアップのレイアウト"
+  },
+  "profileLabel": {
+    "message": "働き方"
+  },
+  "profileUnset": {
+    "message": "未選択"
+  },
+  "profileHint": {
+    "message": "ポップアップに表示するタブと行の詳細を決めます。下の通知・表示の設定は変更されません。"
   }
 }

@@ -125,8 +125,13 @@ export interface DisplayPrefs {
   credit: boolean;
 }
 
+/** How the user works. Picks the popup layout preset (tabs, row signals). */
+export type Profile = "solo" | "team" | "org";
+
 export interface ExtensionConfig {
   accounts: Account[];
+  /** Layout preset. null until the user answers the one-time question in the popup. */
+  profile: Profile | null;
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
   quietHours: QuietHours;

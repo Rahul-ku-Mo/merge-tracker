@@ -7,10 +7,12 @@ import type {
   RecentMr,
   UiState
 } from "../types/index";
+import { isProfile } from "./profile";
 import { DEFAULT_RETENTION_DAYS, normalizeRetention } from "./recent";
 
 const DEFAULT_CONFIG: ExtensionConfig = {
   accounts: [],
+  profile: null,
   syncIntervalMinutes: 5,
   notifyOn: {
     newMr: true,
@@ -101,6 +103,7 @@ export async function getConfig(): Promise<ExtensionConfig> {
 
   return {
     accounts: rawAccounts.map(normalizeAccount),
+    profile: isProfile(stored.profile) ? stored.profile : null,
     syncIntervalMinutes: stored.syncIntervalMinutes ?? DEFAULT_CONFIG.syncIntervalMinutes,
     notifyOn: { ...DEFAULT_CONFIG.notifyOn, ...stored.notifyOn },
     quietHours: { ...DEFAULT_CONFIG.quietHours, ...stored.quietHours },

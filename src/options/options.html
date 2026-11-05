@@ -19,6 +19,8 @@
             </div>
           </div>
           <div class="theme-controls">
+            <span id="save-status" class="save-status" role="status"></span>
+            <button type="submit" form="config-form" class="btn btn-primary" data-i18n="saveChanges">Save changes</button>
             <button
               id="mode-toggle"
               class="icon-btn"
@@ -141,6 +143,17 @@
           </section>
 
           <section class="form-section card">
+            <h2 class="section-title" data-i18n="profileSection">Popup layout</h2>
+            <label class="field-label">
+              <span data-i18n="profileLabel">I work</span>
+              <select class="select" id="profile"></select>
+            </label>
+            <p class="hint" data-i18n="profileHint">
+              Sets which tabs and row details the popup shows. Your notification and display choices below are not changed.
+            </p>
+          </section>
+
+          <section class="form-section card">
             <h2 class="section-title" data-i18n="popupSection">Popup display</h2>
             <p class="hint" data-i18n="popupHint">
               Hide controls you don't use to reclaim space in the popup.
@@ -169,10 +182,6 @@
             </div>
           </section>
 
-          <div class="actions">
-            <button type="submit" class="btn btn-primary" data-i18n="saveChanges">Save changes</button>
-            <span id="save-status" class="save-status" role="status"></span>
-          </div>
         </form>
 
         <p class="credit" data-i18n="credit">crafted by Rahul KM</p>
