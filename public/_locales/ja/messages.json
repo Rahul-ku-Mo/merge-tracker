@@ -665,9 +665,6 @@
   "tabOpenSolo": {
     "message": "オープン"
   },
-  "tabMergedSolo": {
-    "message": "マージ済み"
-  },
   "sectionRecentClosed": {
     "message": "直近24時間にクローズ"
   },
@@ -706,5 +703,23 @@
   },
   "profileHint": {
     "message": "ポップアップに表示するタブと行の詳細を決めます。下の通知・表示の設定は変更されません。"
+  },
+  "tabMerged": {
+    "message": "マージ済み"
+  },
+  "tabsSection": {
+    "message": "タブ"
+  },
+  "tabsHint": {
+    "message": "表示するタブと並び順を選べます。先頭のタブが最初に開きます。上のプロフィールを変えると、この一覧はプリセットに戻ります。"
+  },
+  "tabsMoveUp": {
+    "message": "$1を上へ"
+  },
+  "tabsMoveDown": {
+    "message": "$1を下へ"
+  },
+  "tabsReset": {
+    "message": "プリセットに戻す"
   }
 }

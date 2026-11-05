@@ -7,6 +7,8 @@
   const q = new URLSearchParams(location.search);
   const scene = q.get("scene") || "list";
   const mode = q.get("mode") || "system";
+  // Layout preset: solo | team | org. Defaults to team so older scenes skip the one-time question.
+  const profile = ["solo", "team", "org"].includes(q.get("profile")) ? q.get("profile") : "team";
   const ago = (min) => new Date(Date.now() - min * 60000).toISOString();
 
   const accounts = [
@@ -32,7 +34,7 @@
   });
   const [gh, gl, bb] = accounts;
   // Detail fields (CI, approvals, review requests, branches) mirror what sync's enrichment fills in.
-  const mergeRequests = [
+  const allMrs = [
     mr(gl, 1204, "Rate limit per API key, not per IP", "open", "platform/api-gateway", "marcus.t", 8, false,
       { ci: "pass", approvals: 1, sourceBranch: "feat/PLAT-212-key-limits", targetBranch: "main" }),
     mr(gh, 482, "Add retry with backoff to the sync client", "open", "acme/web-app", "priya-n", 17, false,
@@ -54,6 +56,13 @@
       { ci: "pass", approvals: 0, reviewRequestedFromMe: true, sourceBranch: "feat/PLAT-213-quota-ui", targetBranch: "feat/PLAT-212-key-limits" })
   ];
 
+  // Solo: only my own work, nobody to review for.
+  const mine = [0, 1, 2, 5, 4];
+  const mergeRequests =
+    profile === "solo"
+      ? mine.map((i) => ({ ...allMrs[i], author: "you", authoredByMe: true, reviewRequestedFromMe: false }))
+      : allMrs;
+
   // Everything counts as "seen" except two, so the "updated" marker shows.
   const fresh = new Set([mergeRequests[0].key, mergeRequests[1].key]);
   const seen = {};
@@ -61,6 +70,8 @@
   const opened = [mergeRequests[3].key, mergeRequests[4].key];
 
   const config = {
+    profile,
+    tabs: null,
     accounts: scene === "connect" ? [] : accounts,
     syncIntervalMinutes: 5,
     notifyOn: { newMr: true, statusChange: true, newComment: false, reviewRequested: true, ciFailed: true },
@@ -76,7 +87,7 @@
     project: "all",
     state: "all",
     sort: "updated_desc",
-    tab: scene === "blocked" ? "needs" : "all",
+    tab: scene === "blocked" || (scene === "profile" && profile === "team") ? "needs" : scene === "profile" && profile === "org" ? "reviewing" : "all",
     group: scene === "filtered" ? "project" : "priority"
   };
 
@@ -84,6 +95,9 @@
     config,
     popupPrefs,
     uiState: { seen, opened, hidden: {} },
+    recentMrs: Object.fromEntries(
+      mergeRequests.filter((m) => m.state !== "open").map((m) => [m.key, { mr: m, closedAt: m.updatedAt, removed: false }])
+    ),
     mrSnapshot: { mergeRequests, lastSyncAt: ago(1), lastSyncReason: "alarm" }
   };
 

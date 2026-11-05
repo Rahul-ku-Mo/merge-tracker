@@ -16,7 +16,7 @@ import { initModeControl } from "../lib/theme";
 import { hydrateIcons, iconSvg } from "../lib/icons";
 import { initConnectPanel } from "./connect";
 import { askProfile } from "./profile-picker";
-import { FALLBACK_PROFILE, PROFILE_PRESETS, type ProfilePreset } from "../lib/profile";
+import { FALLBACK_PROFILE, PROFILE_PRESETS, resolveTabs, type ProfilePreset } from "../lib/profile";
 import { type Bucket, bucketOf, headlineReason, inTab, shortAge } from "../lib/triage";
 import { buildStandup } from "../lib/standup";
 import { type StackRow, orderStacks } from "../lib/stacks";
@@ -105,15 +105,19 @@ let syncErrors: AccountError[] = [];
 
 /** Layout preset in effect: tabs and row signals. Team until the user answers the profile question. */
 let preset: ProfilePreset = PROFILE_PRESETS[FALLBACK_PROFILE];
+/** Tabs in view: the user's own list from Settings, else the preset's. The first one is the default. */
+let tabsInView: PopupTab[] = preset.tabs;
 
 function tabLabel(tab: PopupTab): string {
   return t(preset.tabLabels[tab] ?? TAB_LABEL_KEY[tab]);
 }
 
 /** Switch to a profile's layout. Keeps the saved tab when it still exists, else falls back to the preset's default. */
-function applyProfile(profile: Profile | null): void {
-  preset = PROFILE_PRESETS[profile ?? FALLBACK_PROFILE];
-  if (!preset.tabs.includes(prefs.tab)) prefs.tab = preset.defaultTab;
+function applyProfile(profile: Profile | null, customTabs: PopupTab[] | null): void {
+  const resolved = profile ?? FALLBACK_PROFILE;
+  preset = PROFILE_PRESETS[resolved];
+  tabsInView = resolveTabs(resolved, customTabs);
+  if (!tabsInView.includes(prefs.tab)) prefs.tab = tabsInView[0];
   buildTabs();
 }
 
@@ -156,7 +160,7 @@ async function init(): Promise<void> {
     onChange: (mode) => void setConfig({ mode })
   });
   loadConfig(config);
-  applyProfile(config.profile);
+  applyProfile(config.profile, config.tabs);
   applyDisplayPrefs(config.display);
   connectPanel = initConnectPanel(() => void enterMainView());
 
@@ -186,8 +190,8 @@ async function enterMainView(): Promise<void> {
   if (!config.profile) {
     hideMainChrome();
     const profile = await askProfile();
-    await setConfig({ profile });
-    applyProfile(profile);
+    await setConfig({ profile, tabs: null });
+    applyProfile(profile, null);
     await setPopupPrefs(prefs);
   }
 
@@ -240,7 +244,7 @@ async function renderFromCache(): Promise<void> {
 
 function buildTabs(): void {
   tabsEl.replaceChildren();
-  for (const tab of preset.tabs) {
+  for (const tab of tabsInView) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "tab";
@@ -858,7 +862,7 @@ function onKeydown(e: KeyboardEvent): void {
     case "3":
     case "4":
     case "5": {
-      const tab = preset.tabs[Number(e.key) - 1];
+      const tab = tabsInView[Number(e.key) - 1];
       if (tab) setTab(tab);
       break;
     }

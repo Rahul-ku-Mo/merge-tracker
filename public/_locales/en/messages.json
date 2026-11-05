@@ -486,7 +486,7 @@
     "message": "To review"
   },
   "tabAll": {
-    "message": "Everything open"
+    "message": "All open"
   },
   "groupLabel": {
     "message": "Group"
@@ -665,9 +665,6 @@
   "tabOpenSolo": {
     "message": "Open"
   },
-  "tabMergedSolo": {
-    "message": "Merged"
-  },
   "sectionRecentClosed": {
     "message": "Closed in the last 24 hours"
   },
@@ -706,5 +703,23 @@
   },
   "profileHint": {
     "message": "Sets which tabs and row details the popup shows. Your notification and display choices below are not changed."
+  },
+  "tabMerged": {
+    "message": "Merged"
+  },
+  "tabsSection": {
+    "message": "Tabs"
+  },
+  "tabsHint": {
+    "message": "Choose which tabs show and in what order. The first one opens first. Changing the profile above resets this list to its preset."
+  },
+  "tabsMoveUp": {
+    "message": "Move $1 up"
+  },
+  "tabsMoveDown": {
+    "message": "Move $1 down"
+  },
+  "tabsReset": {
+    "message": "Reset to preset"
   }
 }

@@ -1,5 +1,5 @@
 import { createAccount, getConfig, setConfig } from "../lib/storage";
-import { PROFILES, PROFILE_TITLE_KEY, isProfile } from "../lib/profile";
+import { ALL_TABS, PROFILES, PROFILE_PRESETS, PROFILE_TITLE_KEY, FALLBACK_PROFILE, isProfile, resolveTabs } from "../lib/profile";
 import { RECENT_RETENTION_DAYS, normalizeRetention } from "../lib/recent";
 import { normalizeTicketBase } from "../lib/tickets";
 import { requireElement, requireForm, requireInput, requireSelect } from "../lib/dom";
@@ -9,7 +9,7 @@ import { initModeControl } from "../lib/theme";
 import { hydrateIcons } from "../lib/icons";
 import { providerIconSvg } from "../lib/provider-icons";
 import { ensureHostPermissions } from "../lib/permissions";
-import type { Account, MrScope, NormalizedState, Profile, ProviderId } from "../types/index";
+import type { Account, MrScope, NormalizedState, PopupTab, Profile, ProviderId } from "../types/index";
 
 const form = requireForm("config-form");
 const accountsEl = requireElement<HTMLDivElement>("accounts");
@@ -28,6 +28,17 @@ const SCOPES: { value: MrScope; label: string }[] = [
 const STATES: NormalizedState[] = ["open", "merged", "closed"];
 
 let accounts: Account[] = [];
+/** Tab editor state: every tab in display order, plus which are switched on. */
+let tabOrder: PopupTab[] = [];
+const tabsOn = new Set<PopupTab>();
+
+const TAB_LABEL_KEY: Record<PopupTab, string> = {
+  needs: "tabNeeds",
+  mine: "tabMine",
+  reviewing: "tabReviewing",
+  all: "tabAll",
+  recent: "tabRecent"
+};
 
 async function load(): Promise<void> {
   applyI18n();
@@ -55,8 +66,84 @@ async function load(): Promise<void> {
   requireInput("dispOpenAll").checked = config.display.openAll;
   requireInput("dispCredit").checked = config.display.credit;
   fillProfileOptions(config.profile);
+  setTabEditor(resolveTabs(config.profile ?? FALLBACK_PROFILE, config.tabs));
   fillRetentionOptions(config.recentRetentionDays);
   render();
+}
+
+/** Profile shown in the dropdown. Until one is chosen, the team layout is what the popup uses. */
+function selectedProfile(): Profile {
+  const value = requireSelect("profile").value;
+  return isProfile(value) ? value : FALLBACK_PROFILE;
+}
+
+/** Tab name as the popup shows it for the selected profile. */
+function tabName(tab: PopupTab): string {
+  return t(PROFILE_PRESETS[selectedProfile()].tabLabels[tab] ?? TAB_LABEL_KEY[tab]);
+}
+
+/** Load a tab list into the editor: the chosen tabs first, in order, then the rest switched off. */
+function setTabEditor(tabs: PopupTab[]): void {
+  tabOrder = [...tabs, ...ALL_TABS.filter((tab) => !tabs.includes(tab))];
+  tabsOn.clear();
+  for (const tab of tabs) tabsOn.add(tab);
+  renderTabEditor();
+}
+
+function renderTabEditor(): void {
+  const list = requireElement<HTMLUListElement>("tabs-list");
+  list.replaceChildren(
+    ...tabOrder.map((tab, index) => {
+      const name = tabName(tab);
+      const li = document.createElement("li");
+
+      const label = document.createElement("label");
+      label.className = "check-row";
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.checked = tabsOn.has(tab);
+      // The popup needs at least one tab, so the last one on can't be switched off.
+      box.disabled = box.checked && tabsOn.size === 1;
+      box.addEventListener("change", () => {
+        if (box.checked) tabsOn.add(tab);
+        else tabsOn.delete(tab);
+        renderTabEditor();
+      });
+      const text = document.createElement("span");
+      text.textContent = name;
+      label.append(box, text);
+
+      li.append(label, moveButton("↑", t("tabsMoveUp", name), index === 0, () => moveTab(index, -1)));
+      li.append(moveButton("↓", t("tabsMoveDown", name), index === tabOrder.length - 1, () => moveTab(index, 1)));
+      return li;
+    })
+  );
+}
+
+function moveButton(glyph: string, label: string, disabled: boolean, onClick: () => void): HTMLButtonElement {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-ghost move";
+  btn.textContent = glyph;
+  btn.title = label;
+  btn.setAttribute("aria-label", label);
+  btn.disabled = disabled;
+  btn.addEventListener("click", () => onClick());
+  return btn;
+}
+
+function moveTab(index: number, by: -1 | 1): void {
+  const target = index + by;
+  if (target < 0 || target >= tabOrder.length) return;
+  [tabOrder[index], tabOrder[target]] = [tabOrder[target], tabOrder[index]];
+  renderTabEditor();
+}
+
+/** The tabs to save: null while they match the profile's preset, so the preset keeps applying. */
+function chosenTabs(): PopupTab[] | null {
+  const tabs = tabOrder.filter((tab) => tabsOn.has(tab));
+  const preset = PROFILE_PRESETS[selectedProfile()].tabs;
+  return tabs.length === preset.length && tabs.every((tab, i) => tab === preset[i]) ? null : tabs;
 }
 
 /** Profile choices. Until one is picked, a placeholder keeps the popup's one-time question pending. */
@@ -293,6 +380,7 @@ async function save(): Promise<void> {
   await setConfig({
     accounts: collected,
     ...(isProfile(profile) ? { profile } : {}),
+    tabs: chosenTabs(),
     syncIntervalMinutes: Number(requireInput("syncIntervalMinutes").value),
     notifyOn: {
       newMr: requireInput("notifyNewMr").checked,
@@ -341,6 +429,11 @@ function esc(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+requireSelect("profile").addEventListener("change", () => setTabEditor(PROFILE_PRESETS[selectedProfile()].tabs));
+requireElement<HTMLButtonElement>("tabs-reset").addEventListener("click", () =>
+  setTabEditor(PROFILE_PRESETS[selectedProfile()].tabs)
+);
 
 void load();
 

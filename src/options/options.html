@@ -144,13 +144,23 @@
 
           <section class="form-section card">
             <h2 class="section-title" data-i18n="profileSection">Popup layout</h2>
-            <label class="field-label">
+            <label class="field-label stacked">
               <span data-i18n="profileLabel">I work</span>
               <select class="select" id="profile"></select>
             </label>
             <p class="hint" data-i18n="profileHint">
               Sets which tabs and row details the popup shows. Your notification and display choices below are not changed.
             </p>
+            <div class="tabs-editor">
+              <div class="section-head">
+                <h3 class="subsection-title" data-i18n="tabsSection">Tabs</h3>
+                <button type="button" id="tabs-reset" class="btn btn-ghost" data-i18n="tabsReset">Reset to preset</button>
+              </div>
+              <ul id="tabs-list" class="tabs-list"></ul>
+              <p class="hint" data-i18n="tabsHint">
+                Choose which tabs show and in what order. The first one opens first. Changing the profile above resets this list to its preset.
+              </p>
+            </div>
           </section>
 
           <section class="form-section card">

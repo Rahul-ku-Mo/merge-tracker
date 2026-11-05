@@ -132,6 +132,8 @@ export interface ExtensionConfig {
   accounts: Account[];
   /** Layout preset. null until the user answers the one-time question in the popup. */
   profile: Profile | null;
+  /** Tabs the user chose, in order. null = use the profile's preset. */
+  tabs: PopupTab[] | null;
   syncIntervalMinutes: number;
   notifyOn: NotifyOnConfig;
   quietHours: QuietHours;

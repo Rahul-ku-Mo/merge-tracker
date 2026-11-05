@@ -249,6 +249,52 @@ h1 {
   flex-shrink: 0;
 }
 
+/* Label above its control, for fields whose label is too long for a side-by-side row. */
+.field-label.stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.subsection-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tabs-editor {
+  margin-top: 8px;
+}
+
+.tabs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.tabs-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid hsl(var(--border, var(--ink)));
+  border-radius: var(--radius);
+}
+
+.tabs-list .check-row {
+  flex: 1;
+}
+
+.tabs-list .move {
+  min-width: 32px;
+  padding: 4px 8px;
+}
+
 /* Inside account cards, stack label text above the input for readability. */
 .account-card .field-label {
   flex-direction: column;
